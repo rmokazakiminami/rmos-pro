@@ -747,7 +747,7 @@ function searchGB(q){
     let s=str;
     terms.forEach(t=>{
       if(!t) return;
-      s=s.replace(new RegExp('('+t.replace(/[.*+?^${}()|[\]\]/g,'\$&')+')','g'),
+      s=s.replace(new RegExp('('+t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','g'),
         '<mark style="background:#fff3b0;border-radius:2px">$1</mark>');
     });
     return s;
