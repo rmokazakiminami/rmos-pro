@@ -247,6 +247,11 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
     <div id="hr"></div>
   </div>
 
+  <!-- 逆引き -->
+  <div id="sec-gyakubiki" class="sec">
+    <div id="gb-result"></div>
+  </div>
+
   <!-- ブックマーク -->
   <div id="sec-bm" class="sec">
     <div id="bml"></div>
@@ -456,8 +461,8 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
 <script src="data.js"></script>
 <script>
-const GAS_URL  = 'https://script.google.com/macros/s/AKfycbyUv8RMqNRG1IRrutYmcASNuSoQ4IwSSACfMYCYKz94xUG7ffGrFlS8vFWTMCQUmsl1LQ/exec';
-const TO_MAIL  = 'ainasan1959@gmail.com';
+const GAS_URL  = 'https://script.google.com/macros/s/AKfycbxZq9A2RWtmNGGeJVRvKLkNAUeWEC2m6GcaIHIzTs7cRQ4yE9wFGNXN4saNiaEFida-Jw/exec';
+const TO_MAIL  = 'rm.okazaki.minami@gmail.com';
 // ── パスワード（Google Sheets設定シートから起動時に読み込み・フォールバックあり）──
 let PW = { resident:'rm2026', board:'riji2026', repair:'shuzen2026' }; // デフォルト値（Sheets読み込み失敗時に使用）
 
@@ -473,7 +478,7 @@ const CSV = {
 };
 
 const AREA_TABS = {
-  public:   [{s:'kiyaku',i:'📖',l:'規約'},{s:'hosoku',i:'📜',l:'細則'},
+  public:   [{s:'kiyaku',i:'📖',l:'規約'},{s:'hosoku',i:'📜',l:'細則'},{s:'gyakubiki',i:'🔍',l:'逆引き'},
              {s:'f-forms',i:'⚖️',l:'是正'},{s:'wendyfaq',i:'📚',l:'FAQ'},{s:'bm',i:'⭐',l:'メモ'}],
   resident: [{s:'notices',i:'📢',l:'お知らせ'},{s:'progress',i:'🏗',l:'工事'},
              {s:'opinion',i:'📬',l:'意見箱'},{s:'answers',i:'💬',l:'回答'}],
@@ -565,6 +570,7 @@ function goSec(name){
   document.getElementById('rc').textContent='';
   buildFilter();
   if(name==='hosoku'&&!window._hI){initH();window._hI=true;}
+  if(name==='gyakubiki'&&!window._gbI){searchGB('');window._gbI=true;}
   if(name==='bm')renderBM();
   const wp=document.getElementById('wendy-panel');if(wp)wp.style.display='none'; // 細則タブでsearchH内で表示
   if(name==='f-forms')renderFF();
@@ -605,6 +611,7 @@ function doSearch(){
   if(curSec==='kiyaku') searchK(q);
   else if(curSec==='hosoku') searchH(q);
   else if(curSec==='yosiki') searchY(q);
+  else if(curSec==='gyakubiki') searchGB(q);
 }
 function initH(){searchH('');}
 function initY(){searchY('');}
@@ -693,6 +700,99 @@ function searchH(q){
 
   // Wendy-Net FAQパネル：細則タブでは非表示
   const wp=document.getElementById('wendy-panel');if(wp)wp.style.display='none';
+}
+/* ===== 逆引き検索（規約＋細則横断・スコアリング方式） ===== */
+function searchGB(q){
+  const el=document.getElementById('gb-result');
+  const wp=document.getElementById('wendy-panel');if(wp)wp.style.display='none';
+  if(!q){
+    el.innerHTML='<div style="text-align:center;padding:40px 16px;color:var(--tx2);font-size:14px">キーワードを入力してください。<br>スペース区切りで複数キーワード検索できます。</div>';
+    document.getElementById('rc').textContent='';
+    return;
+  }
+  const terms=q.trim().split(/\s+/).filter(t=>t);
+
+  function scoreItem(hay_title,hay_text,hay_cat){
+    let score=0;
+    terms.forEach(t=>{
+      if((hay_title||'').includes(t)) score+=10;
+      score+=((hay_text||'').match(new RegExp(t.replace(/[.*+?^${}()|[\]\]/g,'\$&'),'g'))||[]).length;
+      if((hay_cat||'').includes(t)) score+=2;
+    });
+    return score;
+  }
+
+  const rk=[];
+  KIYAKU_DATA.forEach(a=>{
+    const s=scoreItem(a.label,a.text,a.chapter);
+    if(s>0) rk.push(Object.assign({},a,{_score:s}));
+  });
+  rk.sort((a,b)=>b._score-a._score);
+
+  const rh=[];
+  HOSOKU_DATA.forEach(a=>{
+    const s=scoreItem(a.label,a.text,a.edition);
+    if(s>0) rh.push(Object.assign({},a,{_score:s}));
+  });
+  rh.sort((a,b)=>b._score-a._score);
+
+  const total=rk.length+rh.length;
+  document.getElementById('rc').textContent=total
+    ? total+'件ヒット（規約'+rk.length+'件・細則'+rh.length+'件）関連度順'
+    : '該当なし';
+
+  if(!total){el.innerHTML='<div class="empty">該当する条文が見つかりませんでした。</div>';return;}
+
+  function hlMulti(str,terms){
+    let s=str;
+    terms.forEach(t=>{
+      if(!t) return;
+      s=s.replace(new RegExp('('+t.replace(/[.*+?^${}()|[\]\]/g,'\$&')+')','g'),
+        '<mark style="background:#fff3b0;border-radius:2px">$1</mark>');
+    });
+    return s;
+  }
+
+  let html='';
+
+  if(rk.length){
+    const groups={};
+    rk.forEach(a=>{if(!groups[a.chapter])groups[a.chapter]=[];groups[a.chapter].push(a);});
+    const sorted=Object.entries(groups).sort((a,b)=>b[1][0]._score-a[1][0]._score);
+    html+=sorted.map(([chapter,arts])=>{
+      const m=chapter.match(/第[０-９\d]+章/);
+      const chNum=m?m[0]:(chapter==='附則'?'附則':chapter.slice(0,4));
+      const chTitle=m?chapter.replace(/第[０-９\d]+章\s*/,''):(chapter==='附則'?'':chapter);
+      return '<div class="ke"><div class="ke-head">'
+        +'<span class="ke-badge" style="background:#1B4F8A;color:#fff">規約</span>'
+        +'<span class="ke-badge">'+esc(chNum)+'</span>'
+        +'<span class="ke-title">'+esc(chTitle)+'</span></div>'
+        +arts.map(a=>'<div class="ai">'
+          +'<div class="ka-label"><span>'+hlMulti(esc(a.label),terms)+'</span>'
+          +'<span style="font-size:10px;color:var(--tx2);margin-left:8px">関連度:'+a._score+'</span></div>'
+          +'<div class="ka-text">'+hlMulti(esc(a.text),terms)+'</div></div>').join('')
+        +'</div>';
+    }).join('');
+  }
+
+  if(rh.length){
+    const groups={};
+    rh.forEach(a=>{if(!groups[a.edition])groups[a.edition]=[];groups[a.edition].push(a);});
+    const sorted=Object.entries(groups).sort((a,b)=>b[1][0]._score-a[1][0]._score);
+    html+=sorted.map(([edition,arts])=>
+      '<div class="he"><div class="he-head">'
+      +'<span class="he-badge" style="background:#0F6E56;color:#fff">細則</span>'
+      +'<span class="he-badge">'+esc(edition.replace(/第(\d+)編 /,'$1編'))+'</span>'
+      +'<span class="he-title">'+esc(edition.replace(/第\d+編 /,''))+'</span></div>'
+      +arts.map(a=>'<div class="ha">'
+        +'<div class="ha-label"><span>'+hlMulti(esc(a.label),terms)+'</span>'
+        +'<span style="font-size:10px;color:var(--tx2);margin-left:8px">関連度:'+a._score+'</span></div>'
+        +'<div class="ha-text">'+hlMulti(esc(a.text),terms)+'</div></div>').join('')
+      +'</div>'
+    ).join('');
+  }
+
+  el.innerHTML=html;
 }
 
 /* ===== 様式 ===== */
