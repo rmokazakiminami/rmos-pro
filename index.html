@@ -295,7 +295,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
         </div>
         <div style="margin-bottom:16px">
           <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法（任意）</label>
-          <select id="op-reply" onchange="updateReplyHint()" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px">
+          <select id="op-reply" onchange="updateReplyHint('op-reply','op-reply-hint')" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px">
             <option value="公開（掲示板・RMOS Pro）">公開（掲示板・RMOS Pro）</option>
             <option value="メール">メール</option>
             <option value="電話">電話</option>
@@ -377,13 +377,25 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
           <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">ご意見・ご要望 <span style="color:#e53935">*</span></label>
           <textarea id="opb-msg" rows="5" placeholder="ご自由にお書きください（必須）" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;resize:vertical;box-sizing:border-box;line-height:1.6"></textarea>
         </div>
+        <div style="margin-bottom:16px">
+          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法（任意）</label>
+          <select id="opb-reply" onchange="updateReplyHint('opb-reply','opb-reply-hint')" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px">
+            <option value="公開（掲示板・RMOS Pro）">公開（掲示板・RMOS Pro）</option>
+            <option value="メール">メール</option>
+            <option value="電話">電話</option>
+            <option value="書面">書面</option>
+            <option value="訪問">訪問</option>
+            <option value="回答不要">回答不要</option>
+          </select>
+          <div id="opb-reply-hint" style="margin-top:6px;font-size:12px;color:#1B4F8A;display:none;padding:6px 10px;background:#EBF5FF;border-radius:6px"></div>
+        </div>
         <div style="margin-bottom:12px">
           <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">部屋番号（任意）</label>
           <input type="text" id="opb-room" placeholder="例：502" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
         </div>
         <div style="margin-bottom:16px">
-          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">メールアドレス（任意・返信希望の方）</label>
-          <input type="email" id="opb-email" placeholder="例: example@mail.com" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
+          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">メールアドレスまたは電話番号（任意・返信希望の方）</label>
+          <input type="text" id="opb-email" placeholder="例: example@mail.com　または　090-1234-5678" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
         </div>
         <div id="opb-msg-err" style="font-size:13px;color:#e53935;margin-bottom:8px;display:none">ご意見を入力してください。</div>
         <button class="sbtn" onclick="submitOpinionB()" id="opb-btn" style="max-width:260px;display:block;margin:0 auto">📨 送信する</button>
@@ -433,9 +445,18 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
       </select>
       <textarea id="op-txt-r" placeholder="ご意見・ご要望をご記入ください（匿名可）" rows="5"
         style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;background:var(--bg);color:var(--tx)"></textarea>
+      <select id="op-reply-r" onchange="updateReplyHint('op-reply-r','op-reply-hint-r')" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;margin-top:8px;background:var(--bg);color:var(--tx)">
+        <option value="公開（掲示板・RMOS Pro）">回答方法：公開（掲示板・RMOS Pro）</option>
+        <option value="メール">回答方法：メール</option>
+        <option value="電話">回答方法：電話</option>
+        <option value="書面">回答方法：書面</option>
+        <option value="訪問">回答方法：訪問</option>
+        <option value="回答不要">回答方法：回答不要</option>
+      </select>
+      <div id="op-reply-hint-r" style="margin-top:4px;font-size:12px;color:#1B4F8A;display:none;padding:6px 10px;background:#EBF5FF;border-radius:6px"></div>
       <input id="op-room-r" type="text" placeholder="部屋番号（任意）" maxlength="10"
         style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;margin-top:8px;background:var(--bg);color:var(--tx)">
-      <input id="op-mail-r" type="email" placeholder="メールアドレス（個別回答希望の場合）" maxlength="100"
+      <input id="op-mail-r" type="text" placeholder="メールアドレスまたは電話番号（個別回答希望の場合）" maxlength="100"
         style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;margin-top:8px;background:var(--bg);color:var(--tx)">
       <div id="op-msg-r" style="font-size:12px;color:var(--tx3);margin:8px 0"></div>
       <button class="sbtn" onclick="submitOpinionR()" id="op-btn-r" style="max-width:260px;display:block;margin:0 auto">📨 送信する</button>
@@ -473,7 +494,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
 <script src="data.js"></script>
 <script>
-const GAS_URL  = 'https://script.google.com/macros/s/AKfycbyUv8RMqNRG1IRrutYmcASNuSoQ4IwSSACfMYCYKz94xUG7ffGrFlS8vFWTMCQUmsl1LQ/exec';
+const GAS_URL  = 'https://script.google.com/macros/s/AKfycbwoCI9rAWUJpgyvMulvlu5jqxAg0wls3uVZfNjCgk8sxXjMwYprMLErlYlq3ucjeU3dRg/exec';
 const TO_MAIL  = 'ainasan1959@gmail.com';
 // ── パスワード（Google Sheets設定シートから起動時に読み込み・フォールバックあり）──
 let PW = { resident:'rm2026', board:'riji2026', repair:'shuzen2026' }; // デフォルト値（Sheets読み込み失敗時に使用）
@@ -618,9 +639,12 @@ function buildFilter(){
 }
 
 /* ===== SEARCH ===== */
-function updateReplyHint(){
-  const v=document.getElementById('op-reply').value;
-  const hint=document.getElementById('op-reply-hint');
+function updateReplyHint(selectId, hintId){
+  selectId = selectId || 'op-reply';
+  hintId = hintId || 'op-reply-hint';
+  const v=document.getElementById(selectId).value;
+  const hint=document.getElementById(hintId);
+  if(!hint) return;
   const emailLabel=document.querySelector('label[for="op-email"]')||
     [...document.querySelectorAll('label')].find(l=>l.textContent.includes('メールアドレス'));
   const msgs={
