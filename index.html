@@ -293,13 +293,25 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
           <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">ご意見・ご要望 <span style="color:#e53935">*</span></label>
           <textarea id="op-msg" rows="5" placeholder="ご自由にお書きください（必須）" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;resize:vertical;box-sizing:border-box;line-height:1.6"></textarea>
         </div>
+        <div style="margin-bottom:16px">
+          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法（任意）</label>
+          <select id="op-reply" onchange="updateReplyHint()" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px">
+            <option value="公開（掲示板・RMOS Pro）">公開（掲示板・RMOS Pro）</option>
+            <option value="メール">メール</option>
+            <option value="電話">電話</option>
+            <option value="書面">書面</option>
+            <option value="訪問">訪問</option>
+            <option value="回答不要">回答不要</option>
+          </select>
+          <div id="op-reply-hint" style="margin-top:6px;font-size:12px;color:#1B4F8A;display:none;padding:6px 10px;background:#EBF5FF;border-radius:6px"></div>
+        </div>
         <div style="margin-bottom:12px">
           <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">部屋番号（任意）</label>
           <input type="text" id="op-room" placeholder="例：502" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
         </div>
         <div style="margin-bottom:16px">
-          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">メールアドレス（任意・返信希望の方）</label>
-          <input type="email" id="op-email" placeholder="例: example@mail.com" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
+          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">メールアドレスまたは電話番号（任意・返信希望の方）</label>
+          <input type="text" id="op-email" placeholder="例: example@mail.com　または　090-1234-5678" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
         </div>
         <div id="op-msg-err" style="font-size:13px;color:#e53935;margin-bottom:8px;display:none">ご意見を入力してください。</div>
         <button class="sbtn" onclick="submitOpinion()" id="op-btn" style="max-width:260px;display:block;margin:0 auto">📨 送信する</button>
@@ -606,6 +618,20 @@ function buildFilter(){
 }
 
 /* ===== SEARCH ===== */
+function updateReplyHint(){
+  const v=document.getElementById('op-reply').value;
+  const hint=document.getElementById('op-reply-hint');
+  const emailLabel=document.querySelector('label[for="op-email"]')||
+    [...document.querySelectorAll('label')].find(l=>l.textContent.includes('メールアドレス'));
+  const msgs={
+    'メール':'メールアドレスを下欄に入力してください。',
+    '電話':'電話番号を下欄に入力してください。',
+    '書面':'部屋番号を下欄に入力してください。',
+    '訪問':'部屋番号を下欄に入力してください。',
+  };
+  if(msgs[v]){hint.textContent=msgs[v];hint.style.display='block';}
+  else{hint.style.display='none';}
+}
 function doSearch(){
   const q=(document.getElementById('qi').value||'').trim();
   if(curSec==='kiyaku') searchK(q);
@@ -1184,12 +1210,13 @@ function submitOpinion(){
   const msg=document.getElementById('op-msg').value.trim();
   const room=document.getElementById('op-room').value.trim();
   const email=document.getElementById('op-email').value.trim();
+  const reply=document.getElementById('op-reply').value;
   const errEl=document.getElementById('op-msg-err');
   if(!msg){errEl.style.display='block';return;}
   errEl.style.display='none';
   const btn=document.getElementById('op-btn');
   btn.disabled=true;btn.textContent='送信中…';
-  const params=new URLSearchParams({action:'submitOpinion',category:cat,message:msg,room:room,email:email||'（未記入）',source:'居住者'});
+  const params=new URLSearchParams({action:'submitOpinion',category:cat,message:msg,room:room,email:email||'（未記入）',reply:reply,source:'居住者'});
   console.log('意見箱送信URL:', GAS_URL+'?'+params.toString());
   fetch(GAS_URL+'?'+params.toString(),{method:'GET',mode:'no-cors'})
     .then(()=>{
