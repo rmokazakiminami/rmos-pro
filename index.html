@@ -714,10 +714,12 @@ function searchGB(q){
 
   function scoreItem(hay_title,hay_text,hay_cat){
     let score=0;
+    const title=hay_title||''; const text=hay_text||''; const cat=hay_cat||'';
     terms.forEach(t=>{
-      if((hay_title||'').includes(t)) score+=10;
-      score+=((hay_text||'').match(new RegExp(t.replace(/[.*+?^${}()|[\]\]/g,'\$&'),'g'))||[]).length;
-      if((hay_cat||'').includes(t)) score+=2;
+      if(title.includes(t)) score+=10;
+      // 本文出現回数カウント（正規表現不使用）
+      let pos=0; while((pos=text.indexOf(t,pos))!==-1){score++;pos+=t.length;}
+      if(cat.includes(t)) score+=2;
     });
     return score;
   }
