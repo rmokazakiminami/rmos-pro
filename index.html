@@ -910,11 +910,12 @@ function submitOpinionR(){
   const cat=document.getElementById('op-cat-r').value||'工事全般';
   const room=(document.getElementById('op-room-r').value||'').trim();
   const mail=(document.getElementById('op-mail-r').value||'').trim();
+  const reply=(document.getElementById('op-reply-r').value||'公開（掲示板・RMOS Pro）');
   const msg=document.getElementById('op-msg-r');
   const btn=document.getElementById('op-btn-r');
   if(!txt){msg.textContent='⚠ 内容を入力してください';msg.style.color='var(--rd)';return;}
   btn.disabled=true;btn.textContent='送信中…';msg.textContent='';
-  const params=new URLSearchParams({action:'submitOpinion',category:cat+'（修繕委員会）',message:txt,room:room,email:mail,source:'修繕委員会'});
+  const params=new URLSearchParams({action:'submitOpinion',category:cat+'（修繕委員会）',message:txt,room:room,email:mail,reply:reply,source:'修繕委員会'});
   fetch(GAS_URL+'?'+params.toString(),{method:'GET',mode:'no-cors'})
     .then(()=>{
       msg.textContent='✅ 送信しました。ありがとうございます。';
@@ -1269,12 +1270,13 @@ function submitOpinionB(){
   const msg=document.getElementById('opb-msg').value.trim();
   const room=document.getElementById('opb-room').value.trim();
   const email=document.getElementById('opb-email').value.trim();
+  const reply=document.getElementById('opb-reply').value;
   const errEl=document.getElementById('opb-msg-err');
   if(!msg){errEl.style.display='block';return;}
   errEl.style.display='none';
   const btn=document.getElementById('opb-btn');
   btn.disabled=true;btn.textContent='送信中…';
-  const params=new URLSearchParams({action:'submitOpinion',category:cat,message:msg,room:room,email:email||'（未記入）',source:'理事会'});
+  const params=new URLSearchParams({action:'submitOpinion',category:cat,message:msg,room:room,email:email||'（未記入）',reply:reply,source:'理事会'});
   fetch(GAS_URL+'?'+params.toString(),{method:'GET',mode:'no-cors'})
     .then(()=>{
       document.getElementById('opinion-b-form').style.display='none';
