@@ -353,6 +353,18 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
 
 
+  <!-- 回答閲覧（理事会） -->
+  <div id="sec-answers-b" class="sec">
+    <div id="ans-list-b"></div>
+    <div id="ans-empty-b" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">公開中の回答はありません。</div>
+  </div>
+
+  <!-- 回答閲覧（修繕委員） -->
+  <div id="sec-answers-r" class="sec">
+    <div id="ans-list-r"></div>
+    <div id="ans-empty-r" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">公開中の回答はありません。</div>
+  </div>
+
   <!-- 理事会用意見箱 -->
   <div id="sec-opinion-b" class="sec">
     <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:24px 16px">
@@ -437,10 +449,14 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
       <div style="font-size:13px;font-weight:700;margin-bottom:8px">📬 修繕委員会への意見・要望</div>
       <div style="font-size:12px;color:var(--tx3);margin-bottom:12px">大規模修繕工事に関するご意見・ご要望をお送りください。</div>
       <select id="op-cat-r" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;background:var(--bg);color:var(--tx)">
+        <option value="管理全般">管理全般</option>
+        <option value="修繕・設備">修繕・設備</option>
         <option value="工事全般">工事全般</option>
         <option value="騒音・振動">騒音・振動</option>
         <option value="工程・スケジュール">工程・スケジュール</option>
-        <option value="安全・管理">安全・管理</option>
+        <option value="駐車場・駐輪場">駐車場・駐輪場</option>
+        <option value="騒音・マナー">騒音・マナー</option>
+        <option value="防災・安全">防災・安全</option>
         <option value="その他">その他</option>
       </select>
       <textarea id="op-txt-r" placeholder="ご意見・ご要望をご記入ください（匿名可）" rows="5"
