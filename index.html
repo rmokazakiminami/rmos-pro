@@ -330,7 +330,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
     </div>
   </div>
 
-  <!-- 回答閲覧 -->
+  <!-- 回答閲覧（居住者） -->
   <div id="sec-answers" class="sec">
     <div id="ans-list"></div>
     <div id="ans-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">公開中の回答はありません。</div>
@@ -494,7 +494,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
 <script src="data.js"></script>
 <script>
-const GAS_URL  = 'https://script.google.com/macros/s/AKfycbwoCI9rAWUJpgyvMulvlu5jqxAg0wls3uVZfNjCgk8sxXjMwYprMLErlYlq3ucjeU3dRg/exec';
+const GAS_URL  = 'https://script.google.com/macros/s/AKfycbzCwV8PlLDV_Cbs_kh6UP6wcG0DiwA7BOsuFNj1_ioAzFvT9cc5NaHrgy1G3_6zKX9EhQ/exec';
 const TO_MAIL  = 'ainasan1959@gmail.com';
 // ── パスワード（Google Sheets設定シートから起動時に読み込み・フォールバックあり）──
 let PW = { resident:'rm2026', board:'riji2026', repair:'shuzen2026' }; // デフォルト値（Sheets読み込み失敗時に使用）
@@ -516,9 +516,9 @@ const AREA_TABS = {
   resident: [{s:'notices',i:'📢',l:'お知らせ'},{s:'progress',i:'🏗',l:'工事'},
              {s:'opinion',i:'📬',l:'意見箱'},{s:'answers',i:'💬',l:'回答'}],
   board:    [{s:'minutes',i:'📄',l:'議事録'},{s:'board-notice',i:'📣',l:'お知らせ'},
-             {s:'progress',i:'🏗',l:'工事'},{s:'opinion-b',i:'📬',l:'意見箱'}],
+             {s:'progress',i:'🏗',l:'工事'},{s:'opinion-b',i:'📬',l:'意見箱'},{s:'answers-b',i:'💬',l:'回答'}],
   repair:   [{s:'progress',i:'🏗',l:'工事'},{s:'repair-notice',i:'📢',l:'お知らせ'},
-             {s:'opinion-r',i:'📬',l:'意見箱'}],
+             {s:'opinion-r',i:'📬',l:'意見箱'},{s:'answers-r',i:'💬',l:'回答'}],
 };
 
 let curSec='kiyaku', curArea='public';
@@ -588,8 +588,8 @@ const SEARCH_SECS=['kiyaku','hosoku','gyakubiki'];
 function goSec(name){
   // 認証チェック
   const RESIDENT_SECS=['notices','opinion','answers'];
-  const BOARD_SECS=['minutes','board-notice','opinion-b'];
-  const REPAIR_SECS=['repair-notice','opinion-r'];
+  const BOARD_SECS=['minutes','board-notice','opinion-b','answers-b'];
+  const REPAIR_SECS=['repair-notice','opinion-r','answers-r'];
   if(BOARD_SECS.includes(name)&&!auth.board){return;}
   if(REPAIR_SECS.includes(name)&&!auth.repair&&!auth.board){return;}
   if(RESIDENT_SECS.includes(name)&&!auth.resident&&!auth.board&&!auth.repair){return;}
@@ -610,7 +610,9 @@ function goSec(name){
   // CSV系：セクション表示のたびに最新データを取得
   if(name==='notices')renderNotices();
   if(name==='progress')renderProgress();
-  if(name==='answers')renderAnswers();
+  if(name==='answers')renderAnswers('ans-list','ans-empty');
+  else if(name==='answers-b')renderAnswers('ans-list-b','ans-empty-b');
+  else if(name==='answers-r')renderAnswers('ans-list-r','ans-empty-r');
   if(name==='wendyfaq')renderWendyFAQPage();
   if(name==='minutes')renderMinutes();
   if(name==='board-notice')renderBoardNotices();
@@ -1299,67 +1301,37 @@ function resetOpinionB(){
 }
 
 
-function renderAnswers(){
-  const list=document.getElementById('ans-list');
-  const empty=document.getElementById('ans-empty');
+function renderAnswers(listId,emptyId){
+  listId=listId||'ans-list'; emptyId=emptyId||'ans-empty';
+  const list=document.getElementById(listId);
+  const empty=document.getElementById(emptyId);
   if(!list)return;
   list.innerHTML=loadingHTML();
-  fetch(CSV.answers + '&t=' + Date.now(), {cache: 'no-store'})
-    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text();})
-    .then(text=>{
-      const rows=parseCSVRows(text);
-      // 意見箱回答: 列順 No,受付日,カテゴリ,お問い合わせ内容,回答内容,回答日,公開区分,...
-      // 1行目はURL、2行目以降がデータ（列名行なし）
-      const dataRows=rows.slice(1);
+  fetch(GAS_URL+'?action=getAnswers&t='+Date.now(),{method:'GET',mode:'cors'})
+    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(data=>{
       list.innerHTML='';
-      let count=0;
-      dataRows.forEach(row=>{
-        if(!row||row.length<7)return;
-        const msg=(row[3]||'').trim();
-        const answer=(row[4]||'').trim();
-        const pub=(row[6]||'').trim().replace(/\u3000/g,'');
-        if(pub!=='公開'||!msg||!answer)return;
-        const date=row[1]||'';
-        const cat=row[2]||'';
-        const ansDate=row[5]||'';
+      if(!data||data.length===0){empty.style.display='block';return;}
+      empty.style.display='none';
+      data.forEach(row=>{
         const div=document.createElement('div');
         div.style.cssText='border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:10px;background:var(--sf)';
         div.innerHTML=
           '<div style="padding:10px 13px;background:var(--sf2);display:flex;justify-content:space-between;align-items:center;gap:8px">'+
-            '<span style="font-size:13px;font-weight:500">'+esc(msg)+'</span>'+
-            '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--ac-bg);color:var(--ac);flex-shrink:0">'+esc(cat)+'</span>'+
+            '<span style="font-size:13px;font-weight:500">'+esc(row.message)+'</span>'+
+            '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--ac-bg);color:var(--ac);flex-shrink:0">'+esc(row.category)+'</span>'+
           '</div>'+
           '<div style="padding:10px 13px;font-size:13px;color:var(--tx2);border-top:1px solid var(--bd)">'+
             '<div style="font-size:11px;font-weight:700;color:var(--gn);margin-bottom:4px">▶ 理事会からの回答</div>'+
-            '<div style="line-height:1.75">'+esc(answer)+'</div>'+
-            '<div style="font-size:11px;color:var(--tx2);margin-top:6px">受付：'+esc(date)+(ansDate?'　回答日：'+esc(ansDate):'')+'</div>'+
+            '<div style="line-height:1.75">'+esc(row.answer)+'</div>'+
+            '<div style="font-size:11px;color:var(--tx2);margin-top:6px">受付：'+esc(row.date)+'</div>'+
           '</div>';
         list.appendChild(div);
-        count++;
       });
-      if(count===0){list.innerHTML='';empty.style.display='block';}
-      else empty.style.display='none';
     })
     .catch(()=>{
       list.innerHTML='';
-      if(typeof ANSWER_DATA!=='undefined'&&ANSWER_DATA.length>0){
-        ANSWER_DATA.forEach(row=>{
-          const div=document.createElement('div');
-          div.style.cssText='border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:10px;background:var(--sf)';
-          div.innerHTML=
-            '<div style="padding:10px 13px;background:var(--sf2);display:flex;justify-content:space-between;align-items:center;gap:8px">'+
-              '<span style="font-size:13px;font-weight:500">'+esc(row.message)+'</span>'+
-              '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--ac-bg);color:var(--ac);flex-shrink:0">'+esc(row.category)+'</span>'+
-            '</div>'+
-            '<div style="padding:10px 13px;font-size:13px;color:var(--tx2);border-top:1px solid var(--bd)">'+
-              '<div style="font-size:11px;font-weight:700;color:var(--gn);margin-bottom:4px">▶ 理事会からの回答</div>'+
-              '<div style="line-height:1.75">'+esc(row.answer)+'</div>'+
-              '<div style="font-size:11px;color:var(--tx2);margin-top:6px">受付：'+esc(row.date)+(row.answer_date?'　回答日：'+esc(row.answer_date):'')+'</div>'+
-            '</div>';
-          list.appendChild(div);
-        });
-        empty.style.display='none';
-      } else empty.style.display='block';
+      empty.style.display='block';
     });
 }
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
