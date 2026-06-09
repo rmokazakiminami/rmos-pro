@@ -1927,13 +1927,13 @@ async function rmPushSubscribe() {
 
 async function rmPushSubscribeInternal() {
   const reg = await navigator.serviceWorker.ready;
+  // 既存購読を一旦解除して新規登録（VAPID鍵変更対応）
   let sub = await reg.pushManager.getSubscription();
-  if (!sub) {
-    sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-    });
-  }
+  if (sub) await sub.unsubscribe();
+  sub = await reg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+  });
   await fetch(PUSH_WORKER_URL + '/subscribe', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
