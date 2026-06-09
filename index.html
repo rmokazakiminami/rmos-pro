@@ -259,6 +259,12 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
   <!-- お知らせ -->
   <div id="sec-notices" class="sec">
+    <!-- 通知許可バナー -->
+    <div id="push-banner" style="display:none;margin-bottom:16px;padding:14px 16px;background:rgba(26,82,118,.07);border:1px solid rgba(26,82,118,.2);border-radius:10px;text-align:center">
+      <div style="font-size:13px;color:var(--tx);margin-bottom:10px">📣 管理組合からの緊急連絡をプッシュ通知で受け取れます。</div>
+      <button id="push-allow-btn" onclick="rmPushSubscribe()" style="padding:9px 20px;background:#1a5276;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔔 通知を受け取る</button>
+      <button onclick="document.getElementById('push-banner').style.display='none'" style="margin-left:8px;padding:9px 16px;background:var(--sf);color:var(--tx2);border:1px solid var(--bd);border-radius:8px;font-size:12px;cursor:pointer">後で</button>
+    </div>
     <div id="notice-list"></div>
     <div id="notice-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">お知らせはありません。</div>
   </div>
@@ -434,6 +440,20 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
   <!-- 理事会お知らせ -->
   <div id="sec-board-notice" class="sec">
+    <!-- 緊急通知送信UI（理事会のみ） -->
+    <div id="push-send-panel" style="margin-bottom:20px;padding:16px;background:rgba(231,76,60,.05);border:1px solid rgba(231,76,60,.25);border-radius:10px">
+      <div style="font-size:13px;font-weight:700;color:#c0392b;margin-bottom:12px">📣 緊急プッシュ通知の送信</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">タイトル</label>
+        <input type="text" id="push-title" placeholder="例：重要なお知らせ" style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box">
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">本文</label>
+        <textarea id="push-body" rows="3" placeholder="例：本日15時より共用部の停電作業を行います。" style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box;resize:vertical"></textarea>
+      </div>
+      <button onclick="rmPushSend()" style="padding:10px 24px;background:#c0392b;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📣 全居住者に送信</button>
+      <div id="push-send-result" style="margin-top:10px;font-size:13px;display:none"></div>
+    </div>
     <div id="board-notice-list"></div>
     <div id="board-notice-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">理事会お知らせはありません。</div>
   </div>
@@ -623,6 +643,7 @@ function goSec(name){
   if(name==='bm')renderBM();
   const wp=document.getElementById('wendy-panel');if(wp)wp.style.display='none'; // 細則タブでsearchH内で表示
   if(name==='f-forms')renderFF();
+  if(name==='notices') rmPushBannerCheck();
   // CSV系：セクション表示のたびに最新データを取得
   if(name==='notices')renderNotices();
   if(name==='progress')renderProgress();
@@ -1167,6 +1188,7 @@ function doLogin(){
     const areaMap={resident:'rm2026',board:'riji2026',repair:'shuzen2026'};
     if(typeof gtag==='function') gtag('event','login',{area:areaMap[matched]});
     closeMod(); setArea(matched);
+    if(matched==='resident'||matched==='board') rmPushInit();
   } else {
     document.getElementById('me').textContent='❌ パスワードが違います';
     document.getElementById('mpw').select();
@@ -1754,6 +1776,111 @@ function rmFaqJump(type, id){
         if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
       }, 350);
     }, 200);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  プッシュ通知
+// ══════════════════════════════════════════════
+const PUSH_WORKER_URL = 'https://lingering-bonus-b7e5.rm-okazaki-minami.workers.dev';
+const VAPID_PUBLIC_KEY = 'BFGEESIkBA5bZd5nDI5gPeCzgg_Qt1-qKvlbhyW2TvVhKToRcWCBR4sFms5vDu2Ob-C9SJuZOMvpMcI51AoPCrM';
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+// SW登録（ログイン後に呼ぶ）
+async function rmPushInit() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    await navigator.serviceWorker.register('./sw.js');
+    if (Notification.permission === 'granted') {
+      await rmPushSubscribeInternal(); // 既許可なら静かに再購読
+    }
+  } catch(e) { console.warn('SW登録失敗:', e); }
+}
+
+// noticesセクション表示時にバナー表示判定
+function rmPushBannerCheck() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  if (!(auth.resident || auth.board)) return;
+  const banner = document.getElementById('push-banner');
+  if (!banner) return;
+  const perm = Notification.permission;
+  if (perm === 'default') {
+    banner.style.display = 'block';
+  } else if (perm === 'granted') {
+    banner.innerHTML = '<div style="font-size:13px;color:#1a5276;font-weight:600">✅ 通知設定済み</div>';
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+// 居住者：通知許可ボタン押下
+async function rmPushSubscribe() {
+  const btn = document.getElementById('push-allow-btn');
+  if (btn) { btn.textContent = '処理中…'; btn.disabled = true; }
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') {
+      if (btn) { btn.textContent = '🔔 通知を受け取る'; btn.disabled = false; }
+      return;
+    }
+    await rmPushSubscribeInternal();
+    const banner = document.getElementById('push-banner');
+    if (banner) banner.innerHTML = '<div style="font-size:13px;color:#1a5276;font-weight:600">✅ 通知設定済み</div>';
+  } catch(e) {
+    console.warn('購読失敗:', e);
+    if (btn) { btn.textContent = '🔔 通知を受け取る'; btn.disabled = false; }
+  }
+}
+
+async function rmPushSubscribeInternal() {
+  const reg = await navigator.serviceWorker.ready;
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) {
+    sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+  }
+  await fetch(PUSH_WORKER_URL + '/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(sub)
+  });
+}
+
+// 理事会：緊急通知送信
+async function rmPushSend() {
+  const title = (document.getElementById('push-title')?.value || '').trim();
+  const body  = (document.getElementById('push-body')?.value  || '').trim();
+  const res   = document.getElementById('push-send-result');
+  if (!title || !body) {
+    if (res) { res.style.display='block'; res.style.color='#c0392b'; res.textContent='タイトルと本文を入力してください。'; }
+    return;
+  }
+  if (res) { res.style.display='block'; res.style.color='var(--tx2)'; res.textContent='送信中…'; }
+  try {
+    const r = await fetch(PUSH_WORKER_URL + '/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-notify-secret': 'riji2026' },
+      body: JSON.stringify({ title, body })
+    });
+    const json = await r.json().catch(() => ({}));
+    if (r.ok) {
+      if (res) { res.style.color='#1a5276'; res.textContent=`✅ 送信完了（${json.sent ?? '?'}件）`; }
+      document.getElementById('push-title').value = '';
+      document.getElementById('push-body').value  = '';
+    } else {
+      if (res) { res.style.color='#c0392b'; res.textContent='❌ 送信失敗：' + (json.error || r.status); }
+    }
+  } catch(e) {
+    if (res) { res.style.color='#c0392b'; res.textContent='❌ 通信エラー：' + e.message; }
   }
 }
 

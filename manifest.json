@@ -2,7 +2,7 @@
   "name": "RMOS Pro",
   "short_name": "RMOS",
   "description": "ロイヤルマンション岡崎南公園 管理組合システム",
-  "start_url": "/",
+  "start_url": "/rmos-pro/",
   "display": "standalone",
   "background_color": "#f5f6fa",
   "theme_color": "#1a5276",
