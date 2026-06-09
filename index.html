@@ -440,6 +440,12 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
   <!-- 理事会お知らせ -->
   <div id="sec-board-notice" class="sec">
+    <!-- 通知許可バナー（理事会用） -->
+    <div id="push-banner-board" style="display:none;margin-bottom:16px;padding:14px 16px;background:rgba(26,82,118,.07);border:1px solid rgba(26,82,118,.2);border-radius:10px;text-align:center">
+      <div style="font-size:13px;color:var(--tx);margin-bottom:10px">📣 管理組合からの緊急連絡をプッシュ通知で受け取れます。</div>
+      <button id="push-allow-btn-board" onclick="rmPushSubscribeBoard()" style="padding:9px 20px;background:#1a5276;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔔 通知を受け取る</button>
+      <button onclick="document.getElementById('push-banner-board').style.display='none'" style="margin-left:8px;padding:9px 16px;background:var(--sf);color:var(--tx2);border:1px solid var(--bd);border-radius:8px;font-size:12px;cursor:pointer">後で</button>
+    </div>
     <!-- 緊急通知送信UI（理事会のみ） -->
     <div id="push-send-panel" style="margin-bottom:20px;padding:16px;background:rgba(231,76,60,.05);border:1px solid rgba(231,76,60,.25);border-radius:10px">
       <div style="font-size:13px;font-weight:700;color:#c0392b;margin-bottom:12px">📣 緊急プッシュ通知の送信</div>
@@ -460,6 +466,12 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
   <!-- 修繕委員会専用お知らせ -->
   <div id="sec-repair-notice" class="sec">
+    <!-- 通知許可バナー（修繕委員会用） -->
+    <div id="push-banner-repair" style="display:none;margin-bottom:16px;padding:14px 16px;background:rgba(26,82,118,.07);border:1px solid rgba(26,82,118,.2);border-radius:10px;text-align:center">
+      <div style="font-size:13px;color:var(--tx);margin-bottom:10px">📣 管理組合からの緊急連絡をプッシュ通知で受け取れます。</div>
+      <button id="push-allow-btn-repair" onclick="rmPushSubscribeRepair()" style="padding:9px 20px;background:#1a5276;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔔 通知を受け取る</button>
+      <button onclick="document.getElementById('push-banner-repair').style.display='none'" style="margin-left:8px;padding:9px 16px;background:var(--sf);color:var(--tx2);border:1px solid var(--bd);border-radius:8px;font-size:12px;cursor:pointer">後で</button>
+    </div>
     <div id="repair-notice-list"></div>
   </div>
 
@@ -644,6 +656,8 @@ function goSec(name){
   const wp=document.getElementById('wendy-panel');if(wp)wp.style.display='none'; // 細則タブでsearchH内で表示
   if(name==='f-forms')renderFF();
   if(name==='notices') rmPushBannerCheck();
+  if(name==='board-notice') rmPushBannerBoardCheck();
+  if(name==='repair-notice') rmPushBannerRepairCheck();
   // CSV系：セクション表示のたびに最新データを取得
   if(name==='notices')renderNotices();
   if(name==='progress')renderProgress();
@@ -1803,7 +1817,7 @@ async function rmPushInit() {
   } catch(e) { console.warn('SW登録失敗:', e); }
 }
 
-// noticesセクション表示時にバナー表示判定
+// noticesセクション表示時にバナー表示判定（居住者・修繕委員会）
 function rmPushBannerCheck() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
   if (!(auth.resident || auth.board || auth.repair)) return;
@@ -1817,6 +1831,78 @@ function rmPushBannerCheck() {
     banner.style.display = 'block';
   } else {
     banner.style.display = 'none';
+  }
+}
+
+// board-noticeセクション表示時にバナー表示判定（理事会用）
+function rmPushBannerBoardCheck() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  if (!auth.board) return;
+  const banner = document.getElementById('push-banner-board');
+  if (!banner) return;
+  const perm = Notification.permission;
+  if (perm === 'default') {
+    banner.style.display = 'block';
+  } else if (perm === 'granted') {
+    banner.innerHTML = '<div style="font-size:13px;color:#1a5276;font-weight:600">✅ 通知設定済み</div>';
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+// 理事会：通知許可ボタン押下
+async function rmPushSubscribeBoard() {
+  const btn = document.getElementById('push-allow-btn-board');
+  if (btn) { btn.textContent = '処理中…'; btn.disabled = true; }
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') {
+      if (btn) { btn.textContent = '🔔 通知を受け取る'; btn.disabled = false; }
+      return;
+    }
+    await rmPushSubscribeInternal();
+    const banner = document.getElementById('push-banner-board');
+    if (banner) banner.innerHTML = '<div style="font-size:13px;color:#1a5276;font-weight:600">✅ 通知設定済み</div>';
+  } catch(e) {
+    console.warn('購読失敗:', e);
+    if (btn) { btn.textContent = '🔔 通知を受け取る'; btn.disabled = false; }
+  }
+}
+
+// 修繕委員会：board-noticeバナー表示判定
+function rmPushBannerRepairCheck() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  if (!auth.repair && !auth.board) return;
+  const banner = document.getElementById('push-banner-repair');
+  if (!banner) return;
+  const perm = Notification.permission;
+  if (perm === 'default') {
+    banner.style.display = 'block';
+  } else if (perm === 'granted') {
+    banner.innerHTML = '<div style="font-size:13px;color:#1a5276;font-weight:600">✅ 通知設定済み</div>';
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+// 修繕委員会：通知許可ボタン押下
+async function rmPushSubscribeRepair() {
+  const btn = document.getElementById('push-allow-btn-repair');
+  if (btn) { btn.textContent = '処理中…'; btn.disabled = true; }
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') {
+      if (btn) { btn.textContent = '🔔 通知を受け取る'; btn.disabled = false; }
+      return;
+    }
+    await rmPushSubscribeInternal();
+    const banner = document.getElementById('push-banner-repair');
+    if (banner) banner.innerHTML = '<div style="font-size:13px;color:#1a5276;font-weight:600">✅ 通知設定済み</div>';
+  } catch(e) {
+    console.warn('購読失敗:', e);
+    if (btn) { btn.textContent = '🔔 通知を受け取る'; btn.disabled = false; }
   }
 }
 
