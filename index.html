@@ -1954,8 +1954,8 @@ async function rmPushSend() {
   try {
     const r = await fetch(PUSH_WORKER_URL + '/notify', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-notify-secret': 'riji2026' },
-      body: JSON.stringify({ title, body })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, body, secret: 'riji2026' })
     });
     const json = await r.json().catch(() => ({}));
     if (r.ok) {
