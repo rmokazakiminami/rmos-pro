@@ -1188,7 +1188,7 @@ function doLogin(){
     const areaMap={resident:'rm2026',board:'riji2026',repair:'shuzen2026'};
     if(typeof gtag==='function') gtag('event','login',{area:areaMap[matched]});
     closeMod(); setArea(matched);
-    if(matched==='resident'||matched==='board') rmPushInit();
+    if(matched==='resident'||matched==='board'||matched==='repair') rmPushInit();
   } else {
     document.getElementById('me').textContent='❌ パスワードが違います';
     document.getElementById('mpw').select();
@@ -1806,7 +1806,7 @@ async function rmPushInit() {
 // noticesセクション表示時にバナー表示判定
 function rmPushBannerCheck() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  if (!(auth.resident || auth.board)) return;
+  if (!(auth.resident || auth.board || auth.repair)) return;
   const banner = document.getElementById('push-banner');
   if (!banner) return;
   const perm = Notification.permission;
