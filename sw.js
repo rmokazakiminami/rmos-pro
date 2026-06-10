@@ -12,12 +12,22 @@ self.addEventListener('fetch', event => {
 
 // ── プッシュ通知受信 ──────────────────────────────
 self.addEventListener('push', event => {
-  const title = 'RMOS Pro';
-  const body = event.data ? event.data.text() : 'お知らせがあります。';
+  let title = 'RMOS Pro';
+  let body = 'お知らせがあります。';
+  if (event.data) {
+    try {
+      const d = event.data.json();
+      title = d.title || title;
+      body  = d.body  || body;
+    } catch(e) {
+      body = event.data.text();
+    }
+  }
   event.waitUntil(
     self.registration.showNotification(title, {
       body: body,
       icon: './icon-192.png',
+      badge: './icon-192.png',
       tag: 'rmos-push',
       renotify: true
     })
