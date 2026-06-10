@@ -611,10 +611,23 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 設定シートからPWを読み込んでから初期化
   loadConfig(()=>{
     setTimeout(()=>{const pw=document.getElementById('mpw');if(pw)pw.value='';},500);
-    updAuth(); buildNav(); goSec('kiyaku');
+    // localStorage からログイン状態を復元
+    try{
+      const savedArea = localStorage.getItem('rmos_area');
+      if(savedArea && ['resident','board','repair'].includes(savedArea)){
+        auth[savedArea] = true;
+        updAuth(); buildNav(); goSec({public:'kiyaku',resident:'notices',board:'minutes',repair:'progress'}[savedArea]);
+        rmPushInit();
+      } else {
+        updAuth(); buildNav(); goSec('kiyaku');
+        setTimeout(()=>openLogin(),400);
+      }
+    } catch(e) {
+      updAuth(); buildNav(); goSec('kiyaku');
+      setTimeout(()=>openLogin(),400);
+    }
     document.getElementById('mw').addEventListener('click',e=>{if(e.target===e.currentTarget)closeMod();});
     document.getElementById('am').addEventListener('click',e=>{if(e.target===e.currentTarget)closeAM();});
-    setTimeout(()=>openLogin(),400);
   });
 });
 
@@ -1202,6 +1215,7 @@ function doLogin(){
     const areaMap={resident:'rm2026',board:'riji2026',repair:'shuzen2026'};
     if(typeof gtag==='function') gtag('event','login',{area:areaMap[matched]});
     closeMod(); setArea(matched);
+    try{ localStorage.setItem('rmos_area', matched); }catch(e){}
     if(matched==='resident'||matched==='board'||matched==='repair') rmPushInit();
   } else {
     document.getElementById('me').textContent='❌ パスワードが違います';
@@ -1254,6 +1268,7 @@ function updAuth(){
 function logout(){
   auth={resident:false,board:false,repair:false};
   try{localStorage.removeItem('rmos_auth');}catch(e){}
+  try{localStorage.removeItem('rmos_area');}catch(e){}
   setArea('public');
 }
 
