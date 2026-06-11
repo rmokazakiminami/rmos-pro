@@ -506,6 +506,62 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
       <button onclick="rmPushSend()" style="padding:10px 24px;background:#c0392b;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📣 全居住者に送信</button>
       <div id="push-send-result" style="margin-top:10px;font-size:13px;display:none"></div>
     </div>
+
+    <!-- お知らせ投稿フォーム（kanri2026のみ表示） -->
+    <div id="notice-post-panel" style="display:none;margin-bottom:20px;padding:16px;background:rgba(26,82,118,.05);border:1px solid rgba(26,82,118,.25);border-radius:10px">
+      <div style="font-size:13px;font-weight:700;color:var(--ac);margin-bottom:14px">📝 お知らせ投稿</div>
+      <!-- 配信先 -->
+      <div style="margin-bottom:12px">
+        <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:6px">配信先（複数選択可）</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px">
+            <input type="checkbox" id="np-target-resident" checked> 居住者
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px">
+            <input type="checkbox" id="np-target-board"> 理事会
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px">
+            <input type="checkbox" id="np-target-repair"> 修繕委員会
+          </label>
+        </div>
+      </div>
+      <!-- 掲載日 -->
+      <div style="margin-bottom:10px">
+        <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">掲載日</label>
+        <input type="date" id="np-date" style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box">
+      </div>
+      <!-- カテゴリ -->
+      <div style="margin-bottom:10px">
+        <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">カテゴリ</label>
+        <select id="np-category" style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px">
+          <option value="管理全般">管理全般</option>
+          <option value="修繕・設備">修繕・設備</option>
+          <option value="総会・理事会">総会・理事会</option>
+          <option value="駐車場・駐輪場">駐車場・駐輪場</option>
+          <option value="防災・安全">防災・安全</option>
+          <option value="緊急">緊急</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+      <!-- タイトル -->
+      <div style="margin-bottom:10px">
+        <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">タイトル <span style="color:#e53935">*</span></label>
+        <input type="text" id="np-title" placeholder="例：共用部清掃のお知らせ" style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box">
+      </div>
+      <!-- 本文 -->
+      <div style="margin-bottom:10px">
+        <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">本文</label>
+        <textarea id="np-body" rows="4" placeholder="お知らせの内容を入力してください。" style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box;resize:vertical"></textarea>
+      </div>
+      <!-- 添付リンク -->
+      <div style="margin-bottom:14px">
+        <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">添付リンク（任意）</label>
+        <input type="url" id="np-link" placeholder="https://..." style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box">
+      </div>
+      <div id="np-err" style="font-size:12px;color:#e53935;margin-bottom:8px;display:none">タイトルを入力してください。</div>
+      <button onclick="submitNotice()" id="np-btn" style="padding:11px 24px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📢 投稿してプッシュ通知送信</button>
+      <div id="np-result" style="margin-top:10px;font-size:13px;display:none"></div>
+    </div>
     <div id="board-notice-list"></div>
     <div id="board-notice-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">理事会お知らせはありません。</div>
   </div>
@@ -618,6 +674,91 @@ const AREA_TABS = {
 let curSec='kiyaku', curArea='public';
 let auth={resident:false,board:false,repair:false,kanri:false};
 let bms=[];
+
+// ════════════════════════════════════════════════════════════
+//  お知らせ投稿フォーム（kanri2026専用）
+// ════════════════════════════════════════════════════════════
+
+function initNoticePostPanel() {
+  const panel = document.getElementById('notice-post-panel');
+  if (!panel) return;
+  // kanri2026ログイン時のみ表示
+  panel.style.display = auth.kanri ? 'block' : 'none';
+  // 今日の日付をデフォルト設定
+  const dateEl = document.getElementById('np-date');
+  if (dateEl && !dateEl.value) {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth()+1).padStart(2,'0');
+    const d = String(today.getDate()).padStart(2,'0');
+    dateEl.value = y + '-' + m + '-' + d;
+  }
+}
+
+async function submitNotice() {
+  const title    = (document.getElementById('np-title')?.value || '').trim();
+  const body     = (document.getElementById('np-body')?.value  || '').trim();
+  const category = document.getElementById('np-category')?.value || '管理全般';
+  const date     = document.getElementById('np-date')?.value || '';
+  const link     = (document.getElementById('np-link')?.value  || '').trim();
+  const errEl    = document.getElementById('np-err');
+  const resEl    = document.getElementById('np-result');
+  const btn      = document.getElementById('np-btn');
+
+  if (!title) {
+    if (errEl) { errEl.style.display='block'; }
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
+
+  // 配信先を収集
+  const targets = [];
+  if (document.getElementById('np-target-resident')?.checked) targets.push('居住者');
+  if (document.getElementById('np-target-board')?.checked)    targets.push('理事会');
+  if (document.getElementById('np-target-repair')?.checked)   targets.push('修繕委員');
+  if (!targets.length) {
+    if (errEl) { errEl.textContent='配信先を選択してください。'; errEl.style.display='block'; }
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = '送信中…';
+  if (resEl) { resEl.style.display='none'; }
+
+  const params = new URLSearchParams({
+    action   : 'postNotice',
+    date     : date,
+    category : category,
+    title    : title,
+    body     : body,
+    link     : link,
+    targets  : targets.join(','),
+    poster   : '管理者（kanri）',
+  });
+
+  try {
+    await fetch(GAS_URL + '?' + params.toString(), { method:'GET', mode:'no-cors' });
+    if (resEl) {
+      resEl.style.display = 'block';
+      resEl.style.color   = 'var(--gn)';
+      resEl.textContent   = '✅ 投稿完了・プッシュ通知送信済み（' + targets.join('・') + '）';
+    }
+    // フォームをリセット
+    document.getElementById('np-title').value = '';
+    document.getElementById('np-body').value  = '';
+    document.getElementById('np-link').value  = '';
+    document.getElementById('np-target-resident').checked = true;
+    document.getElementById('np-target-board').checked    = false;
+    document.getElementById('np-target-repair').checked   = false;
+  } catch(e) {
+    if (resEl) {
+      resEl.style.display = 'block';
+      resEl.style.color   = '#c0392b';
+      resEl.textContent   = '❌ 送信エラー：' + e.message;
+    }
+  } finally {
+    btn.disabled = false; btn.textContent = '📢 投稿してプッシュ通知送信';
+  }
+}
 
 // ════════════════════════════════════════════════════════════
 //  ファーストミッションボックス データ＆関数
@@ -1032,7 +1173,7 @@ function goSec(name){
   else if(name==='answers-r')renderAnswers('ans-list-r','ans-empty-r');
   if(name==='wendyfaq')renderWendyFAQPage();
   if(name==='minutes')renderMinutes();
-  if(name==='board-notice')renderBoardNotices();
+  if(name==='board-notice'){renderBoardNotices();initNoticePostPanel();}
   if(name==='repair-notice')renderRepairNotices();
   window.scrollTo(0,0);
 }
@@ -2192,7 +2333,7 @@ async function rmPushInit() {
 // noticesセクション表示時にバナー表示判定（居住者・修繕委員会）
 function rmPushBannerCheck() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  if (!auth.kanri) return; // kanri2026ログイン時のみ表示
+  if (!(auth.resident || auth.board || auth.repair)) return; // 全ログイン済みエリアに表示
   const banner = document.getElementById('push-banner');
   if (!banner) return;
   const perm = Notification.permission;
@@ -2209,7 +2350,7 @@ function rmPushBannerCheck() {
 // board-noticeセクション表示時にバナー表示判定（理事会用）
 function rmPushBannerBoardCheck() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  if (!auth.kanri) return; // kanri2026ログイン時のみ表示
+  if (!auth.board) return; // 理事会エリア全員に表示
   const banner = document.getElementById('push-banner-board');
   if (!banner) return;
   const perm = Notification.permission;
@@ -2245,7 +2386,7 @@ async function rmPushSubscribeBoard() {
 // 修繕委員会：board-noticeバナー表示判定
 function rmPushBannerRepairCheck() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  if (!auth.kanri) return; // kanri2026ログイン時のみ表示
+  if (!auth.repair && !auth.board) return; // 修繕・理事会エリアに表示
   const banner = document.getElementById('push-banner-repair');
   if (!banner) return;
   const perm = Notification.permission;
