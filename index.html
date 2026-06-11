@@ -1773,18 +1773,23 @@ function updAuth(){
   }
 }
 function goPublic(){
-  // ログイン状態を保持したまま公開エリアへ
   closeAM();
   const prev = curArea;
+  if(prev === 'public') return;
   curArea = 'public';
   buildNav();
   goSec('kiyaku');
-  // 戻るボタンをナビに追加
-  const bnav = document.getElementById('bnav');
-  if(bnav && prev !== 'public'){
+  // 戻るボタンをナビバーの末尾に追加
+  setTimeout(()=>{
+    const bnav = document.getElementById('bnav');
+    if(!bnav) return;
+    // 既存の戻るボタンを削除
+    const existing = document.getElementById('back-btn');
+    if(existing) existing.remove();
     const backBtn = document.createElement('button');
+    backBtn.id = 'back-btn';
     backBtn.className = 'btab';
-    backBtn.style.cssText = 'color:var(--ac);border-left:1px solid var(--bd)';
+    backBtn.style.cssText = 'color:var(--ac);border-left:2px solid var(--bd);background:var(--ac-bg)';
     backBtn.innerHTML = '<span class="bic">↩</span><span class="blb">戻る</span>';
     backBtn.onclick = () => {
       curArea = prev;
@@ -1793,7 +1798,7 @@ function goPublic(){
       goSec(first);
     };
     bnav.appendChild(backBtn);
-  }
+  }, 100);
 }
 
 function logout(){
