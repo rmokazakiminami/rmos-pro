@@ -645,7 +645,6 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
   <div class="mo">
     <div class="mt2" id="am-title">🔓 ログイン中</div>
     <div class="md2" id="am-desc" style="margin-bottom:16px"></div>
-    <button class="mok" onclick="goPublic()" style="background:var(--blue2);margin-bottom:8px">📖 公開エリアを見る（ログイン維持）</button>
     <button class="mok" onclick="logout()" style="background:var(--tx2);margin-bottom:8px">🏠 ログアウト（公開エリアへ）</button>
     <button class="mcl" onclick="closeAM()">閉じる</button>
     <div id="am-switch" style="margin-top:12px;display:flex;flex-direction:column;gap:6px"></div>
@@ -1746,13 +1745,14 @@ function updAuth(){
   if(!el)return;
   const amTitle=document.getElementById('am-title');
   const amDesc=document.getElementById('am-desc');
+  const publicBtn=`<button class="mok" style="font-size:13px;padding:8px;background:var(--ac2)" onclick="goPublic()">📖 公開エリアを見る（ログイン維持）</button>`;
   if(auth.board){
     el.textContent='🔓 理事会'; el.classList.add('in');
     el.onclick=()=>document.getElementById('am').classList.add('op');
     if(amTitle)amTitle.textContent='🔓 理事会エリアでログイン中';
     if(amDesc)amDesc.textContent='ログアウトすると公開エリアに戻ります。';
     const sw=document.getElementById('am-switch');
-    if(sw)sw.innerHTML=`<button class="mok" style="font-size:13px;padding:8px" onclick="setArea('repair');closeAM()">🔧 修繕委員会エリアへ</button>
+    if(sw)sw.innerHTML=publicBtn+`<button class="mok" style="font-size:13px;padding:8px" onclick="setArea('repair');closeAM()">🔧 修繕委員会エリアへ</button>
       <button class="mok" style="font-size:13px;padding:8px" onclick="setArea('resident');closeAM()">🏠 居住者エリアへ</button>`;
   } else if(auth.repair){
     el.textContent='🔓 修繕委員会'; el.classList.add('in');
@@ -1760,14 +1760,14 @@ function updAuth(){
     if(amTitle)amTitle.textContent='🔓 修繕委員会エリアでログイン中';
     if(amDesc)amDesc.textContent='ログアウトすると公開エリアに戻ります。';
     const sw=document.getElementById('am-switch');
-    if(sw)sw.innerHTML='';
+    if(sw)sw.innerHTML=publicBtn;
   } else if(auth.resident){
     el.textContent='🔓 居住者'; el.classList.add('in');
     el.onclick=()=>document.getElementById('am').classList.add('op');
     if(amTitle)amTitle.textContent='🔓 居住者エリアでログイン中';
     if(amDesc)amDesc.textContent='ログアウトすると公開エリアに戻ります。';
     const sw=document.getElementById('am-switch');
-    if(sw)sw.innerHTML='';
+    if(sw)sw.innerHTML=publicBtn;
   } else {
     el.textContent='🔒 ログイン'; el.classList.remove('in'); el.onclick=openLogin;
   }
