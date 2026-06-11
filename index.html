@@ -645,6 +645,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
   <div class="mo">
     <div class="mt2" id="am-title">🔓 ログイン中</div>
     <div class="md2" id="am-desc" style="margin-bottom:16px"></div>
+    <button class="mok" onclick="goPublic()" style="background:var(--blue2);margin-bottom:8px">📖 公開エリアを見る（ログイン維持）</button>
     <button class="mok" onclick="logout()" style="background:var(--tx2);margin-bottom:8px">🏠 ログアウト（公開エリアへ）</button>
     <button class="mcl" onclick="closeAM()">閉じる</button>
     <div id="am-switch" style="margin-top:12px;display:flex;flex-direction:column;gap:6px"></div>
@@ -1771,6 +1772,30 @@ function updAuth(){
     el.textContent='🔒 ログイン'; el.classList.remove('in'); el.onclick=openLogin;
   }
 }
+function goPublic(){
+  // ログイン状態を保持したまま公開エリアへ
+  closeAM();
+  const prev = curArea;
+  curArea = 'public';
+  buildNav();
+  goSec('kiyaku');
+  // 戻るボタンをナビに追加
+  const bnav = document.getElementById('bnav');
+  if(bnav && prev !== 'public'){
+    const backBtn = document.createElement('button');
+    backBtn.className = 'btab';
+    backBtn.style.cssText = 'color:var(--ac);border-left:1px solid var(--bd)';
+    backBtn.innerHTML = '<span class="bic">↩</span><span class="blb">戻る</span>';
+    backBtn.onclick = () => {
+      curArea = prev;
+      buildNav();
+      const first = {resident:'notices', board:'minutes', repair:'progress'}[prev] || 'kiyaku';
+      goSec(first);
+    };
+    bnav.appendChild(backBtn);
+  }
+}
+
 function logout(){
   auth={resident:false,board:false,repair:false,kanri:false};
   try{localStorage.removeItem('rmos_auth');}catch(e){}
