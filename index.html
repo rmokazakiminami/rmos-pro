@@ -252,9 +252,55 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
     <div id="gb-result"></div>
   </div>
 
-  <!-- ブックマーク -->
-  <div id="sec-bm" class="sec">
-    <div id="bml"></div>
+  <!-- 防災：ファーストミッションボックス -->
+  <div id="sec-bousai" class="sec">
+    <!-- ヘッダー -->
+    <div style="background:var(--rd);color:#fff;border-radius:var(--rl);padding:14px 16px;margin-bottom:14px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:4px">🚨 ファーストミッションボックス</div>
+      <div style="font-size:11px;opacity:.85">発災直後0〜30分の初動行動カード　ロイヤルマンション岡崎南公園</div>
+    </div>
+    <!-- カード選択タブ -->
+    <div style="display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;margin-bottom:12px">
+      <button class="fmb-tab on" onclick="fmbTab(this,'fmb-all')"    style="padding:7px 12px;border:1px solid var(--rd);border-radius:20px;font-size:12px;font-weight:600;background:var(--rd);color:#fff;white-space:nowrap;cursor:pointer">👥 全居住者</button>
+      <button class="fmb-tab"   onclick="fmbTab(this,'fmb-chief')"   style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🔴 消防隊長</button>
+      <button class="fmb-tab"   onclick="fmbTab(this,'fmb-vice')"    style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">📡 通報連絡班</button>
+      <button class="fmb-tab"   onclick="fmbTab(this,'fmb-info')"    style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🧯 消火班</button>
+      <button class="fmb-tab"   onclick="fmbTab(this,'fmb-fire')"    style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🚶 誘導班①奇数</button>
+      <button class="fmb-tab"   onclick="fmbTab(this,'fmb-rescue')"  style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🚶 誘導班②偶数</button>
+      <button class="fmb-tab"   onclick="fmbTab(this,'fmb-evac')"    style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🔧 後方支援</button>
+      <button class="fmb-tab"   onclick="fmbTab(this,'fmb-life')"    style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🏠 断水・備蓄</button>
+      <button class="fmb-tab"   onclick="fmbTab(this,'fmb-floor')"   style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🗺 避難経路</button>
+    </div>
+    <!-- 全居住者 -->
+    <div id="fmb-all" class="fmb-card"><div style="border-left:4px solid var(--rd);padding:10px 13px;background:var(--rd-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--rd)">👥 全居住者共通 ／ 発災直後0〜30分</div></div><div style="font-size:12px;color:var(--rd);font-weight:700;background:var(--rd-bg);border:1px solid var(--rd);border-radius:var(--r);padding:8px 12px;margin-bottom:10px">⚠️ エレベーター使用禁止　／　火災発生時は119番通報</div><div id="fmb-all-list"></div></div>
+    <!-- 本部長 -->
+    <div id="fmb-chief" class="fmb-card" style="display:none"><div style="border-left:4px solid #c0392b;padding:10px 13px;background:#fdf0ee;border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:#c0392b">🏛 本部長（理事長） ／ 発災直後0〜30分</div></div><div id="fmb-chief-list"></div></div>
+    <!-- 副本部長 -->
+    <div id="fmb-vice" class="fmb-card" style="display:none"><div style="border-left:4px solid #c0392b;padding:10px 13px;background:#fdf0ee;border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:#c0392b">🏛 副本部長 ／ 発災直後0〜30分</div></div><div id="fmb-vice-list"></div></div>
+    <!-- 情報班 -->
+    <div id="fmb-info" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--ac);padding:10px 13px;background:var(--ac-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--ac)">📡 情報班（2名） ／ 発災直後0〜30分</div></div><div id="fmb-info-list"></div></div>
+    <!-- 消火班 -->
+    <div id="fmb-fire" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--or);padding:10px 13px;background:var(--or-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--or)">🧯 消火班（2名） ／ 発災直後0〜30分</div></div><div id="fmb-fire-list"></div></div>
+    <!-- 救出救護班 -->
+    <div id="fmb-rescue" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--gn);padding:10px 13px;background:var(--gn-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--gn)">🚑 救出救護班（3名） ／ 発災直後0〜30分</div></div><div id="fmb-rescue-list"></div></div>
+    <!-- 避難誘導班 -->
+    <div id="fmb-evac" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--pp);padding:10px 13px;background:var(--pp-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--pp)">🚶 避難誘導班（2名） ／ 発災直後0〜30分</div></div><div id="fmb-evac-list"></div></div>
+    <!-- 生活班 -->
+    <div id="fmb-life" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--gd);padding:10px 13px;background:var(--gd-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--gd)">🏠 生活班（3名） ／ 発災直後0〜30分</div></div><div id="fmb-life-list"></div></div>
+    <!-- 階長 -->
+    <div id="fmb-floor" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--ac2);padding:10px 13px;background:var(--ac-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--ac2)">🏢 階長（各階1名） ／ 発災直後0〜30分</div></div><div id="fmb-floor-list"></div></div>
+    <!-- 緊急連絡先 -->
+    <div style="margin-top:16px;padding:12px 14px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r)">
+      <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:8px">📞 緊急連絡先</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px">
+        <div style="padding:8px;background:var(--rd-bg);border-radius:6px;text-align:center"><div style="font-weight:700;color:var(--rd);font-size:18px">119</div><div style="color:var(--tx2)">火災・救急・救助</div></div>
+        <div style="padding:8px;background:var(--rd-bg);border-radius:6px;text-align:center"><div style="font-weight:700;color:var(--rd);font-size:18px">110</div><div style="color:var(--tx2)">警察</div></div>
+        <div style="padding:8px;background:var(--ac-bg);border-radius:6px;text-align:center"><div style="font-weight:700;color:var(--ac);font-size:11px">管理会社（田中）</div><div style="color:var(--tx2)">0564-65-3711</div></div>
+        <div style="padding:8px;background:var(--ac-bg);border-radius:6px;text-align:center"><div style="font-weight:700;color:var(--ac);font-size:11px">岡崎ガス（漏れ）</div><div style="color:var(--tx2)">0564-22-5121</div></div>
+        <div style="padding:8px;background:var(--ac-bg);border-radius:6px;text-align:center"><div style="font-weight:700;color:var(--ac);font-size:11px">中部電力（停電）</div><div style="color:var(--tx2)">0120-985-602</div></div>
+        <div style="padding:8px;background:var(--ac-bg);border-radius:6px;text-align:center"><div style="font-weight:700;color:var(--ac);font-size:11px">岡崎市水道局</div><div style="color:var(--tx2)">0564-23-6817</div></div>
+      </div>
+    </div>
   </div>
 
   <!-- お知らせ -->
@@ -542,10 +588,10 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
 <script src="data.js"></script>
 <script>
-const GAS_URL  = 'https://script.google.com/macros/s/AKfycbwOly9fiNkc8QrPlUsYdPNW34p-bvfTcmVbLP6M77xBQ8Q8vyVaXZWkRMrwYbMHu1oICw/exec';
+const GAS_URL  = 'https://script.google.com/macros/s/AKfycbxsrwKA5oSPe0T_LyCJ1D1CXA28f2eYB3_nMU7B4OBTaCjuuzotS7lu-UXGmPYBlCLZBw/exec';
 const TO_MAIL  = 'ainasan1959@gmail.com';
 // ── パスワード（Google Sheets設定シートから起動時に読み込み・フォールバックあり）──
-let PW = { resident:'rm2026', board:'riji2026', repair:'shuzen2026' }; // デフォルト値（Sheets読み込み失敗時に使用）
+let PW = { resident:'rm2026', board:'riji2026', repair:'shuzen2026', kanri:'kanri2026' }; // デフォルト値（Sheets読み込み失敗時に使用）
 
 // スプレッドシート公開CSV URL（各シート）
 const SHEETS_BASE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBXYuzdnB80m_OI6fzk28TRcxggN06kFoaDLbTci6qND6_WKC7BjmzY9Hodp2dMtc1pR6J4aq6rUE2/pub';
@@ -560,7 +606,7 @@ const CSV = {
 
 const AREA_TABS = {
   public:   [{s:'kiyaku',i:'📖',l:'規約'},{s:'hosoku',i:'📜',l:'細則'},{s:'gyakubiki',i:'🔍',l:'逆引き'},
-             {s:'f-forms',i:'⚖️',l:'是正'},{s:'wendyfaq',i:'📚',l:'FAQ'},{s:'bm',i:'⭐',l:'メモ'}],
+             {s:'f-forms',i:'⚖️',l:'是正'},{s:'wendyfaq',i:'📚',l:'FAQ'},{s:'bousai',i:'🚨',l:'防災'}],
   resident: [{s:'notices',i:'📢',l:'お知らせ'},{s:'progress',i:'🏗',l:'工事'},
              {s:'opinion',i:'📬',l:'意見箱'},{s:'answers',i:'💬',l:'回答'}],
   board:    [{s:'minutes',i:'📄',l:'議事録'},{s:'board-notice',i:'📣',l:'お知らせ'},
@@ -570,9 +616,313 @@ const AREA_TABS = {
 };
 
 let curSec='kiyaku', curArea='public';
-let auth={resident:false,board:false,repair:false};
+let auth={resident:false,board:false,repair:false,kanri:false};
 let bms=[];
 
+// ════════════════════════════════════════════════════════════
+//  ファーストミッションボックス データ＆関数
+// ════════════════════════════════════════════════════════════
+const FMB_DATA = {
+  // ① 全居住者共通
+  'fmb-all': [
+    {t:'STEP１　身の安全確保', items:[
+      'テーブルの下・内壁そばへ退避、頭を守る',
+      '揺れが収まってからガスの元栓を閉める',
+    ]},
+    {t:'STEP２　確認・通報', items:[
+      '火災 → 「火事だ！」と叫び119番通報',
+      '地震 → けが人・火災・ガス漏れ確認',
+    ]},
+    {t:'STEP３　避難行動', items:[
+      'エレベーター禁止、必ず階段で避難',
+      '玄関ドアを閉める（鍵は不要）',
+      '→ 玄関エントランス前に集合',
+    ]},
+    {t:'避難経路', items:[
+      '🔵 奇数階（1・3・5・7F）→ 西側階段 → 駐輪場側出入口',
+      '🟠 偶数階（2・4・6・8F）→ 東側階段 → 北側中央出入口',
+      '集合：玄関エントランス前 → 南公園 → 翔南中学校（指定避難所）',
+    ]},
+    {t:'火災発生時　初動チェック', items:[
+      '□「火事だ！」と大声で知らせる',
+      '□ 119番：「岡崎市若松町金仏27-5、ロイヤルマンション岡崎南公園○○号室で火災」',
+      '□ 消火器で初期消火（炎天井前・30秒以内判断）。無理なら即退避',
+      '□ 玄関ドアを閉める（鍵不要）。エレベーター禁止・階段で避難',
+      '□ 煙の中は姿勢を低く、タオルで口を覆う',
+      '□ 玄関エントランス前に集合・点呼',
+    ]},
+    {t:'地震発生時　初動チェック', items:[
+      '□ テーブルの下・内壁そばへ退避、頭を守る（DROP・COVER）',
+      '□ 揺れが収まってからガスの元栓を閉める',
+      '□ 室内安全確認（けが人・火災・ガス漏れ）',
+      '□ 玄関ドアを開けて逃げ口を確保',
+      '□ エレベーター禁止。避難要否は防火管理者の指示に従う',
+      '□ 避難する場合：階段で玄関エントランス前へ集合',
+    ]},
+    {t:'ガス漏れへの対応', items:[
+      '① ガスの使用を直ちに止める',
+      '② 窓を開けて換気する',
+      '③ 電気スイッチ・インターホン・換気扇等の操作禁止（引火の恐れ）',
+      '④ 玄関から屋外へ退避 → 岡崎ガス（0564-22-5121）へ連絡',
+    ]},
+    {t:'避難ハッチの使用方法', items:[
+      '① 蓋を引き上げる',
+      '② はしごを下階へ下ろす',
+      '③ 足から降りる',
+      '④ はしごはそのままにする',
+      '⚠️ ハッチ上・直下に物を置かないこと',
+    ]},
+  ],
+
+  // ② 自衛消防組織（組織図カード）
+  'fmb-chief': [
+    {t:'自衛消防組織（令和8年7月19日制定）', items:[
+      '🔴 自衛消防隊長：稲垣明（502）全体指揮',
+      '📡 通報・連絡班長：吉本公平（301）119番・館内放送',
+      '🧯 消火班：住本和生（506）消火器操作',
+      '🚶 誘導班①奇数階：畔柳有紀子（302）西側階段',
+      '🚶 誘導班②偶数階：北堀正巳（303）東側階段',
+      '🔧 後方支援：田中温（管理会社）補助',
+    ]},
+    {t:'隊長の初動（発災後0〜30分）', items:[
+      '□ 自分と家族の安全確保',
+      '□ 建物全体の被害確認（傾き・亀裂・火災・階段安全性）',
+      '□ 119番通報要否の判断・指示',
+      '□ 各班長に参集指示・役割確認',
+      '□ 管理会社（田中）に第一報：0564-65-3711',
+      '□ 安否確認の開始指示（震度5強以上）',
+      '□ 必要に応じ避難指示・集合場所への誘導',
+    ]},
+    {t:'判断基準', items:[
+      '火災 → 即119番。初期消火は炎天井前まで',
+      '地震 → 安全確認後エレベーター使用禁止を告知',
+      'ガス漏れ → 換気・岡崎ガス連絡・電気操作禁止',
+      '断水 → 受水槽（生活用水のみ）を公平配分',
+    ]},
+  ],
+
+  // ③ 通報・連絡班
+  'fmb-vice': [
+    {t:'通報・連絡班長の初動（吉本公平301）', items:[
+      '□ 自分と家族の安全確保',
+      '□ 隊長（稲垣502）に連絡・参集確認',
+    ]},
+    {t:'火災時の通報', items:[
+      '□ 119番通報：「岡崎市若松町金仏27-5、ロイヤルマンション岡崎南公園、火災」',
+      '□ 館内放送または拡声器で居住者に知らせる',
+      '□ 消防隊到着時に被害状況・要救助者を報告',
+    ]},
+    {t:'地震時の連絡', items:[
+      '□ 管理会社（田中）に連絡：0564-65-3711',
+      '□ 各班の活動状況を集約・隊長へ報告',
+      '□ 外部機関（消防・行政）からの情報を掲示板へ掲示',
+    ]},
+    {t:'安否情報の管理', items:[
+      '□ 安否確認カードの回収・集計',
+      '□ 未確認住戸を把握し誘導班に伝達',
+      '□ 要救助者情報を隊長へ即時報告',
+    ]},
+  ],
+
+  // ④ 消火班
+  'fmb-info': [
+    {t:'消火班の初動（住本和生506）', items:[
+      '□ 自分と家族の安全確保',
+      '□ 隊長（稲垣502）に参集報告',
+    ]},
+    {t:'火災時の消火活動', items:[
+      '□ 消火器の場所を確認しながら移動',
+      '□ 炎が天井に達する前・30秒以内で判断',
+      '□ 無理と判断したら即退避、扉を閉める',
+      '□ 消防隊到着時に現場を引き継ぎ',
+    ]},
+    {t:'地震後の確認', items:[
+      '□ 各階廊下・共用部の火災有無を確認',
+      '□ ガス漏れ・異臭の有無を確認',
+      '□ 電気設備の異常を確認',
+      '□ 隊長に報告',
+    ]},
+    {t:'消防用設備の確認', items:[
+      '□ 消火器の使用状況・残量確認',
+      '□ 自動火災報知設備の作動状況確認',
+      '□ 消火器使用済みは管理会社へ報告',
+    ]},
+  ],
+
+  // ⑤ 避難誘導班①（奇数階）
+  'fmb-fire': [
+    {t:'誘導班①の担当（畔柳有紀子302）', items:[
+      '担当：奇数階（1・3・5・7F）→ 西側階段 → 駐輪場側出入口',
+    ]},
+    {t:'初動', items:[
+      '□ 自分と家族の安全確保',
+      '□ 西側階段の安全性を確認（障害物・損傷）',
+      '□ 避難ハッチの使用可否を確認',
+      '□ 避難出口（駐輪場側）を開放',
+    ]},
+    {t:'避難誘導', items:[
+      '□ 奇数階（1・3・5・7F）の各住戸にドアノック・声かけ',
+      '□「階段で玄関エントランス前へ」と誘導',
+      '□ 取り残しがないか確認しながら降りる',
+      '□ 要配慮者（高齢者・障害者等）を優先支援',
+    ]},
+    {t:'集合場所での確認', items:[
+      '□ 担当階の人数・安否を把握',
+      '□ 不明者がいる場合は隊長に即時報告',
+      '□ 避難完了を隊長・通報班に報告',
+    ]},
+  ],
+
+  // ⑥ 避難誘導班②（偶数階）
+  'fmb-rescue': [
+    {t:'誘導班②の担当（北堀正巳303）', items:[
+      '担当：偶数階（2・4・6・8F）→ 東側階段 → 北側中央出入口',
+    ]},
+    {t:'初動', items:[
+      '□ 自分と家族の安全確保',
+      '□ 東側階段の安全性を確認（障害物・損傷）',
+      '□ 避難ハッチの使用可否を確認',
+      '□ 避難出口（北側中央）を開放',
+    ]},
+    {t:'避難誘導', items:[
+      '□ 偶数階（2・4・6・8F）の各住戸にドアノック・声かけ',
+      '□「階段で玄関エントランス前へ」と誘導',
+      '□ 取り残しがないか確認しながら降りる',
+      '□ 要配慮者（高齢者・障害者等）を優先支援',
+    ]},
+    {t:'集合場所での確認', items:[
+      '□ 担当階の人数・安否を把握',
+      '□ 不明者がいる場合は隊長に即時報告',
+      '□ 避難完了を隊長・通報班に報告',
+    ]},
+  ],
+
+  // ⑦ 後方支援（管理会社）
+  'fmb-evac': [
+    {t:'後方支援（田中温・管理会社）', items:[
+      '□ 自分の安全確保後、隊長（稲垣502）に連絡',
+      '□ 管理会社緊急連絡先：0564-65-3711',
+    ]},
+    {t:'備蓄品・設備管理', items:[
+      '□ 防災倉庫を開錠・備蓄品の確認',
+      '□ 受水槽（生活用水）の残量確認',
+      '□ エレベーター「使用禁止」の貼り付け',
+      '□ 閉じ込めがある場合は保守会社・消防へ連絡',
+    ]},
+    {t:'情報・記録', items:[
+      '□ 被害状況を写真・メモで記録',
+      '□ 管理会社本社・オーナーへ報告',
+      '□ 修繕業者の手配（隊長指示による）',
+    ]},
+    {t:'生活支援', items:[
+      '□ 断水時：受水槽からの生活用水を公平配分（飲料不可）',
+      '□ 要配慮者へ備蓄品を優先配布',
+      '□ 情報を掲示板へ掲示',
+    ]},
+  ],
+
+  // ⑧ 断水・備蓄・要支援者
+  'fmb-life': [
+    {t:'断水時　受水槽利用', items:[
+      '場所：駐輪場南側・101号室西側',
+      '貯留量：推定16トン（飲料水として使用禁止）',
+      '用途：生活用水のみ（トイレ・清拭等）',
+      '日数目安：120名・約6.7日分相当',
+      '給水は自衛消防隊の管理のもと公平に実施',
+    ]},
+    {t:'共用備蓄品（段階整備）', items:[
+      '第１フェーズ（R8早期）：救急セット・懐中電灯・ラジオ・給水タンク・簡易トイレ',
+      '第２フェーズ（R8中）：非常食・飲料水・毛布・ヘルメット・衛生用品',
+      '第３フェーズ（R9以降）：救助工具・ランタン・モバイルバッテリー等',
+      '※各戸3日分の個人備蓄を前提',
+    ]},
+    {t:'要支援者への配慮', items:[
+      '高齢者（独居）→ 同階・隣戸居住者が担当',
+      '身体障害者 → 修繕・渉外理事が担当',
+      '乳幼児・妊婦 → 近隣居住者が担当',
+      '外国人居住者 → 渉外理事・管理会社が担当',
+    ]},
+  ],
+
+  // ⑨ 避難経路・集合場所詳細
+  'fmb-floor': [
+    {t:'避難経路', items:[
+      '🔵 奇数階（1・3・5・7F）→ 西側階段 → 駐輪場側出入口',
+      '🟠 偶数階（2・4・6・8F）→ 東側階段 → 北側中央出入口',
+    ]},
+    {t:'集合場所・避難所', items:[
+      '① 集合：玄関エントランス前（第一集合場所）',
+      '② 一時避難：岡崎南公園',
+      '③ 指定避難所：市立翔南中学校',
+      '④ 補完：市立岡崎小学校',
+      '※市の指定変更があった場合は最新の指定を優先',
+    ]},
+    {t:'エレベーター管理', items:[
+      '地震・火災時はエレベーター使用禁止',
+      '安全確認が完了するまで使用しないこと',
+      '「使用禁止」の貼り紙を各階に掲示（後方支援担当）',
+      '閉じ込めがある場合は119番または保守会社へ連絡',
+    ]},
+    {t:'安否確認の方法', items:[
+      '震度5強以上で自衛消防隊が実施',
+      '居住者は玄関扉への安否表示で協力',
+      '🟢 緑：全員無事　🟡 黄：支援必要　🔴 赤：緊急支援必要',
+      '結果を集約し隊長へ報告・必要時は消防機関へ情報提供',
+    ]},
+  ],
+};
+
+function fmbTab(btn, cardId) {
+  // タブボタンの切り替え
+  document.querySelectorAll('.fmb-tab').forEach(b => {
+    b.style.background = 'var(--sf)';
+    b.style.color = 'var(--tx)';
+    b.style.borderColor = 'var(--bd2)';
+    b.style.fontWeight = '';
+  });
+  btn.style.background = 'var(--rd)';
+  btn.style.color = '#fff';
+  btn.style.borderColor = 'var(--rd)';
+  btn.style.fontWeight = '600';
+  // カードの切り替え
+  document.querySelectorAll('.fmb-card').forEach(c => c.style.display = 'none');
+  const card = document.getElementById(cardId);
+  if (card) card.style.display = 'block';
+  // リスト未生成なら生成
+  const listEl = document.getElementById(cardId + '-list');
+  if (listEl && !listEl.dataset.rendered) {
+    listEl.dataset.rendered = '1';
+    fmbRender(listEl, FMB_DATA[cardId] || []);
+  }
+}
+
+function fmbRender(el, data) {
+  el.innerHTML = data.map((section, si) =>
+    `<div style="margin-bottom:10px;border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;background:var(--sf)">
+      <div style="padding:9px 13px;background:var(--sf2);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd)">
+        <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--rd);color:#fff;flex-shrink:0">${si+1}</span>
+        <span style="font-size:13px;font-weight:600">${section.t}</span>
+      </div>
+      ${section.items.map(item =>
+        `<div style="padding:8px 13px 8px 16px;border-bottom:1px solid var(--bd);font-size:13px;color:var(--tx2);display:flex;align-items:flex-start;gap:8px">
+          <span style="color:var(--rd);flex-shrink:0;margin-top:1px">□</span>
+          <span>${item}</span>
+        </div>`
+      ).join('')}
+    </div>`
+  ).join('');
+}
+
+// 防災タブ初期表示
+function initBousai() {
+  const listEl = document.getElementById('fmb-all-list');
+  if (listEl && !listEl.dataset.rendered) {
+    listEl.dataset.rendered = '1';
+    fmbRender(listEl, FMB_DATA['fmb-all'] || []);
+  }
+}
+
+// ── 設定シート読み込み
 // ── 設定シート読み込み（パスワードをGoogle Sheetsから取得）──
 // 設定シートの列構成: key | value | 備考
 // 例: resident_pw | rm2026   | 居住者パスワード
@@ -616,6 +966,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       const savedArea = localStorage.getItem('rmos_area');
       if(savedArea && ['resident','board','repair'].includes(savedArea)){
         auth[savedArea] = true;
+        // kanriフラグ復元
+        if(savedArea==='board' && localStorage.getItem('rmos_kanri')==='1') auth.kanri=true;
         updAuth(); buildNav(); goSec({public:'kiyaku',resident:'notices',board:'minutes',repair:'progress'}[savedArea]);
         rmPushInit();
       } else {
@@ -668,6 +1020,7 @@ function goSec(name){
   if(name==='bm')renderBM();
   const wp=document.getElementById('wendy-panel');if(wp)wp.style.display='none'; // 細則タブでsearchH内で表示
   if(name==='f-forms')renderFF();
+  if(name==='bousai')initBousai();
   if(name==='notices') rmPushBannerCheck();
   if(name==='board-notice') rmPushBannerBoardCheck();
   if(name==='repair-notice') rmPushBannerRepairCheck();
@@ -1208,15 +1561,18 @@ function doLogin(){
   if(pw===PW.resident)matched='resident';
   else if(pw===PW.board)matched='board';
   else if(pw===PW.repair)matched='repair';
+  else if(pw===PW.kanri)matched='kanri';
   if(matched){
     auth[matched]=true;
-    // auth状態はセッション内のみ保持（localStorage保存なし）
+    if(matched==='kanri') auth.board=true; // kanriは理事会エリアに入る
     // GA4ログインイベント
-    const areaMap={resident:'rm2026',board:'riji2026',repair:'shuzen2026'};
+    const areaMap={resident:'rm2026',board:'riji2026',repair:'shuzen2026',kanri:'kanri2026'};
     if(typeof gtag==='function') gtag('event','login',{area:areaMap[matched]});
-    closeMod(); setArea(matched);
-    try{ localStorage.setItem('rmos_area', matched); }catch(e){}
-    if(matched==='resident'||matched==='board'||matched==='repair') rmPushInit();
+    const area=(matched==='kanri')?'board':matched;
+    closeMod(); setArea(area);
+    try{ localStorage.setItem('rmos_area', area);
+         if(matched==='kanri') localStorage.setItem('rmos_kanri','1'); }catch(e){}
+    rmPushInit();
   } else {
     document.getElementById('me').textContent='❌ パスワードが違います';
     document.getElementById('mpw').select();
@@ -1266,9 +1622,10 @@ function updAuth(){
   }
 }
 function logout(){
-  auth={resident:false,board:false,repair:false};
+  auth={resident:false,board:false,repair:false,kanri:false};
   try{localStorage.removeItem('rmos_auth');}catch(e){}
   try{localStorage.removeItem('rmos_area');}catch(e){}
+  try{localStorage.removeItem('rmos_kanri');}catch(e){}
   setArea('public');
 }
 
@@ -1835,14 +2192,14 @@ async function rmPushInit() {
 // noticesセクション表示時にバナー表示判定（居住者・修繕委員会）
 function rmPushBannerCheck() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  if (!(auth.resident || auth.board || auth.repair)) return;
+  if (!auth.kanri) return; // kanri2026ログイン時のみ表示
   const banner = document.getElementById('push-banner');
   if (!banner) return;
   const perm = Notification.permission;
   if (perm === 'default') {
     banner.style.display = 'block';
   } else if (perm === 'granted') {
-    banner.innerHTML = '<div style="font-size:13px;color:#1a5276;font-weight:600">✅ 通知設定済み</div>';
+    banner.innerHTML = pushGrantedHTML('push-banner');
     banner.style.display = 'block';
   } else {
     banner.style.display = 'none';
@@ -1852,14 +2209,14 @@ function rmPushBannerCheck() {
 // board-noticeセクション表示時にバナー表示判定（理事会用）
 function rmPushBannerBoardCheck() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  if (!auth.board) return;
+  if (!auth.kanri) return; // kanri2026ログイン時のみ表示
   const banner = document.getElementById('push-banner-board');
   if (!banner) return;
   const perm = Notification.permission;
   if (perm === 'default') {
     banner.style.display = 'block';
   } else if (perm === 'granted') {
-    banner.innerHTML = '<div style="font-size:13px;color:#1a5276;font-weight:600">✅ 通知設定済み</div>';
+    banner.innerHTML = pushGrantedHTML('push-banner-board');
     banner.style.display = 'block';
   } else {
     banner.style.display = 'none';
@@ -1878,7 +2235,7 @@ async function rmPushSubscribeBoard() {
     }
     await rmPushSubscribeInternal();
     const banner = document.getElementById('push-banner-board');
-    if (banner) banner.innerHTML = '<div style="font-size:13px;color:#1a5276;font-weight:600">✅ 通知設定済み</div>';
+    if (banner) { banner.style.display = 'block'; banner.innerHTML = pushGrantedHTML('push-banner-board'); }
   } catch(e) {
     console.warn('購読失敗:', e);
     if (btn) { btn.textContent = '🔔 通知を受け取る'; btn.disabled = false; }
@@ -1888,14 +2245,14 @@ async function rmPushSubscribeBoard() {
 // 修繕委員会：board-noticeバナー表示判定
 function rmPushBannerRepairCheck() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  if (!auth.repair && !auth.board) return;
+  if (!auth.kanri) return; // kanri2026ログイン時のみ表示
   const banner = document.getElementById('push-banner-repair');
   if (!banner) return;
   const perm = Notification.permission;
   if (perm === 'default') {
     banner.style.display = 'block';
   } else if (perm === 'granted') {
-    banner.innerHTML = '<div style="font-size:13px;color:#1a5276;font-weight:600">✅ 通知設定済み</div>';
+    banner.innerHTML = pushGrantedHTML('push-banner-repair');
     banner.style.display = 'block';
   } else {
     banner.style.display = 'none';
@@ -1914,7 +2271,7 @@ async function rmPushSubscribeRepair() {
     }
     await rmPushSubscribeInternal();
     const banner = document.getElementById('push-banner-repair');
-    if (banner) banner.innerHTML = '<div style="font-size:13px;color:#1a5276;font-weight:600">✅ 通知設定済み</div>';
+    if (banner) { banner.style.display = 'block'; banner.innerHTML = pushGrantedHTML('push-banner-repair'); }
   } catch(e) {
     console.warn('購読失敗:', e);
     if (btn) { btn.textContent = '🔔 通知を受け取る'; btn.disabled = false; }
@@ -1933,10 +2290,75 @@ async function rmPushSubscribe() {
     }
     await rmPushSubscribeInternal();
     const banner = document.getElementById('push-banner');
-    if (banner) banner.innerHTML = '<div style="font-size:13px;color:#1a5276;font-weight:600">✅ 通知設定済み</div>';
+    if (banner) { banner.style.display = 'block'; banner.innerHTML = pushGrantedHTML('push-banner'); }
   } catch(e) {
     console.warn('購読失敗:', e);
     if (btn) { btn.textContent = '🔔 通知を受け取る'; btn.disabled = false; }
+  }
+}
+
+// ── 通知ON/OFF共通UI生成 ───────────────────────────
+function pushGrantedHTML(bannerId) {
+  return `<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div style="font-size:13px;color:#1a5276;font-weight:600">✅ プッシュ通知：ON</div>
+    <button onclick="rmPushUnsubscribe('${bannerId}')"
+      style="padding:7px 14px;background:var(--sf);color:#c0392b;border:1px solid #c0392b;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">
+      🔕 通知をOFFにする
+    </button>
+  </div>`;
+}
+
+// 通知購読解除
+async function rmPushUnsubscribe(bannerId) {
+  const banner = document.getElementById(bannerId);
+  if (banner) banner.innerHTML = '<div style="font-size:13px;color:var(--tx2)">処理中…</div>';
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      // Workerから購読情報を削除
+      try {
+        await fetch(PUSH_WORKER_URL + '/unsubscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint: sub.endpoint })
+        });
+      } catch(e) { console.warn('Worker削除失敗（継続）:', e); }
+      await sub.unsubscribe();
+    }
+    // バナーをOFF状態に更新
+    if (banner) {
+      banner.style.display = 'block';
+      banner.innerHTML = `<div style="font-size:13px;color:var(--tx);margin-bottom:10px">🔕 プッシュ通知：OFF</div>
+        <button onclick="rmPushResubscribe('${bannerId}')"
+          style="padding:9px 20px;background:#1a5276;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">
+          🔔 通知をONにする
+        </button>`;
+    }
+  } catch(e) {
+    console.warn('unsubscribe失敗:', e);
+    if (banner) banner.innerHTML = pushGrantedHTML(bannerId);
+  }
+}
+
+// OFFからONに戻す
+async function rmPushResubscribe(bannerId) {
+  const banner = document.getElementById(bannerId);
+  if (banner) banner.innerHTML = '<div style="font-size:13px;color:var(--tx2)">処理中…</div>';
+  try {
+    const perm = Notification.permission;
+    if (perm !== 'granted') {
+      const p2 = await Notification.requestPermission();
+      if (p2 !== 'granted') {
+        if (banner) banner.innerHTML = '<div style="font-size:13px;color:#c0392b">通知が拒否されています。ブラウザ設定から許可してください。</div>';
+        return;
+      }
+    }
+    await rmPushSubscribeInternal();
+    if (banner) { banner.style.display = 'block'; banner.innerHTML = pushGrantedHTML(bannerId); }
+  } catch(e) {
+    console.warn('再購読失敗:', e);
+    if (banner) banner.innerHTML = '<div style="font-size:13px;color:#c0392b">❌ 再設定に失敗しました。</div>';
   }
 }
 
