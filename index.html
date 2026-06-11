@@ -1773,7 +1773,8 @@ function updAuth(){
   }
 }
 function goPublic(){
-  closeAM();
+  // モーダルを確実に閉じる
+  document.getElementById('am').classList.remove('op');
   const prev = curArea;
   if(prev === 'public') return;
   curArea = 'public';
@@ -1783,7 +1784,6 @@ function goPublic(){
   setTimeout(()=>{
     const bnav = document.getElementById('bnav');
     if(!bnav) return;
-    // 既存の戻るボタンを削除
     const existing = document.getElementById('back-btn');
     if(existing) existing.remove();
     const backBtn = document.createElement('button');
@@ -1793,6 +1793,8 @@ function goPublic(){
     backBtn.innerHTML = '<span class="bic">↩</span><span class="blb">戻る</span>';
     backBtn.onclick = () => {
       curArea = prev;
+      const existing2 = document.getElementById('back-btn');
+      if(existing2) existing2.remove();
       buildNav();
       const first = {resident:'notices', board:'minutes', repair:'progress'}[prev] || 'kiyaku';
       goSec(first);
