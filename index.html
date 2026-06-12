@@ -733,6 +733,9 @@ function initNoticePostPanel() {
 }
 
 async function submitNotice() {
+  if (window._submitNoticeInProgress) return; // 多重実行防止
+  window._submitNoticeInProgress = true;
+  try {
   const title    = (document.getElementById('np-title')?.value || '').trim();
   const body     = (document.getElementById('np-body')?.value  || '').trim();
   const category = document.getElementById('np-category')?.value || '管理全般';
@@ -744,6 +747,7 @@ async function submitNotice() {
 
   if (!title) {
     if (errEl) { errEl.style.display='block'; }
+    window._submitNoticeInProgress = false;
     return;
   }
   if (errEl) errEl.style.display = 'none';
@@ -755,6 +759,7 @@ async function submitNotice() {
   if (document.getElementById('np-target-repair')?.checked)   targets.push('修繕委員');
   if (!targets.length) {
     if (errEl) { errEl.textContent='配信先を選択してください。'; errEl.style.display='block'; }
+    window._submitNoticeInProgress = false;
     return;
   }
 
@@ -794,6 +799,9 @@ async function submitNotice() {
     }
   } finally {
     btn.disabled = false; btn.textContent = '📢 投稿してプッシュ通知送信';
+  }
+  } finally {
+    window._submitNoticeInProgress = false;
   }
 }
 
