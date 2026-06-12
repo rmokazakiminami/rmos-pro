@@ -248,6 +248,13 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
   <!-- 規約（章ごとグループ化＋全展開） -->
   <div id="sec-kiyaku" class="sec on">
+    <!-- 直近の予定（公開エリア） -->
+    <div id="upcoming-events-section-public" style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+        <span>📅 直近の予定</span>
+      </div>
+      <div id="upcoming-events-list-public"></div>
+    </div>
     <div id="kr"></div>
   </div>
 
@@ -508,6 +515,13 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
       <button id="push-allow-btn-board" onclick="rmPushSubscribeBoard()" style="padding:9px 20px;background:#1a5276;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔔 通知を受け取る</button>
       <button onclick="document.getElementById('push-banner-board').style.display='none'" style="margin-left:8px;padding:9px 16px;background:var(--sf);color:var(--tx2);border:1px solid var(--bd);border-radius:8px;font-size:12px;cursor:pointer">後で</button>
     </div>
+    <!-- 直近の予定（理事会） -->
+    <div id="upcoming-events-section-board" style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+        <span>📅 直近の予定</span>
+      </div>
+      <div id="upcoming-events-list-board"></div>
+    </div>
     <!-- 緊急通知送信UI（理事会のみ） -->
     <div id="push-send-panel" style="margin-bottom:20px;padding:16px;background:rgba(231,76,60,.05);border:1px solid rgba(231,76,60,.25);border-radius:10px">
       <div style="font-size:13px;font-weight:700;color:#c0392b;margin-bottom:12px">📣 緊急プッシュ通知の送信</div>
@@ -589,6 +603,13 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
       <div style="font-size:13px;color:var(--tx);margin-bottom:10px">📣 管理組合からの緊急連絡をプッシュ通知で受け取れます。</div>
       <button id="push-allow-btn-repair" onclick="rmPushSubscribeRepair()" style="padding:9px 20px;background:#1a5276;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔔 通知を受け取る</button>
       <button onclick="document.getElementById('push-banner-repair').style.display='none'" style="margin-left:8px;padding:9px 16px;background:var(--sf);color:var(--tx2);border:1px solid var(--bd);border-radius:8px;font-size:12px;cursor:pointer">後で</button>
+    </div>
+    <!-- 直近の予定（修繕委員会） -->
+    <div id="upcoming-events-section-repair" style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+        <span>📅 直近の予定</span>
+      </div>
+      <div id="upcoming-events-list-repair"></div>
     </div>
     <div id="repair-notice-list"></div>
   </div>
@@ -777,56 +798,31 @@ async function submitNotice() {
 }
 
 // ════════════════════════════════════════════════════════════
-//  直近の予定（Googleカレンダー連携）
+//  直近の予定（Googleカレンダー連携・GAS経由）
 // ════════════════════════════════════════════════════════════
-const CALENDAR_ICAL_URL = 'https://calendar.google.com/calendar/ical/rm.okazaki.minami%40gmail.com/public/basic.ics';
 const CALENDAR_LINK_URL = 'https://calendar.google.com/calendar/embed?src=rm.okazaki.minami%40gmail.com';
 
-function parseICalEvents(icsText) {
-  const events = [];
-  const blocks = icsText.split('BEGIN:VEVENT');
-  for (let i = 1; i < blocks.length; i++) {
-    const block = blocks[i].split('END:VEVENT')[0];
-    const get = (key) => {
-      const m = block.match(new RegExp(key + '[^:]*:(.+)'));
-      return m ? m[1].trim() : '';
-    };
-    let summary = get('SUMMARY');
-    summary = summary.replace(/\\,/g,',').replace(/\\n/g,' ').replace(/\\\\/g,'\\');
-    let dtstart = get('DTSTART');
-    let dateObj = null;
-    if (/^\d{8}$/.test(dtstart)) {
-      const y=dtstart.slice(0,4), m=dtstart.slice(4,6), d=dtstart.slice(6,8);
-      dateObj = new Date(y+'-'+m+'-'+d+'T00:00:00');
-    } else if (/^\d{8}T/.test(dtstart)) {
-      const y=dtstart.slice(0,4), m=dtstart.slice(4,6), d=dtstart.slice(6,8);
-      const hh=dtstart.slice(9,11), mm=dtstart.slice(11,13);
-      dateObj = new Date(y+'-'+m+'-'+d+'T'+hh+':'+mm+':00');
-    }
-    if (summary && dateObj && !isNaN(dateObj)) {
-      events.push({ title: summary, date: dateObj });
-    }
-  }
-  return events;
-}
-
-function renderUpcomingEvents() {
-  const el = document.getElementById('upcoming-events-list');
+function renderUpcomingEvents(elId) {
+  elId = elId || 'upcoming-events-list';
+  const el = document.getElementById(elId);
   if (!el) return;
   el.innerHTML = loadingHTML();
 
-  fetch(CALENDAR_ICAL_URL + '?t=' + Date.now(), { cache: 'no-store' })
-    .then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
-    .then(text => {
-      const events = parseICalEvents(text);
+  fetch(GAS_URL + '?action=getEvents&t=' + Date.now(), { method:'GET', mode:'cors' })
+    .then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(data => {
+      const events = (data.events || []).map(ev => ({
+        title: ev.title,
+        date: new Date(ev.date + 'T00:00:00'),
+        description: ev.description || '',
+      }));
+
       const today = new Date(); today.setHours(0,0,0,0);
-      const upcoming = events
-        .filter(e => e.date >= today)
-        .sort((a,b) => a.date - b.date)
-        .slice(0, 5);
+      const upcoming = events.filter(e => e.date >= today).slice(0, 5);
 
       if (!upcoming.length) {
-        el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--tx3);font-size:12px">直近の予定はありません。</div>';
+        el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--tx3);font-size:12px">直近の予定はありません。</div>'
+          + `<a href="${CALENDAR_LINK_URL}" target="_blank" style="display:block;text-align:center;font-size:11px;color:var(--ac);margin-top:6px;text-decoration:none">📅 カレンダーで予定を見る →</a>`;
         return;
       }
 
@@ -835,19 +831,23 @@ function renderUpcomingEvents() {
         const m = ev.date.getMonth()+1, d = ev.date.getDate(), w = dayNames[ev.date.getDay()];
         const isToday = ev.date.getTime() === today.getTime();
         const badge = isToday ? '<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--rd);color:#fff;font-weight:700;margin-left:6px">本日</span>' : '';
+        const desc = ev.description ? `<div style="font-size:11px;color:var(--tx3);margin-top:2px">${esc(ev.description)}</div>` : '';
         return `<div style="display:flex;align-items:center;gap:12px;padding:9px 13px;border:1px solid var(--bd);border-radius:var(--r);margin-bottom:6px;background:var(--sf)">
           <div style="text-align:center;min-width:44px;flex-shrink:0">
             <div style="font-size:10px;color:var(--tx3)">${m}月</div>
             <div style="font-size:18px;font-weight:700;color:var(--ac)">${d}</div>
             <div style="font-size:10px;color:var(--tx3)">(${w})</div>
           </div>
-          <div style="flex:1;font-size:13px;color:var(--tx)">${esc(ev.title)}${badge}</div>
+          <div style="flex:1">
+            <div style="font-size:13px;color:var(--tx)">${esc(ev.title)}${badge}</div>
+            ${desc}
+          </div>
         </div>`;
       }).join('') +
       `<a href="${CALENDAR_LINK_URL}" target="_blank" style="display:block;text-align:center;font-size:11px;color:var(--ac);margin-top:4px;text-decoration:none">📅 すべての予定をカレンダーで見る →</a>`;
     })
     .catch(e => {
-      console.warn('カレンダー取得失敗:', e);
+      console.warn('予定取得失敗:', e);
       el.innerHTML = `<a href="${CALENDAR_LINK_URL}" target="_blank" style="display:block;text-align:center;padding:12px;color:var(--ac);font-size:12px;text-decoration:none;border:1px solid var(--bd);border-radius:var(--r)">📅 カレンダーで予定を確認する →</a>`;
     });
 }
@@ -1256,17 +1256,17 @@ function goSec(name){
   if(name==='bousai')initBousai();
   if(name==='notices') rmPushBannerCheck();
   if(name==='board-notice') rmPushBannerBoardCheck();
-  if(name==='repair-notice') rmPushBannerRepairCheck();
+  if(name==='repair-notice'){rmPushBannerRepairCheck();renderRepairNotices();renderUpcomingEvents('upcoming-events-list-repair');}
   // CSV系：セクション表示のたびに最新データを取得
   if(name==='notices'){renderNotices();renderUpcomingEvents();}
+  if(name==='board-notice'){renderBoardNotices();initNoticePostPanel();renderUpcomingEvents('upcoming-events-list-board');}
   if(name==='progress')renderProgress();
   if(name==='answers')renderAnswers('ans-list','ans-empty');
   else if(name==='answers-b')renderAnswers('ans-list-b','ans-empty-b');
   else if(name==='answers-r')renderAnswers('ans-list-r','ans-empty-r');
   if(name==='wendyfaq')renderWendyFAQPage();
   if(name==='minutes')renderMinutes();
-  if(name==='board-notice'){renderBoardNotices();initNoticePostPanel();}
-  if(name==='repair-notice')renderRepairNotices();
+  if(name==='kiyaku'&&!window._evtPubI){renderUpcomingEvents('upcoming-events-list-public');window._evtPubI=true;}
   window.scrollTo(0,0);
 }
 
