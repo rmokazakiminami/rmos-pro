@@ -320,6 +320,13 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
       <button id="push-allow-btn" onclick="rmPushSubscribe()" style="padding:9px 20px;background:#1a5276;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔔 通知を受け取る</button>
       <button onclick="document.getElementById('push-banner').style.display='none'" style="margin-left:8px;padding:9px 16px;background:var(--sf);color:var(--tx2);border:1px solid var(--bd);border-radius:8px;font-size:12px;cursor:pointer">後で</button>
     </div>
+    <!-- 直近の予定 -->
+    <div id="upcoming-events-section" style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+        <span>📅 直近の予定</span>
+      </div>
+      <div id="upcoming-events-list"></div>
+    </div>
     <div id="notice-list"></div>
     <div id="notice-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">お知らせはありません。</div>
   </div>
@@ -770,6 +777,82 @@ async function submitNotice() {
 }
 
 // ════════════════════════════════════════════════════════════
+//  直近の予定（Googleカレンダー連携）
+// ════════════════════════════════════════════════════════════
+const CALENDAR_ICAL_URL = 'https://calendar.google.com/calendar/ical/rm.okazaki.minami%40gmail.com/public/basic.ics';
+const CALENDAR_LINK_URL = 'https://calendar.google.com/calendar/embed?src=rm.okazaki.minami%40gmail.com';
+
+function parseICalEvents(icsText) {
+  const events = [];
+  const blocks = icsText.split('BEGIN:VEVENT');
+  for (let i = 1; i < blocks.length; i++) {
+    const block = blocks[i].split('END:VEVENT')[0];
+    const get = (key) => {
+      const m = block.match(new RegExp(key + '[^:]*:(.+)'));
+      return m ? m[1].trim() : '';
+    };
+    let summary = get('SUMMARY');
+    summary = summary.replace(/\\,/g,',').replace(/\\n/g,' ').replace(/\\\\/g,'\\');
+    let dtstart = get('DTSTART');
+    let dateObj = null;
+    if (/^\d{8}$/.test(dtstart)) {
+      const y=dtstart.slice(0,4), m=dtstart.slice(4,6), d=dtstart.slice(6,8);
+      dateObj = new Date(y+'-'+m+'-'+d+'T00:00:00');
+    } else if (/^\d{8}T/.test(dtstart)) {
+      const y=dtstart.slice(0,4), m=dtstart.slice(4,6), d=dtstart.slice(6,8);
+      const hh=dtstart.slice(9,11), mm=dtstart.slice(11,13);
+      dateObj = new Date(y+'-'+m+'-'+d+'T'+hh+':'+mm+':00');
+    }
+    if (summary && dateObj && !isNaN(dateObj)) {
+      events.push({ title: summary, date: dateObj });
+    }
+  }
+  return events;
+}
+
+function renderUpcomingEvents() {
+  const el = document.getElementById('upcoming-events-list');
+  if (!el) return;
+  el.innerHTML = loadingHTML();
+
+  fetch(CALENDAR_ICAL_URL + '?t=' + Date.now(), { cache: 'no-store' })
+    .then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+    .then(text => {
+      const events = parseICalEvents(text);
+      const today = new Date(); today.setHours(0,0,0,0);
+      const upcoming = events
+        .filter(e => e.date >= today)
+        .sort((a,b) => a.date - b.date)
+        .slice(0, 5);
+
+      if (!upcoming.length) {
+        el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--tx3);font-size:12px">直近の予定はありません。</div>';
+        return;
+      }
+
+      const dayNames = ['日','月','火','水','木','金','土'];
+      el.innerHTML = upcoming.map(ev => {
+        const m = ev.date.getMonth()+1, d = ev.date.getDate(), w = dayNames[ev.date.getDay()];
+        const isToday = ev.date.getTime() === today.getTime();
+        const badge = isToday ? '<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--rd);color:#fff;font-weight:700;margin-left:6px">本日</span>' : '';
+        return `<div style="display:flex;align-items:center;gap:12px;padding:9px 13px;border:1px solid var(--bd);border-radius:var(--r);margin-bottom:6px;background:var(--sf)">
+          <div style="text-align:center;min-width:44px;flex-shrink:0">
+            <div style="font-size:10px;color:var(--tx3)">${m}月</div>
+            <div style="font-size:18px;font-weight:700;color:var(--ac)">${d}</div>
+            <div style="font-size:10px;color:var(--tx3)">(${w})</div>
+          </div>
+          <div style="flex:1;font-size:13px;color:var(--tx)">${esc(ev.title)}${badge}</div>
+        </div>`;
+      }).join('') +
+      `<a href="${CALENDAR_LINK_URL}" target="_blank" style="display:block;text-align:center;font-size:11px;color:var(--ac);margin-top:4px;text-decoration:none">📅 すべての予定をカレンダーで見る →</a>`;
+    })
+    .catch(e => {
+      console.warn('カレンダー取得失敗:', e);
+      el.innerHTML = `<a href="${CALENDAR_LINK_URL}" target="_blank" style="display:block;text-align:center;padding:12px;color:var(--ac);font-size:12px;text-decoration:none;border:1px solid var(--bd);border-radius:var(--r)">📅 カレンダーで予定を確認する →</a>`;
+    });
+}
+
+// ════════════════════════════════════════════════════════════
 //  ファーストミッションボックス データ＆関数
 // ════════════════════════════════════════════════════════════
 const FMB_DATA = {
@@ -1175,7 +1258,7 @@ function goSec(name){
   if(name==='board-notice') rmPushBannerBoardCheck();
   if(name==='repair-notice') rmPushBannerRepairCheck();
   // CSV系：セクション表示のたびに最新データを取得
-  if(name==='notices')renderNotices();
+  if(name==='notices'){renderNotices();renderUpcomingEvents();}
   if(name==='progress')renderProgress();
   if(name==='answers')renderAnswers('ans-list','ans-empty');
   else if(name==='answers-b')renderAnswers('ans-list-b','ans-empty-b');
