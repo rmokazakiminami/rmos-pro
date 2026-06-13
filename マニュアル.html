@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RMOS Pro 操作マニュアル</title>
+<style>
+:root {
+  --blue:   #1B4F8A;
+  --blue2:  #2465A8;
+  --lblue:  #EBF2FA;
+  --white:  #FFFFFF;
+  --bg:     #F7F5F0;
+  --sf:     #FFFFFF;
+  --sf2:    #F0EDE6;
+  --bd:     #DDD9CF;
+  --tx:     #1C1A16;
+  --tx2:    #5C5848;
+  --tx3:    #8A8472;
+  --red:    #8B1A1A;
+  --lred:   #FAEBEB;
+  --red2:   #C0392B;
+  --green:  #1A5C3A;
+  --lgreen: #EBF5EE;
+  --gold:   #8B6914;
+  --lgold:  #FDF6E3;
+  --orange: #7A3B10;
+  --loran:  #FEF3E8;
+  --r: 8px;
+  --rl: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Hiragino Sans', 'Noto Sans JP', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--tx);
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+/* ── ヘッダー ── */
+.hero {
+  background: var(--blue);
+  color: #fff;
+  padding: 40px 20px 32px;
+  text-align: center;
+}
+.hero-title { font-size: 32px; font-weight: 800; letter-spacing: .02em; margin-bottom: 6px; }
+.hero-sub   { font-size: 14px; opacity: .8; margin-bottom: 20px; }
+.hero-url   { font-family: monospace; font-size: 13px; background: rgba(255,255,255,.15); padding: 6px 14px; border-radius: 20px; display: inline-block; margin-bottom: 16px; }
+.qr-wrap    { display: inline-block; background: #fff; padding: 12px; border-radius: var(--r); margin-bottom: 12px; }
+.qr-wrap img { display: block; width: 140px; height: 140px; }
+.hero-note  { font-size: 12px; opacity: .7; }
+
+/* ── 目次 ── */
+.toc { background: var(--sf); border-bottom: 1px solid var(--bd); padding: 16px 20px; }
+.toc-title { font-size: 11px; font-weight: 700; color: var(--tx3); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; }
+.toc-list { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.toc-list a { font-size: 12px; color: var(--blue); text-decoration: none; padding: 4px 10px; background: var(--lblue); border-radius: 20px; white-space: nowrap; }
+.toc-list a:hover { background: var(--blue); color: #fff; }
+
+/* ── コンテンツ ── */
+.wrap { max-width: 800px; margin: 0 auto; padding: 0 16px 60px; }
+
+/* ── セクション ── */
+.section { margin-top: 40px; }
+.section-title {
+  font-size: 20px; font-weight: 800; color: var(--blue);
+  padding-bottom: 10px; margin-bottom: 20px;
+  border-bottom: 3px solid var(--blue);
+  display: flex; align-items: center; gap: 10px;
+}
+.section-num {
+  background: var(--blue); color: #fff;
+  font-size: 12px; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px;
+}
+.subsection { margin-top: 24px; margin-bottom: 8px; }
+.subsection-title {
+  font-size: 15px; font-weight: 700; color: var(--blue2);
+  padding: 8px 12px; background: var(--lblue);
+  border-left: 4px solid var(--blue2); border-radius: 0 var(--r) var(--r) 0;
+  margin-bottom: 12px;
+}
+.h3 { font-size: 14px; font-weight: 700; color: var(--tx); margin: 16px 0 6px; padding-left: 10px; border-left: 3px solid var(--blue2); }
+p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
+
+/* ── ステップボックス ── */
+.steps { display: flex; flex-direction: column; gap: 8px; }
+.step {
+  display: flex; gap: 0; border-radius: var(--r); overflow: hidden;
+  border: 1px solid var(--bd);
+}
+.step-num {
+  background: var(--blue); color: #fff;
+  font-size: 18px; font-weight: 800;
+  min-width: 48px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.step-body { padding: 12px 14px; background: var(--sf); flex: 1; }
+.step-body strong { display: block; font-size: 14px; font-weight: 700; color: var(--tx); margin-bottom: 4px; }
+.step-body p { font-size: 13px; margin: 0; color: var(--tx2); }
+
+/* ── 注意ボックス ── */
+.note {
+  padding: 12px 14px; border-radius: var(--r);
+  font-size: 13px; line-height: 1.7;
+  margin: 12px 0;
+}
+.note-warn  { background: var(--lred);   color: var(--red);   border: 1px solid #EDACAC; }
+.note-info  { background: var(--lblue);  color: var(--blue);  border: 1px solid #B8D4EF; }
+.note-ok    { background: var(--lgreen); color: var(--green); border: 1px solid #9ECDB4; }
+.note-tips  { background: var(--lgold);  color: var(--gold);  border: 1px solid #DFC57A; }
+
+/* ── エリアカード ── */
+.area-cards { display: flex; flex-direction: column; gap: 10px; }
+.area-card {
+  border-radius: var(--rl); overflow: hidden; border: 1px solid var(--bd);
+  display: flex;
+}
+.area-label {
+  min-width: 90px; padding: 16px 10px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; flex-shrink: 0;
+}
+.area-label .icon { font-size: 22px; margin-bottom: 4px; }
+.area-label .name { font-size: 11px; font-weight: 700; color: #fff; line-height: 1.3; }
+.area-body { padding: 14px; background: var(--sf); flex: 1; }
+.area-body .desc { font-size: 13px; color: var(--tx2); margin-bottom: 8px; }
+.area-features { list-style: none; display: flex; flex-wrap: wrap; gap: 4px; }
+.area-features li { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--sf2); color: var(--tx2); }
+
+/* ── テーブル ── */
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+.tbl th { background: var(--blue); color: #fff; padding: 8px 10px; text-align: left; font-weight: 700; }
+.tbl td { padding: 8px 10px; border-bottom: 1px solid var(--bd); vertical-align: top; }
+.tbl tr:nth-child(even) td { background: var(--sf2); }
+.tbl tr:hover td { background: var(--lblue); }
+
+/* ── FAQ ── */
+.faq { display: flex; flex-direction: column; gap: 8px; }
+.faq-item { border: 1px solid var(--bd); border-radius: var(--r); overflow: hidden; }
+.faq-q {
+  padding: 12px 14px; background: var(--sf2);
+  font-size: 14px; font-weight: 600; color: var(--tx);
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  user-select: none;
+}
+.faq-q::after { content: '＋'; font-size: 18px; color: var(--blue); flex-shrink: 0; }
+.faq-q.open::after { content: '－'; }
+.faq-a { display: none; padding: 12px 14px; font-size: 13px; color: var(--tx2); border-top: 1px solid var(--bd); line-height: 1.75; }
+.faq-a.open { display: block; }
+
+/* ── 緊急連絡先グリッド ── */
+.emergency { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+.ec { padding: 12px; border-radius: var(--r); text-align: center; }
+.ec-num { font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+.ec-name { font-size: 11px; }
+.ec-red  { background: var(--lred);   color: var(--red2); border: 1px solid #EDACAC; }
+.ec-blue { background: var(--lblue);  color: var(--blue); border: 1px solid #B8D4EF; }
+
+/* ── 役員テーブル ── */
+.officers { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+.officers th { background: var(--blue); color: #fff; padding: 8px 10px; text-align: left; }
+.officers td { padding: 8px 10px; border-bottom: 1px solid var(--bd); }
+.officers tr:nth-child(even) td { background: var(--sf2); }
+
+/* ── 避難経路テーブル ── */
+.evac { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+.evac th { background: var(--red2); color: #fff; padding: 8px 10px; text-align: left; }
+.evac td { padding: 8px 10px; border-bottom: 1px solid var(--bd); vertical-align: top; }
+.evac tr:nth-child(odd) td { background: var(--lred); }
+
+/* ── FMBタブ ── */
+.fmb-role { display: flex; flex-direction: column; gap: 6px; }
+.fmb-item { display: flex; gap: 10px; padding: 10px 12px; background: var(--sf); border: 1px solid var(--bd); border-radius: var(--r); font-size: 13px; }
+.fmb-icon { font-size: 18px; flex-shrink: 0; }
+.fmb-name { font-weight: 700; color: var(--tx); margin-bottom: 2px; }
+.fmb-who  { font-size: 12px; color: var(--tx3); }
+
+/* ── フッター ── */
+.footer {
+  background: var(--blue); color: rgba(255,255,255,.7);
+  text-align: center; padding: 24px 16px;
+  font-size: 12px; margin-top: 40px;
+}
+
+/* ── モバイル調整 ── */
+@media (max-width: 480px) {
+  .hero-title { font-size: 24px; }
+  .emergency  { grid-template-columns: 1fr 1fr; }
+  .area-card  { flex-direction: column; }
+  .area-label { flex-direction: row; min-width: auto; padding: 10px 14px; gap: 8px; }
+  .area-label .name { font-size: 13px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── ヘッダー ── -->
+<div class="hero">
+  <div class="hero-title">RMOS Pro</div>
+  <div class="hero-sub">スマートフォン登録・操作マニュアル</div>
+  <div class="qr-wrap">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=https://rmokazakiminami.github.io/rmos-pro/" alt="QRコード">
+  </div>
+  <br>
+  <div class="hero-url">https://rmokazakiminami.github.io/rmos-pro/</div>
+  <div class="hero-note">上記QRコードまたはURLからアクセスしてください</div>
+  <div style="margin-top:16px">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);border-radius:20px;color:#fff;font-size:13px;font-weight:600;text-decoration:none">
+      ← RMOS Pro ホームに戻る
+    </a>
+  </div>
+</div>
+
+<!-- ── 目次 ── -->
+<div class="toc">
+  <div class="toc-title">目次</div>
+  <ul class="toc-list">
+    <li><a href="#s1">１ RMOS Proとは</a></li>
+    <li><a href="#s2">２ iPhone登録</a></li>
+    <li><a href="#s3">３ Android登録</a></li>
+    <li><a href="#s4">４ プッシュ通知</a></li>
+    <li><a href="#s5">５ ログイン</a></li>
+    <li><a href="#s6">６ 各機能</a></li>
+    <li><a href="#s7">７ 防災（FMB）</a></li>
+    <li><a href="#s8">８ よくある質問</a></li>
+    <li><a href="#s9">９ 緊急連絡先</a></li>
+  </ul>
+</div>
+
+<div class="wrap">
+
+<!-- ── 1. RMOS Proとは ── -->
+<div class="section" id="s1">
+  <div class="section-title"><span class="section-num">１</span>RMOS Pro とは</div>
+  <p>RMOS Pro（ロイヤルマンション岡崎南公園 管理システム）は、当マンション管理組合が独自に開発したスマートフォン対応の管理情報システムです。</p>
+  <p>アプリのインストールは不要です。ホーム画面に追加することで、通常のアプリと同じ感覚でご利用いただけます。</p>
+
+  <div class="subsection">
+    <div class="subsection-title">主な機能</div>
+    <table class="tbl">
+      <tr><th>機能</th><th>内容</th></tr>
+      <tr><td>📖 管理規約・細則閲覧</td><td>全75条の管理規約と細則を章ごとに全文表示。キーワード検索・逆引き検索に対応。</td></tr>
+      <tr><td>🔍 逆引き検索</td><td>複数キーワードで規約・細則を横断検索。関連度順に表示。</td></tr>
+      <tr><td>📚 Wendy-Net FAQ</td><td>弁護士監修のマンション管理FAQ。規約条文と連動したQ&A。</td></tr>
+      <tr><td>📢 お知らせ</td><td>管理組合からの連絡・告知をリアルタイムで受信。</td></tr>
+      <tr><td>🏗 工事進捗</td><td>大規模修繕工事等の進捗状況を確認。</td></tr>
+      <tr><td>📬 意見箱</td><td>匿名でもご意見・ご要望を送信可能。</td></tr>
+      <tr><td>💬 回答閲覧</td><td>意見箱への理事会回答を確認。</td></tr>
+      <tr><td>🚨 防災（FMB）</td><td>発災直後の役割別初動カード。</td></tr>
+      <tr><td>🔔 プッシュ通知</td><td>お知らせ・緊急情報をスマホに自動通知。</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">対応環境</div>
+    <table class="tbl">
+      <tr><th>端末</th><th>推奨ブラウザ</th><th>備考</th></tr>
+      <tr><td>iPhone / iPad</td><td>Safari（必須）</td><td>ホーム画面追加・プッシュ通知対応</td></tr>
+      <tr><td>Android</td><td>Chrome（推奨）</td><td>Samsung Internetも可</td></tr>
+      <tr><td>Windows PC</td><td>Chrome / Edge</td><td>閲覧・操作に対応</td></tr>
+      <tr><td>Mac</td><td>Safari / Chrome</td><td>閲覧・操作に対応</td></tr>
+    </table>
+  </div>
+  <div class="note note-warn">⚠️ LINE・Instagram等のアプリ内ブラウザではホーム画面への追加・プッシュ通知が利用できません。必ずSafari（iPhone）またはChrome（Android）で開いてください。</div>
+</div>
+
+<!-- ── 2. iPhone登録 ── -->
+<div class="section" id="s2">
+  <div class="section-title"><span class="section-num">２</span>ホーム画面への追加（iPhone / iPad）</div>
+  <div class="note note-info">📌 使用ブラウザ：Safari（必須）　Chrome・Firefox・アプリ内ブラウザでは登録できません。</div>
+  <div class="steps" style="margin-top:16px">
+    <div class="step">
+      <div class="step-num">①</div>
+      <div class="step-body">
+        <strong>SafariでRMOS ProのURLを開く</strong>
+        <p>Safariを起動し、アドレスバーに「rmokazakiminami.github.io/rmos-pro/」を入力、またはQRコードをカメラで読み取ってSafariで開きます。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">②</div>
+      <div class="step-body">
+        <strong>共有ボタンをタップ</strong>
+        <p>Safari画面下部中央の「□↑」マーク（共有ボタン）をタップします。iPhone 13以降・iPadでは上部に表示される場合があります。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">③</div>
+      <div class="step-body">
+        <strong>「ホーム画面に追加」を選択</strong>
+        <p>共有メニューを下にスクロールし「ホーム画面に追加」をタップします。見つからない場合は「その他」から探してください。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">④</div>
+      <div class="step-body">
+        <strong>名前を確認して「追加」をタップ</strong>
+        <p>「RMOS Pro」と表示されていることを確認し、右上の「追加」をタップします。ホーム画面にアイコンが追加されれば完了です。</p>
+      </div>
+    </div>
+  </div>
+  <div class="note note-ok" style="margin-top:12px">💡 ホーム画面のアイコンから起動するとアドレスバーが消えて全画面表示になります。次回からはアイコンをタップするだけでOKです。</div>
+</div>
+
+<!-- ── 3. Android登録 ── -->
+<div class="section" id="s3">
+  <div class="section-title"><span class="section-num">３</span>ホーム画面への追加（Android）</div>
+  <div class="note note-info">📌 使用ブラウザ：Chrome（推奨）　Samsung Internetでも可能ですが操作が一部異なります。</div>
+
+  <div class="subsection">
+    <div class="subsection-title">Chromeを使った手順（推奨）</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">①</div>
+        <div class="step-body">
+          <strong>ChromeでRMOS ProのURLを開く</strong>
+          <p>Chromeを起動し、アドレスバーに「rmokazakiminami.github.io/rmos-pro/」を入力、またはQRコードをカメラで読み取ってChromeで開きます。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">②</div>
+        <div class="step-body">
+          <strong>メニューを開く</strong>
+          <p>画面右上の「⋮」（縦3点ボタン）をタップします。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">③</div>
+        <div class="step-body">
+          <strong>「ホーム画面に追加」をタップ</strong>
+          <p>「ホーム画面に追加」または「アプリとしてインストール」をタップします。下部にインストールバナーが表示された場合もタップしてください。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">④</div>
+        <div class="step-body">
+          <strong>「追加」または「インストール」をタップ</strong>
+          <p>確認ダイアログで「追加」または「インストール」をタップします。ホーム画面にアイコンが追加されれば完了です。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Samsung Internetを使った手順</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">①</div>
+        <div class="step-body"><strong>Samsung InternetでURLを開く</strong><p>URLを入力してRMOS Proにアクセスします。</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">②</div>
+        <div class="step-body"><strong>メニューから追加</strong><p>下部の「≡」または「…」→「ページをホーム画面に追加」→「追加」をタップします。</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="note note-ok">💡 機種やOSのバージョンによって手順が異なる場合があります。「ホーム画面に追加」が見つからない場合は管理組合（稲垣502）までお問い合わせください。</div>
+</div>
+
+<!-- ── 4. プッシュ通知 ── -->
+<div class="section" id="s4">
+  <div class="section-title"><span class="section-num">４</span>プッシュ通知の設定</div>
+  <p>プッシュ通知を設定すると、管理組合からのお知らせ・緊急情報が自動的にスマートフォンに届きます。</p>
+  <div class="note note-warn">⚠️ 重要：プッシュ通知はホーム画面に追加したアイコンから起動した場合のみ動作します。Safariのブラウザから直接開いた場合は通知が届きません。</div>
+
+  <div class="steps" style="margin-top:16px">
+    <div class="step">
+      <div class="step-num">①</div>
+      <div class="step-body"><strong>ホーム画面のアイコンをタップして起動</strong><p>ブラウザからではなくホーム画面のアイコンからRMOS Proを起動します。</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">②</div>
+      <div class="step-body"><strong>右上の「🔒 ログイン」をタップ</strong><p>お知らせしているパスワードを入力し「ログイン」をタップします。</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">③</div>
+      <div class="step-body"><strong>「📢 お知らせ」タブをタップ</strong><p>画面下部のナビゲーションバーから「お知らせ」タブを開きます。</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">④</div>
+      <div class="step-body"><strong>「🔔 通知を受け取る」をタップ</strong><p>「許可」をタップします。「✅ プッシュ通知：ON」と表示されれば設定完了です。</p></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">通知が届かない場合の確認事項</div>
+    <table class="tbl">
+      <tr><th>確認事項</th><th>対処方法</th></tr>
+      <tr><td>ホーム画面のアイコンから起動しているか</td><td>ブラウザから直接ではなくアイコンから起動してください</td></tr>
+      <tr><td>お知らせタブで「✅ ON」になっているか</td><td>バナーのボタンで通知をONにしてください</td></tr>
+      <tr><td>スマホの通知設定がONになっているか</td><td>設定→通知→Safari(Chrome)→通知をONに変更</td></tr>
+      <tr><td>iPhone: iOS 16.4以降か</td><td>iOS 16.4未満はWeb Pushに非対応です</td></tr>
+      <tr><td>一度ログアウトして再ログインしてみる</td><td>ログアウト後、再ログイン→通知設定を行う</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ── 5. ログイン ── -->
+<div class="section" id="s5">
+  <div class="section-title"><span class="section-num">５</span>ログイン・エリアの切り替え</div>
+  <p>RMOS Proには4つのエリアがあります。パスワードでログインすることで、それぞれのエリアにアクセスできます。パスワードは別途お知らせします。</p>
+
+  <div class="area-cards" style="margin:16px 0">
+    <div class="area-card">
+      <div class="area-label" style="background:#2465A8">
+        <div class="icon">🌐</div>
+        <div class="name">公開エリア</div>
+      </div>
+      <div class="area-body">
+        <div class="desc">ログイン不要で誰でもアクセスできるエリアです。</div>
+        <ul class="area-features">
+          <li>管理規約（全75条）閲覧</li><li>細則（9編）閲覧</li><li>逆引き横断検索</li>
+          <li>是正手続き書類</li><li>Wendy-Net FAQ</li><li>🚨 防災（FMB）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="area-card">
+      <div class="area-label" style="background:#1A5C3A">
+        <div class="icon">🏠</div>
+        <div class="name">居住者エリア</div>
+      </div>
+      <div class="area-body">
+        <div class="desc">当マンションの居住者向けエリアです。</div>
+        <ul class="area-features">
+          <li>お知らせ受信・プッシュ通知</li><li>工事進捗確認</li><li>意見箱への投稿</li><li>回答の閲覧</li>
+        </ul>
+      </div>
+    </div>
+    <div class="area-card">
+      <div class="area-label" style="background:#8B6914">
+        <div class="icon">📋</div>
+        <div class="name">理事会エリア</div>
+      </div>
+      <div class="area-body">
+        <div class="desc">理事会メンバー向けのエリアです。</div>
+        <ul class="area-features">
+          <li>議事録の閲覧</li><li>理事会専用お知らせ</li><li>工事進捗管理</li>
+          <li>意見箱の管理・回答</li><li>緊急プッシュ通知の送信</li>
+        </ul>
+      </div>
+    </div>
+    <div class="area-card">
+      <div class="area-label" style="background:#7A3B10">
+        <div class="icon">🔧</div>
+        <div class="name">修繕委員会エリア</div>
+      </div>
+      <div class="area-body">
+        <div class="desc">修繕委員会メンバー向けのエリアです。</div>
+        <ul class="area-features">
+          <li>工事進捗確認・管理</li><li>修繕委員会専用お知らせ</li><li>意見箱への投稿・管理</li><li>回答の閲覧</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">①</div>
+      <div class="step-body"><strong>「🔒 ログイン」をタップ</strong><p>画面右上のボタンをタップします。</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">②</div>
+      <div class="step-body"><strong>パスワードを入力して「ログイン」</strong><p>担当エリアのパスワードを入力します（別途お知らせ）。</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">③</div>
+      <div class="step-body"><strong>エリアが切り替わる</strong><p>ログイン成功後、対応するエリアに自動的に切り替わります。次回起動時もログイン状態が保持されます。</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 6. 各機能 ── -->
+<div class="section" id="s6">
+  <div class="section-title"><span class="section-num">６</span>各エリアの機能と使い方</div>
+
+  <div class="subsection">
+    <div class="subsection-title">🌐 公開エリア（ログイン不要）</div>
+    <div class="h3">📖 管理規約</div>
+    <p>全75条・7章構成の管理規約を閲覧できます。章ごとにグループ化されて全条文が表示されます。キーワード検索・章フィルターが使えます。</p>
+    <div class="h3">📜 細則</div>
+    <p>管理細則（全9編）を閲覧できます。キーワード検索・編フィルターが使えます。</p>
+    <div class="h3">🔍 逆引き（横断検索）</div>
+    <p>規約と細則を同時に横断検索できます。スペース区切りで複数キーワードを入力でき、関連度の高い順に表示されます。</p>
+    <div class="h3">⚖️ 是正（理事会是正手続き書類）</div>
+    <p>区分所有者が理事会の不適切な業務執行に対して是正を求める際の書類です。①是正要求→②監事への勧告要請→③管理会社通報→④臨時総会招集の順で手続きを進めます。書類はPDFでダウンロードできます。</p>
+    <div class="h3">📚 Wendy-Net FAQ</div>
+    <p>弁護士監修のマンション管理FAQを閲覧できます。カテゴリ一覧から選ぶとQ&A形式で回答が表示され、根拠条文へ直接ジャンプできます。</p>
+    <div class="h3">🚨 防災（FMB）</div>
+    <p>「７．防災タブ」を参照してください。</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">🏠 居住者エリア</div>
+    <div class="h3">📢 お知らせ</div>
+    <p>管理組合からの告知・連絡を確認できます。新しいお知らせが追加されると、自動的にスマートフォンに通知が届きます（通知設定済みの場合）。</p>
+    <div class="h3">🏗 工事進捗</div>
+    <p>大規模修繕工事等の工程ごとの進捗状況を確認できます。各工程に進捗バー（0〜100%）と状態バッジ（予定・進行中・完了）が表示されます。</p>
+    <div class="h3">📬 意見箱</div>
+    <p>管理組合へのご意見・ご要望を送信できます。匿名での投稿も可能です。回答方法（公開・メール・電話・書面・訪問・回答不要）を選択できます。</p>
+    <div class="h3">💬 回答閲覧</div>
+    <p>意見箱への理事会回答のうち「公開」に設定されたものを閲覧できます。回答が公開されると通知が届きます。</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">📋 理事会エリア</div>
+    <div class="h3">📄 議事録</div>
+    <p>理事会・総会の議事録一覧を閲覧できます。GoogleドライブへのリンクがあるものはタップしてPDFを開けます。</p>
+    <div class="h3">📣 お知らせ・緊急通知送信</div>
+    <p>理事会メンバー向けのお知らせを確認できます。タイトルと本文を入力して「投稿してプッシュ通知送信」ボタンをタップすると、通知設定済みの全端末に即座にプッシュ通知を送信できます。掲載日に加えて開催時刻（開始・終了）を入力すると、Googleカレンダーに時間指定の予定として登録されます。時刻を入力しない場合は終日の予定として登録されます。</p>
+    <div class="h3">📬 意見箱・回答管理</div>
+    <p>居住者から届いた意見箱の内容を確認し、スプレッドシートのH列（回答）に回答を入力、I列（公開）に「公開」と入力すると居住者に公開されプッシュ通知が送信されます。</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">🔧 修繕委員会エリア</div>
+    <div class="h3">🏗 工事進捗</div>
+    <p>大規模修繕工事の進捗を確認・管理できます。スプレッドシートの進捗率を更新するとプッシュ通知が送信されます。</p>
+    <div class="h3">📢 お知らせ・📬 意見箱・💬 回答閲覧</div>
+    <p>修繕委員会メンバー向けのお知らせ確認、工事に関するご意見受付、回答閲覧が行えます。</p>
+  </div>
+</div>
+
+<!-- ── 7. 防災タブ ── -->
+<div class="section" id="s7">
+  <div class="section-title"><span class="section-num">７</span>防災タブ（ファーストミッションボックス）</div>
+  <p>防災タブは公開エリアに配置されており、ログイン不要で誰でもいつでもアクセスできます。</p>
+  <div class="note note-warn">🚨 発災時はホーム画面のRMOS Proアイコンをタップ →「🚨 防災」タブをタップして自分の役割を確認してください。</div>
+
+  <div class="subsection">
+    <div class="subsection-title">役割と担当者一覧</div>
+    <div class="fmb-role">
+      <div class="fmb-item"><div class="fmb-icon">👥</div><div><div class="fmb-name">全居住者共通</div><div class="fmb-who">STEP1〜3・避難経路・火災/地震チェック・ガス漏れ・避難ハッチ</div></div></div>
+      <div class="fmb-item"><div class="fmb-icon">🔴</div><div><div class="fmb-name">消防隊長：稲垣 明（502）</div><div class="fmb-who">全体指揮・各班指示・管理会社連絡・避難判断</div></div></div>
+      <div class="fmb-item"><div class="fmb-icon">📡</div><div><div class="fmb-name">通報連絡班：吉本 公平（301）</div><div class="fmb-who">119番通報・館内放送・安否情報管理</div></div></div>
+      <div class="fmb-item"><div class="fmb-icon">🧯</div><div><div class="fmb-name">消火班：住本 和生（506）</div><div class="fmb-who">消火器操作・火災確認・ガス漏れ確認</div></div></div>
+      <div class="fmb-item"><div class="fmb-icon">🚶</div><div><div class="fmb-name">誘導班①奇数階：畔柳 有紀子（302）</div><div class="fmb-who">奇数階誘導・西側階段・駐輪場側出口</div></div></div>
+      <div class="fmb-item"><div class="fmb-icon">🚶</div><div><div class="fmb-name">誘導班②偶数階：北堀 正巳（303）</div><div class="fmb-who">偶数階誘導・東側階段・北側中央出口</div></div></div>
+      <div class="fmb-item"><div class="fmb-icon">🔧</div><div><div class="fmb-name">後方支援：田中 温（管理会社）</div><div class="fmb-who">備蓄品管理・受水槽・被害記録</div></div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">避難経路と集合場所</div>
+    <table class="evac">
+      <tr><th>対象</th><th>階段</th><th>出口</th><th>集合場所</th></tr>
+      <tr><td>奇数階（1・3・5・7F）</td><td>西側階段</td><td>駐輪場側出入口</td><td>玄関エントランス前 → 南公園 → 翔南中学校</td></tr>
+      <tr><td>偶数階（2・4・6・8F）</td><td>東側階段</td><td>北側中央出入口</td><td>玄関エントランス前 → 南公園 → 翔南中学校</td></tr>
+    </table>
+    <div class="note note-warn">⚠️ 地震・火災時はエレベーター禁止。必ず階段で避難してください。</div>
+  </div>
+</div>
+
+<!-- ── 8. FAQ ── -->
+<div class="section" id="s8">
+  <div class="section-title"><span class="section-num">８</span>よくあるご質問</div>
+  <div class="faq">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">ホーム画面にアイコンが追加できない</div>
+      <div class="faq-a">SafariまたはChromeで開いているか確認してください。LINE・Instagram等のアプリ内ブラウザでは登録できません。iPhoneはSafari→共有→ホーム画面に追加、AndroidはChrome→⋮→ホーム画面に追加です。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">通知が届かない</div>
+      <div class="faq-a">①ホーム画面アイコンから起動しているか確認②お知らせタブで「✅ ON」になっているか確認③スマホの通知設定でブラウザの通知をONに変更④iPhoneはiOS 16.4以上が必要⑤一度ログアウトして再設定してみてください。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">パスワードがわからない</div>
+      <div class="faq-a">管理組合（稲垣：502号室）またはサービスワン（田中：0564-65-3711）までお問い合わせください。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">ログインが維持されない</div>
+      <div class="faq-a">ホーム画面のアイコンから起動すると維持されます。ブラウザのキャッシュをクリアすると再ログインが必要になります。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">規約・細則の内容がわからない</div>
+      <div class="faq-a">逆引きタブでキーワード検索するか、Wendy-Net FAQタブで弁護士監修のQ&Aを参照してください。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">意見箱に送信したが確認できない</div>
+      <div class="faq-a">送信後「✅ 送信しました」と表示されれば正常に届いています。回答方法に「公開」を選択した場合、理事会が回答を入力・公開後に回答閲覧タブで確認できます。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">画面の表示がおかしい</div>
+      <div class="faq-a">ブラウザのキャッシュをクリアしてから再度アクセスしてください。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">アイコンを削除してしまった</div>
+      <div class="faq-a">再度SafariまたはChromeでURLにアクセスし、ホーム画面への追加からやり直してください。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 9. 緊急連絡先 ── -->
+<div class="section" id="s9">
+  <div class="section-title"><span class="section-num">９</span>お問い合わせ・緊急連絡先</div>
+
+  <div class="subsection">
+    <div class="subsection-title">緊急連絡先</div>
+    <div class="emergency">
+      <div class="ec ec-red"><div class="ec-num">119</div><div class="ec-name">火災・救急・救助</div></div>
+      <div class="ec ec-red"><div class="ec-num">110</div><div class="ec-name">警察</div></div>
+      <div class="ec ec-blue"><div class="ec-num" style="font-size:14px">0564-65-3711</div><div class="ec-name">管理会社（田中）</div></div>
+      <div class="ec ec-blue"><div class="ec-num" style="font-size:14px">0564-22-5121</div><div class="ec-name">岡崎ガス（ガス漏れ）</div></div>
+      <div class="ec ec-blue"><div class="ec-num" style="font-size:14px">0120-985-602</div><div class="ec-name">中部電力（停電）</div></div>
+      <div class="ec ec-blue"><div class="ec-num" style="font-size:14px">0564-23-6817</div><div class="ec-name">岡崎市水道局</div></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">RMOS Pro・管理組合へのお問い合わせ</div>
+    <table class="tbl">
+      <tr><th>担当</th><th>連絡先・備考</th></tr>
+      <tr><td>渉外理事　稲垣 明（502号室）</td><td>RMOS Proの操作・ログイン・技術的なご質問</td></tr>
+      <tr><td>管理会社　田中 温（サービスワン）</td><td>0564-65-3711　管理全般・設備・修繕</td></tr>
+      <tr><td>意見箱（RMOS Pro内）</td><td>匿名可・24時間受付</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">管理組合役員</div>
+    <table class="officers">
+      <tr><th>役職</th><th>号室</th><th>氏名</th></tr>
+      <tr><td>理事長</td><td>301号室</td><td>吉本 幸平</td></tr>
+      <tr><td>副理事長</td><td>302号室</td><td>畔柳 有紀子</td></tr>
+      <tr><td>会計理事</td><td>303号室</td><td>北堀 正巳</td></tr>
+      <tr><td>修繕理事</td><td>506号室</td><td>住本 和生</td></tr>
+      <tr><td>渉外理事（防火管理者）</td><td>502号室</td><td>稲垣 明</td></tr>
+    </table>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<div style="text-align:center;padding:16px;background:var(--bg)">
+  <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;padding:10px 24px;background:var(--blue);border-radius:20px;color:#fff;font-size:13px;font-weight:600;text-decoration:none">
+    ← RMOS Pro ホームに戻る
+  </a>
+</div>
+<div class="footer">
+  ロイヤルマンション岡崎南公園管理組合　　令和８年７月制定<br>
+  次回改訂：規約改訂時または年次見直し時
+</div>
+
+<script>
+function toggleFaq(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+// スムーズスクロール
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
