@@ -560,6 +560,16 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
         <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">掲載日</label>
         <input type="date" id="np-date" style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box">
       </div>
+      <!-- 開始・終了時刻（任意・カレンダー連携用） -->
+      <div style="margin-bottom:10px">
+        <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">開催時刻（任意・カレンダーに時間指定で登録されます）</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="time" id="np-start-time" style="flex:1;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box">
+          <span style="font-size:12px;color:var(--tx2)">〜</span>
+          <input type="time" id="np-end-time" style="flex:1;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box">
+        </div>
+        <div style="font-size:11px;color:var(--tx2);margin-top:4px">未入力の場合は終日予定としてカレンダーに登録されます。</div>
+      </div>
       <!-- カテゴリ -->
       <div style="margin-bottom:10px">
         <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">カテゴリ</label>
@@ -740,6 +750,8 @@ async function submitNotice() {
   const body     = (document.getElementById('np-body')?.value  || '').trim();
   const category = document.getElementById('np-category')?.value || '管理全般';
   const date     = document.getElementById('np-date')?.value || '';
+  const startTime= document.getElementById('np-start-time')?.value || '';
+  const endTime  = document.getElementById('np-end-time')?.value || '';
   const link     = (document.getElementById('np-link')?.value  || '').trim();
   const errEl    = document.getElementById('np-err');
   const resEl    = document.getElementById('np-result');
@@ -769,6 +781,8 @@ async function submitNotice() {
   const params = new URLSearchParams({
     action   : 'postNotice',
     date     : date,
+    startTime: startTime,
+    endTime  : endTime,
     category : category,
     title    : title,
     body     : body,
@@ -788,6 +802,8 @@ async function submitNotice() {
     document.getElementById('np-title').value = '';
     document.getElementById('np-body').value  = '';
     document.getElementById('np-link').value  = '';
+    document.getElementById('np-start-time').value = '';
+    document.getElementById('np-end-time').value   = '';
     document.getElementById('np-target-resident').checked = true;
     document.getElementById('np-target-board').checked    = false;
     document.getElementById('np-target-repair').checked   = false;
