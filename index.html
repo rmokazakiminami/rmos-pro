@@ -330,6 +330,11 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
     </div>
     <div id="notice-list"></div>
     <div id="notice-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">お知らせはありません。</div>
+      <!-- 出席届・参加確認フォームリンク -->
+      <div style="margin-top:16px;padding:12px 14px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);text-align:center">
+        <div style="font-size:12px;color:var(--tx2);margin-bottom:8px">出席届・参加確認はこちら</div>
+        <a href="https://docs.google.com/forms/d/1RjiGe7wWeYjgSaEvfVf2nQzjbGyxYp_6tuFYLdabbAs/viewform" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--ac);color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none">📋 出席届・参加確認フォーム</a>
+      </div>
   </div>
 
   <!-- 工事進捗 -->
@@ -384,10 +389,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
         </div>
         <div id="op-msg-err" style="font-size:13px;color:#e53935;margin-bottom:8px;display:none">ご意見を入力してください。</div>
         <button class="sbtn" onclick="submitOpinion()" id="op-btn" style="max-width:260px;display:block;margin:0 auto">📨 送信する</button>
-        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--bd);text-align:center">
-          <div style="font-size:12px;color:var(--tx2);margin-bottom:8px">出席届・参加確認はこちら</div>
-          <a href="https://docs.google.com/forms/d/1RjiGe7wWeYjgSaEvfVf2nQzjbGyxYp_6tuFYLdabbAs/viewform" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--ac);color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none">📋 出席届・参加確認フォーム</a>
-        </div>
+
       </div>
       <div id="opinion-done" style="display:none;text-align:center;padding:16px 0">
         <div style="font-size:32px;margin-bottom:10px">✅</div>
@@ -484,10 +486,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
         </div>
         <div id="opb-msg-err" style="font-size:13px;color:#e53935;margin-bottom:8px;display:none">ご意見を入力してください。</div>
         <button class="sbtn" onclick="submitOpinionB()" id="opb-btn" style="max-width:260px;display:block;margin:0 auto">📨 送信する</button>
-        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--bd);text-align:center">
-          <div style="font-size:12px;color:var(--tx2);margin-bottom:8px">出席届・参加確認はこちら</div>
-          <a href="https://docs.google.com/forms/d/1RjiGe7wWeYjgSaEvfVf2nQzjbGyxYp_6tuFYLdabbAs/viewform" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--ac);color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none">📋 出席届・参加確認フォーム</a>
-        </div>
+
       </div>
       <div id="opinion-b-done" style="display:none;text-align:center;padding:16px 0">
         <div style="font-size:32px;margin-bottom:10px">✅</div>
@@ -600,12 +599,28 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
         <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">添付リンク（任意）</label>
         <input type="url" id="np-link" placeholder="https://..." style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box">
       </div>
+      <!-- 要返信 -->
+      <div style="margin-bottom:14px">
+        <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">要返信（任意）</label>
+        <select id="np-reply-req" style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box">
+          <option value="">なし（通常のお知らせ）</option>
+          <option value="要返信（出席届）">要返信（出席届）</option>
+          <option value="要返信（アンケート）">要返信（アンケート）</option>
+          <option value="要返信（申請書提出）">要返信（申請書提出）</option>
+          <option value="要返信（その他）">要返信（その他）</option>
+        </select>
+      </div>
       <div id="np-err" style="font-size:12px;color:#e53935;margin-bottom:8px;display:none">タイトルを入力してください。</div>
       <button onclick="submitNotice()" id="np-btn" style="padding:11px 24px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📢 投稿してプッシュ通知送信</button>
       <div id="np-result" style="margin-top:10px;font-size:13px;display:none"></div>
     </div>
     <div id="board-notice-list"></div>
     <div id="board-notice-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">理事会お知らせはありません。</div>
+      <!-- 出席届・参加確認フォームリンク -->
+      <div style="margin-top:16px;padding:12px 14px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);text-align:center">
+        <div style="font-size:12px;color:var(--tx2);margin-bottom:8px">出席届・参加確認はこちら</div>
+        <a href="https://docs.google.com/forms/d/1RjiGe7wWeYjgSaEvfVf2nQzjbGyxYp_6tuFYLdabbAs/viewform" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--ac);color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none">📋 出席届・参加確認フォーム</a>
+      </div>
   </div>
 
   <!-- 修繕委員会専用お知らせ -->
@@ -624,6 +639,11 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
       <div id="upcoming-events-list-repair"></div>
     </div>
     <div id="repair-notice-list"></div>
+      <!-- 出席届・参加確認フォームリンク -->
+      <div style="margin-top:16px;padding:12px 14px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);text-align:center">
+        <div style="font-size:12px;color:var(--tx2);margin-bottom:8px">出席届・参加確認はこちら</div>
+        <a href="https://docs.google.com/forms/d/1RjiGe7wWeYjgSaEvfVf2nQzjbGyxYp_6tuFYLdabbAs/viewform" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--ac);color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none">📋 出席届・参加確認フォーム</a>
+      </div>
   </div>
 
   <!-- 修繕委員会専用意見箱 -->
@@ -659,10 +679,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
         style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;margin-top:8px;background:var(--bg);color:var(--tx)">
       <div id="op-msg-r" style="font-size:12px;color:var(--tx3);margin:8px 0"></div>
       <button class="sbtn" onclick="submitOpinionR()" id="op-btn-r" style="max-width:260px;display:block;margin:0 auto">📨 送信する</button>
-        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--bd);text-align:center">
-          <div style="font-size:12px;color:var(--tx2);margin-bottom:8px">出席届・参加確認はこちら</div>
-          <a href="https://docs.google.com/forms/d/1RjiGe7wWeYjgSaEvfVf2nQzjbGyxYp_6tuFYLdabbAs/viewform" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--ac);color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none">📋 出席届・参加確認フォーム</a>
-        </div>
+
     </div>
   </div>
 
@@ -759,6 +776,7 @@ async function submitNotice() {
   const startTime= document.getElementById('np-start-time')?.value || '';
   const endTime  = document.getElementById('np-end-time')?.value || '';
   const link     = (document.getElementById('np-link')?.value  || '').trim();
+  const replyReq = document.getElementById('np-reply-req')?.value || '';
   const errEl    = document.getElementById('np-err');
   const resEl    = document.getElementById('np-result');
   const btn      = document.getElementById('np-btn');
@@ -790,6 +808,7 @@ async function submitNotice() {
     startTime: startTime,
     endTime  : endTime,
     category : category,
+    replyReq : replyReq,
     title    : title,
     body     : body,
     link     : link,
@@ -810,6 +829,7 @@ async function submitNotice() {
     document.getElementById('np-link').value  = '';
     document.getElementById('np-start-time').value = '';
     document.getElementById('np-end-time').value   = '';
+    document.getElementById('np-reply-req').value  = '';
     document.getElementById('np-target-resident').checked = true;
     document.getElementById('np-target-board').checked    = false;
     document.getElementById('np-target-repair').checked   = false;
