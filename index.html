@@ -248,13 +248,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
   <!-- 規約（章ごとグループ化＋全展開） -->
   <div id="sec-kiyaku" class="sec on">
-    <!-- 直近の予定（公開エリア） -->
-    <div id="upcoming-events-section-public" style="margin-bottom:16px">
-      <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:8px;display:flex;align-items:center;gap:6px">
-        <span>📅 直近の予定</span>
-      </div>
-      <div id="upcoming-events-list-public"></div>
-    </div>
+
     <div id="kr"></div>
   </div>
 
@@ -1302,7 +1296,6 @@ function goSec(name){
   else if(name==='answers-r')renderAnswers('ans-list-r','ans-empty-r');
   if(name==='wendyfaq')renderWendyFAQPage();
   if(name==='minutes')renderMinutes();
-  if(name==='kiyaku'&&!window._evtPubI){renderUpcomingEvents('upcoming-events-list-public');window._evtPubI=true;}
   window.scrollTo(0,0);
 }
 
