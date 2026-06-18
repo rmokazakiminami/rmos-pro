@@ -430,6 +430,12 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
   <!-- 回答閲覧（理事会） -->
   <div id="sec-answers-b" class="sec">
+    <!-- 意見箱管理（kanri2026のみ表示） -->
+    <div id="opinion-admin-panel" style="display:none;margin-bottom:20px;padding:16px;background:rgba(26,82,118,.05);border:1px solid rgba(26,82,118,.25);border-radius:10px">
+      <div style="font-size:13px;font-weight:700;color:var(--ac);margin-bottom:14px">📬 意見箱管理（届いた意見・回答の作成）</div>
+      <div id="opinion-admin-list"></div>
+      <div id="opinion-admin-empty" style="display:none;text-align:center;padding:24px;color:var(--tx2);font-size:13px">届いている意見はありません。</div>
+    </div>
     <div id="ans-list-b"></div>
     <div id="ans-empty-b" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">公開中の回答はありません。</div>
   </div>
@@ -1312,7 +1318,7 @@ function goSec(name){
   if(name==='board-notice'){renderBoardNotices();initNoticePostPanel();renderUpcomingEvents('upcoming-events-list-board');}
   if(name==='progress')renderProgress();
   if(name==='answers')renderAnswers('ans-list','ans-empty');
-  else if(name==='answers-b')renderAnswers('ans-list-b','ans-empty-b');
+  else if(name==='answers-b'){renderAnswers('ans-list-b','ans-empty-b');initOpinionAdminPanel();}
   else if(name==='answers-r')renderAnswers('ans-list-r','ans-empty-r');
   if(name==='wendyfaq')renderWendyFAQPage();
   if(name==='minutes')renderMinutes();
@@ -2073,6 +2079,77 @@ function renderAnswers(listId,emptyId){
     });
 }
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ===== 意見箱管理（理事会・kanri2026専用） ===== */
+function initOpinionAdminPanel(){
+  const panel=document.getElementById('opinion-admin-panel');
+  if(!panel)return;
+  panel.style.display=auth.kanri?'block':'none';
+  if(auth.kanri)loadOpinionAdmin();
+}
+function loadOpinionAdmin(){
+  const list=document.getElementById('opinion-admin-list');
+  const empty=document.getElementById('opinion-admin-empty');
+  if(!list)return;
+  list.innerHTML=loadingHTML();
+  empty.style.display='none';
+  fetch(GAS_URL+'?action=getOpinions&t='+Date.now(),{method:'GET',mode:'cors'})
+    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(data=>{
+      list.innerHTML='';
+      if(!data||data.length===0){empty.style.display='block';empty.textContent='届いている意見はありません。';return;}
+      data.forEach(op=>{
+        const isPublic=op.public==='公開'&&op.answer;
+        const statusLabel=isPublic?'✅ 公開済み':(op.answer?'📝 回答済み（未公開）':'🆕 未回答');
+        const statusColor=isPublic?'var(--gn)':(op.answer?'#e8a33d':'#e53935');
+        const replyNote=(op.replyMethod&&op.replyMethod!=='公開（掲示板・RMOS Pro）')
+          ?'<div style="font-size:11px;color:#c0392b;margin-top:4px">⚠ 希望回答方法：'+esc(op.replyMethod)+(op.contact&&op.contact!=='（未記入）'?'（'+esc(op.contact)+'）':'')+'</div>'
+          :'';
+        const div=document.createElement('div');
+        div.style.cssText='border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:12px;background:var(--sf)';
+        div.innerHTML=
+          '<div style="padding:10px 13px;background:var(--sf2);display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap">'+
+            '<div style="font-size:12px;color:var(--tx2)">'+esc(op.date)+'　'+esc(op.source)+(op.room&&op.room!=='（未記入）'?'　'+esc(op.room)+'号室':'')+'</div>'+
+            '<div style="display:flex;gap:6px;align-items:center;flex-shrink:0">'+
+              '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--ac-bg);color:var(--ac)">'+esc(op.category)+'</span>'+
+              '<span style="font-size:11px;font-weight:700;color:'+statusColor+'">'+statusLabel+'</span>'+
+            '</div>'+
+          '</div>'+
+          '<div style="padding:12px 13px">'+
+            '<div style="font-size:13px;line-height:1.7;margin-bottom:4px;white-space:pre-wrap">'+esc(op.message)+'</div>'+
+            replyNote+
+            '<textarea id="oa-ans-'+op.row+'" rows="3" placeholder="回答を入力してください" style="width:100%;margin-top:10px;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box;resize:vertical">'+esc(op.answer)+'</textarea>'+
+            '<button onclick="publishOpinionAnswer('+op.row+')" id="oa-btn-'+op.row+'" style="margin-top:8px;padding:9px 18px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">💬 '+(isPublic?'回答を更新する':'回答を公開する')+'</button>'+
+            '<span id="oa-result-'+op.row+'" style="margin-left:10px;font-size:12px;display:none"></span>'+
+          '</div>';
+        list.appendChild(div);
+      });
+    })
+    .catch(()=>{
+      list.innerHTML='';
+      empty.style.display='block';
+      empty.textContent='読み込みに失敗しました。時間をおいて再度お試しください。';
+    });
+}
+function publishOpinionAnswer(row){
+  const ta=document.getElementById('oa-ans-'+row);
+  const btn=document.getElementById('oa-btn-'+row);
+  const result=document.getElementById('oa-result-'+row);
+  const answer=(ta&&ta.value||'').trim();
+  if(!answer){alert('回答を入力してください');return;}
+  if(btn){btn.disabled=true;btn.textContent='送信中…';}
+  const params=new URLSearchParams({action:'publishAnswer',row:row,answer:answer});
+  fetch(GAS_URL+'?'+params.toString(),{method:'GET',mode:'no-cors'})
+    .then(()=>{
+      if(result){result.style.display='inline';result.style.color='var(--gn)';result.textContent='✅ 公開しました';}
+      renderAnswers('ans-list-b','ans-empty-b');
+      setTimeout(loadOpinionAdmin,800);
+    })
+    .catch(()=>{
+      if(result){result.style.display='inline';result.style.color='#e53935';result.textContent='❌ 送信に失敗しました';}
+    })
+    .finally(()=>{if(btn){btn.disabled=false;btn.textContent='💬 回答を公開する';}});
+}
 function mail(){
   const room=document.getElementById('cr-room').value.trim();
   const name=document.getElementById('cr-name').value.trim();
