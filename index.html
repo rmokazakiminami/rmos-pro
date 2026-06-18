@@ -272,8 +272,8 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
     <!-- カード選択タブ -->
     <div style="display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;margin-bottom:12px">
       <button class="fmb-tab on" onclick="fmbTab(this,'fmb-all')"    style="padding:7px 12px;border:1px solid var(--rd);border-radius:20px;font-size:12px;font-weight:600;background:var(--rd);color:#fff;white-space:nowrap;cursor:pointer">👥 全居住者</button>
-      <button class="fmb-tab"   onclick="fmbTab(this,'fmb-chief')"   style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🔴 消防隊長</button>
-      <button class="fmb-tab"   onclick="fmbTab(this,'fmb-vice')"    style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">📡 通報連絡班</button>
+      <button class="fmb-tab"   onclick="fmbTab(this,'fmb-chief')"   style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🔴 防火管理者</button>
+      <button class="fmb-tab"   onclick="fmbTab(this,'fmb-vice')"    style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🏛 本部長</button>
       <button class="fmb-tab"   onclick="fmbTab(this,'fmb-info')"    style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🧯 消火班</button>
       <button class="fmb-tab"   onclick="fmbTab(this,'fmb-fire')"    style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🚶 誘導班①奇数</button>
       <button class="fmb-tab"   onclick="fmbTab(this,'fmb-rescue')"  style="padding:7px 12px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--sf);color:var(--tx);white-space:nowrap;cursor:pointer">🚶 誘導班②偶数</button>
@@ -283,18 +283,18 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
     </div>
     <!-- 全居住者 -->
     <div id="fmb-all" class="fmb-card"><div style="border-left:4px solid var(--rd);padding:10px 13px;background:var(--rd-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--rd)">👥 全居住者共通 ／ 発災直後0〜30分</div></div><div style="font-size:12px;color:var(--rd);font-weight:700;background:var(--rd-bg);border:1px solid var(--rd);border-radius:var(--r);padding:8px 12px;margin-bottom:10px">⚠️ エレベーター使用禁止　／　火災発生時は119番通報</div><div id="fmb-all-list"></div></div>
-    <!-- 本部長 -->
-    <div id="fmb-chief" class="fmb-card" style="display:none"><div style="border-left:4px solid #c0392b;padding:10px 13px;background:#fdf0ee;border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:#c0392b">🏛 本部長（理事長） ／ 発災直後0〜30分</div></div><div id="fmb-chief-list"></div></div>
-    <!-- 副本部長 -->
-    <div id="fmb-vice" class="fmb-card" style="display:none"><div style="border-left:4px solid #c0392b;padding:10px 13px;background:#fdf0ee;border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:#c0392b">🏛 副本部長 ／ 発災直後0〜30分</div></div><div id="fmb-vice-list"></div></div>
-    <!-- 情報班 -->
-    <div id="fmb-info" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--ac);padding:10px 13px;background:var(--ac-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--ac)">📡 情報班（2名） ／ 発災直後0〜30分</div></div><div id="fmb-info-list"></div></div>
+    <!-- 防火管理者（消防隊長） -->
+    <div id="fmb-chief" class="fmb-card" style="display:none"><div style="border-left:4px solid #c0392b;padding:10px 13px;background:#fdf0ee;border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:#c0392b">🔴 防火管理者（消防隊長） ／ 発災直後0〜30分</div></div><div id="fmb-chief-list"></div></div>
+    <!-- 本部長・通報連絡班長 -->
+    <div id="fmb-vice" class="fmb-card" style="display:none"><div style="border-left:4px solid #c0392b;padding:10px 13px;background:#fdf0ee;border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:#c0392b">🏛 本部長・通報連絡班長（理事長） ／ 発災直後0〜30分</div></div><div id="fmb-vice-list"></div></div>
     <!-- 消火班 -->
-    <div id="fmb-fire" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--or);padding:10px 13px;background:var(--or-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--or)">🧯 消火班（2名） ／ 発災直後0〜30分</div></div><div id="fmb-fire-list"></div></div>
-    <!-- 救出救護班 -->
-    <div id="fmb-rescue" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--gn);padding:10px 13px;background:var(--gn-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--gn)">🚑 救出救護班（3名） ／ 発災直後0〜30分</div></div><div id="fmb-rescue-list"></div></div>
-    <!-- 避難誘導班 -->
-    <div id="fmb-evac" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--pp);padding:10px 13px;background:var(--pp-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--pp)">🚶 避難誘導班（2名） ／ 発災直後0〜30分</div></div><div id="fmb-evac-list"></div></div>
+    <div id="fmb-info" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--ac);padding:10px 13px;background:var(--ac-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--ac)">🧯 消火班（前年理事会） ／ 発災直後0〜30分</div></div><div id="fmb-info-list"></div></div>
+    <!-- 誘導班① -->
+    <div id="fmb-fire" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--or);padding:10px 13px;background:var(--or-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--or)">🚶 誘導班①奇数階（副理事長） ／ 発災直後0〜30分</div></div><div id="fmb-fire-list"></div></div>
+    <!-- 誘導班② -->
+    <div id="fmb-rescue" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--gn);padding:10px 13px;background:var(--gn-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--gn)">🚶 誘導班②偶数階（会計理事） ／ 発災直後0〜30分</div></div><div id="fmb-rescue-list"></div></div>
+    <!-- 後方支援 -->
+    <div id="fmb-evac" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--pp);padding:10px 13px;background:var(--pp-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--pp)">🔧 後方支援（管理会社） ／ 発災直後0〜30分</div></div><div id="fmb-evac-list"></div></div>
     <!-- 生活班 -->
     <div id="fmb-life" class="fmb-card" style="display:none"><div style="border-left:4px solid var(--gd);padding:10px 13px;background:var(--gd-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--gd)">🏠 生活班（3名） ／ 発災直後0〜30分</div></div><div id="fmb-life-list"></div></div>
     <!-- 階長 -->
@@ -960,14 +960,14 @@ const FMB_DATA = {
   // ② 自衛消防組織（組織図カード）
   'fmb-chief': [
     {t:'自衛消防組織（令和8年7月19日制定）', items:[
-      '🔴 自衛消防隊長：稲垣明（502）全体指揮',
-      '📡 通報・連絡班長：吉本公平（301）119番・館内放送',
-      '🧯 消火班：住本和生（506）消火器操作',
-      '🚶 誘導班①奇数階：畔柳有紀子（302）西側階段',
-      '🚶 誘導班②偶数階：北堀正巳（303）東側階段',
-      '🔧 後方支援：田中温（管理会社）補助',
+      '🏛 本部長・通報連絡班長：理事長　全体指揮・119番・館内放送',
+      '🔴 防火管理者（消防隊長）：役員任期と独立して指名　消火指揮',
+      '🚶 誘導班①奇数階：副理事長　西側階段',
+      '🚶 誘導班②偶数階：会計理事　東側階段',
+      '🧯 消火班：前年理事会　消火器操作',
+      '🔧 後方支援：管理会社　補助',
     ]},
-    {t:'隊長の初動（発災後0〜30分）', items:[
+    {t:'防火管理者（消防隊長）の初動（発災後0〜30分）', items:[
       '□ 自分と家族の安全確保',
       '□ 建物全体の被害確認（傾き・亀裂・火災・階段安全性）',
       '□ 119番通報要否の判断・指示',
@@ -986,9 +986,9 @@ const FMB_DATA = {
 
   // ③ 通報・連絡班
   'fmb-vice': [
-    {t:'通報・連絡班長の初動（吉本公平301）', items:[
+    {t:'本部長・通報連絡班長の初動（理事長）', items:[
       '□ 自分と家族の安全確保',
-      '□ 隊長（稲垣502）に連絡・参集確認',
+      '□ 防火管理者に連絡・参集確認',
     ]},
     {t:'火災時の通報', items:[
       '□ 119番通報：「岡崎市若松町金仏27-5、ロイヤルマンション岡崎南公園、火災」',
@@ -1009,9 +1009,9 @@ const FMB_DATA = {
 
   // ④ 消火班
   'fmb-info': [
-    {t:'消火班の初動（住本和生506）', items:[
+    {t:'消火班の初動（前年理事会）', items:[
       '□ 自分と家族の安全確保',
-      '□ 隊長（稲垣502）に参集報告',
+      '□ 防火管理者に参集報告',
     ]},
     {t:'火災時の消火活動', items:[
       '□ 消火器の場所を確認しながら移動',
@@ -1034,7 +1034,7 @@ const FMB_DATA = {
 
   // ⑤ 避難誘導班①（奇数階）
   'fmb-fire': [
-    {t:'誘導班①の担当（畔柳有紀子302）', items:[
+    {t:'誘導班①の担当（副理事長）', items:[
       '担当：奇数階（1・3・5・7F）→ 西側階段 → 駐輪場側出入口',
     ]},
     {t:'初動', items:[
@@ -1058,7 +1058,7 @@ const FMB_DATA = {
 
   // ⑥ 避難誘導班②（偶数階）
   'fmb-rescue': [
-    {t:'誘導班②の担当（北堀正巳303）', items:[
+    {t:'誘導班②の担当（会計理事）', items:[
       '担当：偶数階（2・4・6・8F）→ 東側階段 → 北側中央出入口',
     ]},
     {t:'初動', items:[
@@ -1082,8 +1082,8 @@ const FMB_DATA = {
 
   // ⑦ 後方支援（管理会社）
   'fmb-evac': [
-    {t:'後方支援（田中温・管理会社）', items:[
-      '□ 自分の安全確保後、隊長（稲垣502）に連絡',
+    {t:'後方支援（管理会社）', items:[
+      '□ 自分の安全確保後、防火管理者に連絡',
       '□ 管理会社緊急連絡先：0564-65-3711',
     ]},
     {t:'備蓄品・設備管理', items:[
@@ -2108,6 +2108,12 @@ const RMOS_FAQ = [
       { q:'区分所有者が守らなければならないルールは何ですか？',
         a:'規約・総会決議・使用細則等を誠実に遵守する義務があります。また占有者（賃借人等）にも同様の義務があります。',
         refs:[{type:'k',id:'k3',label:'第3条（規約及び総会の決議の遵守義務）'},{type:'k',id:'k5',label:'第5条（規約及び総会の決議の効力）'}] },
+      { q:'管理組合に届出・申請をしたい場合はどうすればよいですか？',
+        a:'管理組合所定の書式で行います。独自に作成した書式は使用できません。',
+        refs:[{type:'h',id:'h4',label:'第1編 一般管理細則 第4条（届出及び申請）'}] },
+      { q:'細則に書かれていないことが起きた場合はどうなりますか？',
+        a:'管理規約または理事会の決議によって対応します。',
+        refs:[{type:'h',id:'h11',label:'第1編 一般管理細則 第11条（細則の位置付け）'}] },
     ]
   },
   // ===== カテゴリ2: 生活ルール =====
@@ -2126,6 +2132,24 @@ const RMOS_FAQ = [
       { q:'暴力団員が入居している場合はどうなりますか？',
         a:'暴力団員等への専有部分の貸与・売却は禁止されています。発覚した場合、管理組合は使用停止・契約解除を求めることができます。',
         refs:[{type:'k',id:'k19b',label:'第19条の2（暴力団員の排除）'}] },
+      { q:'敷地内の空き地に一時的に車を停めたいと言われたらどうしますか？',
+        a:'原則禁止です。安全上支障がなく一時的な必要性がある場合に限り、理事会決議で期間・条件を定めて許可できます。緊急時は理事長が暫定的に許可し、事後に理事会へ報告して承認を得ます。許可は専用使用権を生じさせるものではなく、理由を示さずいつでも撤回できます。',
+        refs:[{type:'h',id:'h9',label:'第1編 一般管理細則 第9条（使用細則への委任等）'}] },
+      { q:'壁に穴を開けたい・重い物を運び込みたいと相談されたら？',
+        a:'建物の構造・耐久性・外観に影響する変更、他住戸に影響する設備の新設・変更、500kg超の重量物の搬入、冷暖房配管等のための壁の無断貫通は禁止です。',
+        refs:[{type:'h',id:'h13',label:'第2編 生活使用細則 第2条（専有部分の構造変更等）'}] },
+      { q:'西側空き地に来客が一時的に車を停めたいと言ってきたら？',
+        a:'訪問客または専有部分工事に係る業者に限り、事前承認・期間・条件付きで臨時駐車できます。住戸番号等の車両表示と連絡先の届出が必要です。専用使用権は生じず、支障が出れば移動を命じられます。',
+        refs:[{type:'h',id:'h15',label:'第2編 生活使用細則 第4条（共用部分の使用）'}] },
+      { q:'バルコニーの避難経路を塞いでいる・物が多いと苦情が来たら？',
+        a:'避難経路を妨げる物の放置は禁止です。違反があった場合、理事長は理事会の決議を経て勧告または指示を行うことができます。',
+        refs:[{type:'h',id:'h17',label:'第2編 生活使用細則 第6条（バルコニー等の使用）'},{type:'h',id:'h22',label:'第2編 生活使用細則 第11条（是正措置）'},{type:'k',id:'k80',label:'第67条（理事長の勧告及び指示等）'}] },
+      { q:'ペットの鳴き声・共用部での扱いに苦情が来たら？',
+        a:'飼育は室内に限ります。共用部分では抱えて移動し、近隣に迷惑を及ぼす鳴き声等は禁止です。',
+        refs:[{type:'h',id:'h20',label:'第2編 生活使用細則 第9条（ペットの飼育）'}] },
+      { q:'長期不在にすると言われた場合はどうしますか？',
+        a:'1か月以上の長期不在は管理組合へ届出が必要です。',
+        refs:[{type:'h',id:'h21',label:'第2編 生活使用細則 第10条（届出義務）'}] },
     ]
   },
   // ===== カテゴリ3: 総会・理事会の運営 =====
@@ -2153,6 +2177,36 @@ const RMOS_FAQ = [
       { q:'監事にはどのような権限がありますか？',
         a:'管理組合の業務執行・財産状況を監査し総会に報告する権限を持ちます。不正発見時の臨時総会招集権、帳簿等の資料提出請求権（拒否禁止）、専門家委嘱権も認められています。',
         refs:[{type:'k',id:'k41',label:'第41条（監事）'}] },
+      { q:'理事会はいつ開くものですか？',
+        a:'原則2か月に1回以上、定例で開催します。年度当初に日程を決定し組合員に周知します。緊急時等は理事長が臨時理事会を招集できます。',
+        refs:[{type:'h',id:'h109',label:'第9編 理事会運営細則 第7条（定例理事会）'},{type:'h',id:'h110',label:'第9編 理事会運営細則 第8条（臨時理事会）'}] },
+      { q:'理事会の招集通知はいつまでに出しますか？',
+        a:'開催日の7日前までに、開催日時・場所・議題を記載した通知を発します。緊急の場合は期間を短縮し、電話・メール等によることができます。全員の同意があれば招集手続を省略できます。',
+        refs:[{type:'h',id:'h111',label:'第9編 理事会運営細則 第9条（招集手続）'}] },
+      { q:'理事会の決議は何人の賛成で成立しますか？',
+        a:'出席理事の過半数で決議します。可否同数の場合は議長が決します。特別の利害関係を有する理事は議決に加わることができません。',
+        refs:[{type:'h',id:'h117',label:'第9編 理事会運営細則 第15条（決議の方法）'},{type:'h',id:'h118',label:'第9編 理事会運営細則 第16条（特別利害関係理事の除外）'},{type:'k',id:'k66',label:'第53条（理事会の会議及び議事）'}] },
+      { q:'緊急で理事会を開けないとき意思決定できますか？',
+        a:'理事長がLINE・電子メール等の電磁的方法で全理事の意思確認を行い、過半数の賛成があれば暫定的に業務を執行できます。次回理事会で必ず報告・審議のうえ正式に追認しなければなりません。追認が得られなければ原状回復等の措置を講じます。',
+        refs:[{type:'h',id:'h121',label:'第9編 理事会運営細則 第19条（電磁的方法による意思確認と追認）'}] },
+      { q:'理事会を開かずに決議したい（書面決議）ときはどうしますか？',
+        a:'専有部分工事の承認・不承認に関する事項に限れば、理事の過半数の承諾で書面決議ができます。それ以外の事項でも、理事全員の同意があれば会議を開かず書面決議で決定できます。',
+        refs:[{type:'h',id:'h120',label:'第9編 理事会運営細則 第18条（書面決議）'},{type:'k',id:'k66',label:'第53条（理事会の会議及び議事）'}] },
+      { q:'理事会議事録はいつまでに作成し、誰が署名しますか？',
+        a:'開催後2週間以内に理事長が作成します。議長（理事長）と、出席理事の中から互選された署名人2名が署名押印します。紙・デジタルデータの双方で保管し、保管期間は10年間です。',
+        refs:[{type:'h',id:'h122',label:'第9編 理事会運営細則 第20条（議事録の作成）'},{type:'h',id:'h124',label:'第9編 理事会運営細則 第22条（議事録の署名）'},{type:'h',id:'h125',label:'第9編 理事会運営細則 第23条（議事録の保管・開示）'},{type:'k',id:'k66',label:'第53条（理事会の会議及び議事）'},{type:'k',id:'k61',label:'第49条（議事録の作成、保管等）'}] },
+      { q:'理事を退任するとき何を引き継ぎますか？',
+        a:'保管文書の所在、パスワード・認証情報、進行中案件の状況、管理会社・弁護士等の連絡先、銀行口座・印鑑・鍵類を引き継ぎます。原則として総会承認後2週間以内に完了し、引継書に新旧役員が署名押印します。',
+        refs:[{type:'h',id:'h128',label:'第9編 理事会運営細則 第26条（引き継ぎの義務）'},{type:'h',id:'h129',label:'第9編 理事会運営細則 第27条（引き継ぎ事項）'}] },
+      { q:'渉外理事は理事長の代わりに何ができますか？',
+        a:'理事会決議を経て理事長の代理人に指定された場合、弁護士等との連絡調整、滞納督促・交渉、内容証明の作成発送、訴訟等の法的手続の準備行為などを行えます。代理行為の法的効果は管理組合に帰属し、理事長が監督責任を負います。',
+        refs:[{type:'h',id:'h133',label:'第9編 理事会運営細則 第31条（理事長の代理）'}] },
+      { q:'専門委員会（修繕委員会など）を作りたいと言われたら？',
+        a:'理事会が設立目的を定め委員を公募します。原則5名以上（軽微な事項なら3名以上も可）とし、設立後14日以内に取組方針等の報告書を理事会に提出します。委員会は決定権限を持たず、理事会の諮問機関にとどまります。',
+        refs:[{type:'h',id:'h117',label:'第9編 理事会運営細則 第15条（決議の方法）'},{type:'k',id:'k68',label:'第55条（専門委員会の設置）'}] },
+      { q:'電磁的方法（RMOS Pro等）はいつから使えるようになりますか？',
+        a:'理事会が電磁的方法の運用基準を決議した時点から使用できます。理事全員の同意があれば会議を開かず書面決議で決めることもできます。総会の承認は不要ですが、新たに電磁的方法を採用するときは総会へ報告しなければなりません。',
+        refs:[{type:'k',id:'k90',label:'第73条（改正区分所有法への対応）'},{type:'k',id:'k66',label:'第53条（理事会の会議及び議事）'}] },
     ]
   },
   // ===== カテゴリ4: 管理費の滞納問題 =====
@@ -2183,6 +2237,27 @@ const RMOS_FAQ = [
       { q:'区分所有者が変わっても滞納はどうなりますか？',
         a:'特定承継人（購入者等）に対しても管理費等の支払いを請求できます。売却されても滞納債権は消滅しません。',
         refs:[{type:'k',id:'k26',label:'第26条（承継人に対する債権の行使）'}] },
+      { q:'滞納者への対応方法を聞かれたら、まずどこを見ますか？',
+        a:'滞納対応細則（第7編）の規定によります。',
+        refs:[{type:'h',id:'h8',label:'第1編 一般管理細則 第8条（滞納への対応）'}] },
+      { q:'支払いが遅れている組合員にいつ督促を出しますか？',
+        a:'支払期限から14日経過した時点で督促状を発送します（滞納額・支払期限を明記し、受領後7日以内の支払いを求めます）。30日経過した時点で内容証明郵便（民法第150条の催告）を発送します。',
+        refs:[{type:'h',id:'h71',label:'第7編 滞納対応細則 第3条（督促状の発送時期）'},{type:'h',id:'h73',label:'第7編 滞納対応細則 第5条（内容証明郵便の発送）'}] },
+      { q:'180日以上滞納が続いている場合、次はどうしますか？',
+        a:'原則として理事会で法的措置への移行を決議します。強制執行認諾文言付き公正証書による分割返済契約が締結され履行中である場合は例外とし、その理由を議事録に記録します。',
+        refs:[{type:'h',id:'h75',label:'第7編 滞納対応細則 第7条（法的措置の実施時期）'}] },
+      { q:'分割返済を求められたら応じてよいですか？',
+        a:'強制執行認諾文言付き公正証書を作成しない限り分割契約は成立しません。期間は最長24か月以内です。新たな滞納や支払遅延が生じれば期限の利益を喪失し、直ちに法的措置へ移行します。',
+        refs:[{type:'h',id:'h77',label:'第7編 滞納対応細則 第9条（公正証書）'},{type:'h',id:'h78',label:'第7編 滞納対応細則 第10条（分割返済）'}] },
+      { q:'滞納額が50万円未満かどうかで対応は変わりますか？',
+        a:'50万円未満は公正証書の作成が原則です。ただし債務者が協議に応じない、所在不明、悪質な滞納、競売開始決定等の場合は直ちに訴訟を提起できます。',
+        refs:[{type:'h',id:'h76',label:'第7編 滞納対応細則 第8条（法的措置の選択）'}] },
+      { q:'滞納者の駐車場はすぐに止められますか？',
+        a:'3か月以上滞納していても、理事会決議・通知のみでの一方的な使用停止・解除はできません。本人の書面同意、または確定判決等の執行力ある債務名義が必要です。新規申込みも滞納を理由に拒否できません。',
+        refs:[{type:'h',id:'h84',label:'第7編 滞納対応細則 第16条（駐車場使用制限）'},{type:'k',id:'k73',label:'第60条（管理費等の徴収及び滞納対応）'}] },
+      { q:'滞納している組合員が亡くなった場合はどうしますか？',
+        a:'相続人を調査して請求します。相続放棄または不存在が確認された場合は、原則として相続財産管理人の選任を申し立てます。',
+        refs:[{type:'h',id:'h83',label:'第7編 滞納対応細則 第15条（相続人への請求）'}] },
     ]
   },
   // ===== カテゴリ5: 専有部分について =====
@@ -2258,6 +2333,133 @@ const RMOS_FAQ = [
       { q:'義務違反者に対してどのような措置が取れますか？',
         a:'理事長は勧告・指示を行い、それでも是正されない場合は総会決議により行為の停止・専有部分の使用禁止・競売請求等の法的措置が取れます。',
         refs:[{type:'k',id:'k66',label:'第66条（義務違反者に対する措置）'},{type:'k',id:'k67',label:'第67条（理事長の勧告及び指示等）'}] },
+    ]
+  },
+  // ===== カテゴリ11: 集会室の使用 =====
+  { cat:'shukai', catLabel:'集会室の使用',
+    qa:[
+      { q:'集会室を借りたいと言われたらどうしますか？',
+        a:'使用日の2日前までに所定の方法で申請し、承認を受けます。対象は組合員・占有者です（理事会が認めた場合は例外があります）。',
+        refs:[{type:'h',id:'h24',label:'第3編 集会室使用細則 第2条（使用資格）'},{type:'h',id:'h26',label:'第3編 集会室使用細則 第4条（使用手続）'}] },
+      { q:'集会室の使用料はいくらですか・無料になる場合は？',
+        a:'非営利目的は1時間200円、営利目的は1時間400円です（1時間未満も1時間として扱います）。総会・理事会等の公式会議、理事会が承認した防災訓練・住民説明会、非営利の管理運営目的での利用は無料です。',
+        refs:[{type:'h',id:'h27',label:'第3編 集会室使用細則 第5条（使用料）'}] },
+      { q:'使用希望が重なったらどちらを優先しますか？',
+        a:'原則として申込受付順です。災害等非常時、葬儀での利用、理事長が招集した理事会等での利用は優先されます。',
+        refs:[{type:'h',id:'h28',label:'第3編 集会室使用細則 第6条（使用順位）'}] },
+      { q:'使用後に汚損・破損があった場合はどうなりますか？',
+        a:'原状回復に要する費用を使用者が負担します。',
+        refs:[{type:'h',id:'h30',label:'第3編 集会室使用細則 第8条（損害賠償）'}] },
+      { q:'キャンセルしたら使用料は戻りますか？',
+        a:'原則として返還しません。管理組合都合による中止の場合は例外です。',
+        refs:[{type:'h',id:'h27',label:'第3編 集会室使用細則 第5条（使用料）'}] },
+    ]
+  },
+  // ===== カテゴリ12: 防犯カメラの運用 =====
+  { cat:'bouhan', catLabel:'防犯カメラの運用',
+    qa:[
+      { q:'防犯カメラの映像を見たいと言われたら？',
+        a:'管理組合所定の書面で理事長に申請してもらいます。発生日時・場所・具体的事実を明記し、理事長が受理後、理事会に付議します。',
+        refs:[{type:'h',id:'h38',label:'第4編 防犯カメラ運用細則 第6条（閲覧の申請）'}] },
+      { q:'防犯カメラの映像を実際に見せてよいですか？',
+        a:'犯罪行為等が発生した場合、その予防保全措置として必要な場合、捜査機関から法令に基づく要請があった場合、理事会が相当の理由により必要と認めた場合に限ります。必要最小限の範囲で、理事会決議を経て複数名の立会いのもとで実施します。',
+        refs:[{type:'h',id:'h39',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'}] },
+      { q:'緊急で今すぐ映像を見る必要があるときはどうしますか？',
+        a:'理事長の判断で先に閲覧できます。事後速やかに理事会へ報告し、承認を得ます。',
+        refs:[{type:'h',id:'h39',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'}] },
+      { q:'警察から映像の提供を求められたらどうしますか？',
+        a:'法令に基づく要請であれば提供できます（第三者提供禁止の例外にあたります）。',
+        refs:[{type:'h',id:'h39',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'},{type:'h',id:'h40',label:'第4編 防犯カメラ運用細則 第8条（第三者提供）'}] },
+      { q:'被害者本人に映像を見せてほしいと言われたら？',
+        a:'理事会決議を経て、必要最小限の範囲で提供できます。',
+        refs:[{type:'h',id:'h40',label:'第4編 防犯カメラ運用細則 第8条（第三者提供）'}] },
+      { q:'防犯カメラの映像はどれくらい残っていますか？',
+        a:'自動上書き方式で、原則30日間保存します。事故・事件に関係する場合は除きます。保存期間経過後は復元できない方法で消去します。',
+        refs:[{type:'h',id:'h37',label:'第4編 防犯カメラ運用細則 第5条（録画及び保存）'}] },
+      { q:'映像を閲覧・提供した後にすべきことは何ですか？',
+        a:'日時、目的、閲覧者氏名等を記録し、3年間保存します。閲覧・提供により知り得た情報の守秘義務は、役職を退任した後も継続します。',
+        refs:[{type:'h',id:'h41',label:'第4編 防犯カメラ運用細則 第9条（記録）'},{type:'h',id:'h42',label:'第4編 防犯カメラ運用細則 第10条（守秘義務）'}] },
+    ]
+  },
+  // ===== カテゴリ13: 契約・業者選定 =====
+  { cat:'keiyaku', catLabel:'契約・業者選定の手続き',
+    qa:[
+      { q:'業者との契約・見積りの進め方を聞かれたら？',
+        a:'契約及び業者選定に関する細則（第5編）の手続によります。',
+        refs:[{type:'h',id:'h10',label:'第1編 一般管理細則 第10条（契約手続への委任）'}] },
+      { q:'いくらまでなら理事長だけで決めてよいですか？',
+        a:'10万円未満は理事長の専決とすることができます（理事会への報告は必要です）。10万円以上100万円未満は理事会の承認が必要です。100万円以上は総会の承認が必要です。',
+        refs:[{type:'h',id:'h47',label:'第5編 契約及び業者選定細則 第4条（金額区分及び決定権限）'}] },
+      { q:'見積りは何社取ればいいですか？',
+        a:'10万円以上の契約は原則2社以上、100万円以上の契約は原則3社以上から見積りを取得します。特定業者に限定する合理的理由がある場合は、その理由を議事録に明記します。',
+        refs:[{type:'h',id:'h48',label:'第5編 契約及び業者選定細則 第5条（見積取得）'}] },
+      { q:'理事の知り合いの業者に発注したいという話が出たら？',
+        a:'契約相手と利害関係がある理事・監事は、その案件の審議・議決に参加できません。利益相反申告書の提出が必要です。',
+        refs:[{type:'h',id:'h50',label:'第5編 契約及び業者選定細則 第7条（利益相反の排除）'}] },
+      { q:'災害等で緊急対応が必要で見積りを待てないときは？',
+        a:'理事長が契約を締結できます。事後速やかに理事会へ報告し、承認を得ます。',
+        refs:[{type:'h',id:'h51',label:'第5編 契約及び業者選定細則 第8条（緊急時対応）'}] },
+      { q:'一番安い業者を選べばよいですか？',
+        a:'価格だけでなく、技術力・実績、提案内容の妥当性、履行体制・保証内容、アフターサービス体制、財務状況等を総合的に評価します。',
+        refs:[{type:'h',id:'h49',label:'第5編 契約及び業者選定細則 第6条（評価方法）'}] },
+      { q:'契約関連書類はいつまで保管しますか？',
+        a:'見積書・比較表・評価資料・議事録・契約書は、契約終了後5年間保存します。',
+        refs:[{type:'h',id:'h53',label:'第5編 契約及び業者選定細則 第10条（記録及び保存）'}] },
+      { q:'第三者管理方式を採用した場合、契約のルールはどう読みますか？',
+        a:'細則中の「理事長」は「管理者」に、「理事会」は「監督機関」に読み替えます。契約金額にかかわらず管理者単独では決定できず、監督機関の承認を得たうえで監事の確認・承認も必要になります。',
+        refs:[{type:'h',id:'h47',label:'第5編 契約及び業者選定細則 第4条（金額区分及び決定権限）'},{type:'h',id:'h54',label:'第5編 契約及び業者選定細則 第11条（第三者管理方式における読み替え）'}] },
+    ]
+  },
+  // ===== カテゴリ14: 専有部分の工事 =====
+  { cat:'kouji', catLabel:'専有部分の工事手続き',
+    qa:[
+      { q:'工事業者の駐車・共用部分使用について聞かれたら？',
+        a:'専有部分工事管理細則（第6編）の規定によります。',
+        refs:[{type:'h',id:'h9',label:'第1編 一般管理細則 第9条（使用細則への委任等）'}] },
+      { q:'リフォームしたいと相談されたらどうしますか？',
+        a:'所定様式で事前に届け出てもらいます。軽微な内装工事は理事長の承認、構造・設備・共用部分に影響する工事は理事会の承認が必要です。',
+        refs:[{type:'h',id:'h58',label:'第6編 専有部分工事管理細則 第3条（事前届出及び承認）'}] },
+      { q:'業者に規約・細則を守らせたいが、どう周知しますか？',
+        a:'工事着手前に管理組合が規約・細則一式を貸し出し、施工業者に内容を周知させます。区分所有者・施工業者は受領確認欄に署名し、工事完了後7日以内に返却します（複写・複製は禁止です）。',
+        refs:[{type:'h',id:'h59',label:'第6編 専有部分工事管理細則 第3条の2（規約・細則の貸出および遵守）'}] },
+      { q:'工事は何時から何時まで可能ですか・土日祝はどうですか？',
+        a:'原則として午前9時から午後5時までです。工事関係者は午後6時までに退室します。日曜は工事不可。土曜・国民の祝日は軽微な工程に限り理事長の承認があれば可能です。年末年始（12月29日〜1月3日）は工事を認めません。',
+        refs:[{type:'h',id:'h60',label:'第6編 専有部分工事管理細則 第4条（工事時間及び退室義務）'}] },
+      { q:'工事中、エントランスを資材置き場にしたいと言われたら？',
+        a:'エントランスは搬入出のための一時的使用のみ可能です。作業・保管・待機等はできません。',
+        refs:[{type:'h',id:'h61',label:'第6編 専有部分工事管理細則 第5条（共用部分の使用及び責任）'}] },
+      { q:'工事車両はどこに停めますか？',
+        a:'原則として西側空き地です。区分所有者の専用区画を業者に一時使用させる場合は事前の届出が必要です。車両には住戸番号・連絡先を明示します。',
+        refs:[{type:'h',id:'h62',label:'第6編 専有部分工事管理細則 第6条（工事車両の取扱い）'}] },
+      { q:'工事保証金は必ず取りますか？',
+        a:'工事の内容・規模・共用部分への影響に照らし必要と認める場合のみ預託を求めます。完了後に損傷がなければ返還し、損傷があれば原状回復費用に充当します。',
+        refs:[{type:'h',id:'h63',label:'第6編 専有部分工事管理細則 第7条（工事保証金）'}] },
+      { q:'貸し出した規約・細則を返してもらえないときはどうしますか？',
+        a:'管理組合は返却を督促し、必要に応じて実費相当額を請求できます。',
+        refs:[{type:'h',id:'h59',label:'第6編 専有部分工事管理細則 第3条の2（規約・細則の貸出および遵守）'}] },
+    ]
+  },
+  // ===== カテゴリ15: 駐車場使用の詳細手続き =====
+  { cat:'chusha', catLabel:'駐車場使用の詳細手続き',
+    qa:[
+      { q:'滞納している組合員から駐車場の新規申込みがあったら？',
+        a:'滞納を理由に申込みを拒否してはなりません（管理組合が受理しない取扱いとなります）。滞納そのものへの対応は別途の手続によります。',
+        refs:[{type:'h',id:'h88',label:'第8編 駐車場使用細則 第4条（滞納者の申込制限）'},{type:'k',id:'k73',label:'第60条（管理費等の徴収及び滞納対応）'}] },
+      { q:'駐車場が空いたら誰に割り当てますか？',
+        a:'定期割当（2年ごと）は総会で抽選を行います。契約期間中に空き区画が生じた場合は申込みを受け付け、希望者が複数なら抽選します。',
+        refs:[{type:'h',id:'h92',label:'第8編 駐車場使用細則 第8条（割当方法）'}] },
+      { q:'抽選に外れた人はどうなりますか？',
+        a:'次回の定期抽選で優先枠（空くじなし）に参加できます。優先権は1回限りで、行使しなかった場合・区画を割り当てられた場合・区分所有者の資格を喪失した場合に消滅します。',
+        refs:[{type:'h',id:'h94',label:'第8編 駐車場使用細則 第10条（落選者の優先権）'}] },
+      { q:'駐車場の契約期間と更新方法を聞かれたら？',
+        a:'契約期間は2年です。総会議案書に記載された定期抽選への参加が更新の申込みとなります。参加しなければ契約期間満了で終了します。',
+        refs:[{type:'h',id:'h96',label:'第8編 駐車場使用細則 第12条（契約期間・更新）'}] },
+      { q:'契約者以外の車が長時間停まっているときはどうしますか？',
+        a:'契約車両以外の駐車は原則禁止です（代車・家族・来客の一時使用は除きます）。割当区画の転貸も禁止です（同様の一時的使用は除きます）。',
+        refs:[{type:'h',id:'h98',label:'第8編 駐車場使用細則 第14条（使用上の遵守事項）'},{type:'h',id:'h99',label:'第8編 駐車場使用細則 第15条（転貸禁止）'}] },
+      { q:'専有部分を売却・賃貸したら駐車場契約はどうなりますか？',
+        a:'譲渡または貸与した時点で、駐車場使用契約は効力を失います。',
+        refs:[{type:'h',id:'h100',label:'第8編 駐車場使用細則 第16条（区分所有権譲渡時の取扱い）'}] },
     ]
   },
 ];
