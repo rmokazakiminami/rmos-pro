@@ -58,6 +58,9 @@ body {
 .toc-list { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
 .toc-list a { font-size: 12px; color: var(--blue); text-decoration: none; padding: 4px 10px; background: var(--lblue); border-radius: 20px; white-space: nowrap; }
 .toc-list a:hover { background: var(--blue); color: #fff; }
+.back-to-top { display: block; text-align: right; margin-top: 24px; }
+.back-to-top a { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--blue); text-decoration: none; padding: 6px 14px; background: var(--lblue); border-radius: 20px; border: 1px solid rgba(26,82,118,.2); }
+.back-to-top a:hover { background: var(--blue); color: #fff; }
 
 /* ── コンテンツ ── */
 .wrap { max-width: 800px; margin: 0 auto; padding: 0 16px 60px; }
@@ -215,7 +218,7 @@ p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
 </div>
 
 <!-- ── 目次 ── -->
-<div class="toc">
+<div class="toc" id="toc">
   <div class="toc-title">目次</div>
   <ul class="toc-list">
     <li><a href="#s1">１ RMOS Proとは</a></li>
@@ -265,6 +268,7 @@ p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
     </table>
   </div>
   <div class="note note-warn">⚠️ LINE・Instagram等のアプリ内ブラウザではホーム画面への追加・プッシュ通知が利用できません。必ずSafari（iPhone）またはChrome（Android）で開いてください。</div>
+  <div class="back-to-top"><a href="#toc">▲ 目次に戻る</a></div>
 </div>
 
 <!-- ── 2. iPhone登録 ── -->
@@ -302,6 +306,7 @@ p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
     </div>
   </div>
   <div class="note note-ok" style="margin-top:12px">💡 ホーム画面のアイコンから起動するとアドレスバーが消えて全画面表示になります。次回からはアイコンをタップするだけでOKです。</div>
+  <div class="back-to-top"><a href="#toc">▲ 目次に戻る</a></div>
 </div>
 
 <!-- ── 3. Android登録 ── -->
@@ -357,6 +362,7 @@ p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
     </div>
   </div>
   <div class="note note-ok">💡 機種やOSのバージョンによって手順が異なる場合があります。「ホーム画面に追加」が見つからない場合は管理組合（稲垣502）までお問い合わせください。</div>
+  <div class="back-to-top"><a href="#toc">▲ 目次に戻る</a></div>
 </div>
 
 <!-- ── 4. プッシュ通知 ── -->
@@ -395,6 +401,7 @@ p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
       <tr><td>一度ログアウトして再ログインしてみる</td><td>ログアウト後、再ログイン→通知設定を行う</td></tr>
     </table>
   </div>
+  <div class="back-to-top"><a href="#toc">▲ 目次に戻る</a></div>
 </div>
 
 <!-- ── 5. ログイン ── -->
@@ -469,6 +476,7 @@ p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
       <div class="step-body"><strong>エリアが切り替わる</strong><p>ログイン成功後、対応するエリアに自動的に切り替わります。次回起動時もログイン状態が保持されます。</p></div>
     </div>
   </div>
+  <div class="back-to-top"><a href="#toc">▲ 目次に戻る</a></div>
 </div>
 
 <!-- ── 6. 各機能 ── -->
@@ -509,8 +517,8 @@ p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
     <p>理事会・総会の議事録一覧を閲覧できます。GoogleドライブへのリンクがあるものはタップしてPDFを開けます。</p>
     <div class="h3">📣 お知らせ・緊急通知送信</div>
     <p>理事会メンバー向けのお知らせを確認できます。タイトルと本文を入力して「投稿してプッシュ通知送信」ボタンをタップすると、通知設定済みの全端末に即座にプッシュ通知を送信できます。掲載日に加えて開催時刻（開始・終了）を入力すると、Googleカレンダーに時間指定の予定として登録されます。時刻を入力しない場合は終日の予定として登録されます。「要返信」プルダウンで返信種別（出席届・アンケート・申請書提出など）を選択して投稿すると、スプレッドシートに返信要否が記録されます。</p>
-    <div class="h3">📬 意見箱・回答管理</div>
-    <p>居住者から届いた意見箱の内容を確認し、スプレッドシートのH列（回答）に回答を入力、I列（公開）に「公開」と入力すると居住者に公開されプッシュ通知が送信されます。</p>
+    <div class="h3">📬 意見箱・回答管理（管理者専用）</div>
+    <p>「回答」タブを開くと、画面上部に「📬 意見箱管理」パネルが表示されます（管理者パスワード kanri2026 でログイン時のみ）。居住者から届いた全件が一覧表示され、🆕 未回答・📝 回答済み（未公開）・✅ 公開済みのステータスが一目で確認できます。回答欄に入力して「💬 回答を公開する」ボタンをタップするだけで、スプレッドシートへの書き込みと居住者へのプッシュ通知が自動で行われます。スプレッドシートを直接開く必要はありません。</p>
   </div>
 
   <div class="subsection">
@@ -520,6 +528,7 @@ p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
     <div class="h3">📢 お知らせ・📬 意見箱・💬 回答閲覧</div>
     <p>修繕委員会メンバー向けのお知らせ確認、工事に関するご意見受付、回答閲覧が行えます。</p>
   </div>
+  <div class="back-to-top"><a href="#toc">▲ 目次に戻る</a></div>
 </div>
 
 <!-- ── 7. 防災タブ ── -->
@@ -550,6 +559,7 @@ p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
     </table>
     <div class="note note-warn">⚠️ 地震・火災時はエレベーター禁止。必ず階段で避難してください。</div>
   </div>
+  <div class="back-to-top"><a href="#toc">▲ 目次に戻る</a></div>
 </div>
 
 <!-- ── 8. FAQ ── -->
@@ -562,7 +572,20 @@ p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">通知が届かない</div>
-      <div class="faq-a">①ホーム画面アイコンから起動しているか確認②お知らせタブで「✅ ON」になっているか確認③スマホの通知設定でブラウザの通知をONに変更④iPhoneはiOS 16.4以上が必要⑤一度ログアウトして再設定してみてください。</div>
+      <div class="faq-a">
+        <strong>【共通確認事項】</strong><br>
+        ①ホーム画面アイコンから起動しているか確認<br>
+        ②お知らせタブで「✅ ON」になっているか確認<br>
+        ③一度ログアウトして再設定<br><br>
+        <strong>【Android（特に新しい機種）の場合】</strong><br>
+        Android 13以降は通知権限の設定が必要です。<br>
+        ❶ Chromeで RMOS Pro を開いた状態で、アドレスバー左のアイコンをタップ →「サイトの設定」→「通知」→「許可」に変更<br>
+        ※アイコンは 🔒 鍵マーク、⊙ 丸に点、ⓘ のいずれかが表示されます（Chromeのバージョンにより異なります）<br>
+        ❷ スマホの「設定」→「アプリ」→「Chrome」→「通知」→「通知を表示」がONになっているか確認<br>
+        ❸ 上記を確認後、RMOS Proの「お知らせ」タブで「🔔 通知を受け取る」をタップして再許可<br><br>
+        <strong>【iPhoneの場合】</strong><br>
+        iOS 16.4以上が必要です。Safariで開き、ホーム画面に追加してから通知設定を行ってください。
+      </div>
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">パスワードがわからない</div>
@@ -589,6 +612,7 @@ p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
       <div class="faq-a">再度SafariまたはChromeでURLにアクセスし、ホーム画面への追加からやり直してください。</div>
     </div>
   </div>
+  <div class="back-to-top"><a href="#toc">▲ 目次に戻る</a></div>
 </div>
 
 <!-- ── 9. 緊急連絡先 ── -->
@@ -628,6 +652,7 @@ p { font-size: 14px; color: var(--tx2); margin-bottom: 10px; line-height: 1.8; }
       <tr><td>渉外理事（防火管理者）</td><td>502号室</td><td>稲垣 明</td></tr>
     </table>
   </div>
+  <div class="back-to-top"><a href="#toc">▲ 目次に戻る</a></div>
 </div>
 
 </div><!-- /wrap -->
