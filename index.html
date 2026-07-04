@@ -1600,12 +1600,13 @@ function renderRepairNotices(){
   fetchCSV(CSV.notices,rows=>{
     if(!rows.length){el.innerHTML='<div class="empty">お知らせはありません。</div>';return;}
     el.innerHTML=rows.map(r=>{
-      const no=r[0]||'',date=r[1]||'',cat=r[2]||'',title=r[3]||'',body=r[4]||'',link=r[5]||'',end=r[6]||'';
+      const no=r[0]||'',date=r[1]||'',cat=r[2]||'',title=r[3]||'',body=r[4]||'',link=r[5]||'',end=r[6]||'',replyReq=r[7]||'';
       if(end&&new Date(end)<new Date())return '';
       return `<div class="ni"><div class="ni-top"><span class="ni-cat">${esc(cat)}</span><span class="ni-date">${esc(date)}</span></div>
         <div class="ni-title">${esc(title)}</div>
         ${body?`<div class="ni-body">${esc(body)}</div>`:''}
         ${link?`<a href="${esc(link)}" target="_blank" class="ni-link">📎 詳細を見る</a>`:''}
+        ${noticeReplyHTML(replyReq,'opinion-r')}
       </div>`;
     }).filter(Boolean).join('')||'<div class="empty">お知らせはありません。</div>';
   },()=>{el.innerHTML=errHTML();});
@@ -1700,6 +1701,24 @@ function fetchCSV(url, render, fallback){
     .catch(e=>{console.warn('CSV fetch失敗:',url,e);fallback&&fallback();});
 }
 
+// ===== お知らせ：要返信バッジ＋返信導線 =====
+function noticeReplyHTML(replyType, opinionSec){
+  if(!replyType) return '';
+  opinionSec = opinionSec || 'opinion';
+  let cta;
+  if(replyType.indexOf('出席届') !== -1){
+    cta = `<a href="https://docs.google.com/forms/d/1RjiGe7wWeYjgSaEvfVf2nQzjbGyxYp_6tuFYLdabbAs/viewform" target="_blank"
+      style="display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:6px 14px;background:#c0392b;color:#fff;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none">📋 出席届を提出する</a>`;
+  } else {
+    cta = `<button onclick="goSec('${opinionSec}')"
+      style="margin-top:8px;padding:6px 14px;background:#c0392b;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">💬 意見箱から返信する</button>`;
+  }
+  return `<div style="margin-top:8px;padding:8px 10px;background:#fdecea;border-left:3px solid #c0392b;border-radius:6px">
+    <div style="font-size:12px;color:#c0392b;font-weight:700">⚠ ${esc(replyType)}</div>
+    ${cta}
+  </div>`;
+}
+
 // ===== お知らせ（居住者）=====
 function renderNotices(){
   const el=document.getElementById('notice-list');
@@ -1721,7 +1740,8 @@ function renderNotices(){
     el.innerHTML=items.map(r=>{
       const badge=r[2]?`<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--ac-bg);color:var(--ac);font-weight:700;margin-left:6px">${esc(r[2])}</span>`:'';
       const link=r[5]?`<a href="${esc(r[5])}" target="_blank" style="font-size:12px;color:var(--ac);display:block;margin-top:4px">🔗 添付資料を開く</a>`:'';
-      return `<div class="ni"><div class="nd">${esc(r[1])}${badge}</div><div class="nt">${esc(r[3])}</div><div class="nb">${esc(r[4])}${link}</div></div>`;
+      const replyHtml=noticeReplyHTML(r[7],'opinion');
+      return `<div class="ni"><div class="nd">${esc(r[1])}${badge}</div><div class="nt">${esc(r[3])}</div><div class="nb">${esc(r[4])}${link}${replyHtml}</div></div>`;
     }).join('');
   }, ()=>{
     // フォールバック: NOTICE_DATA
@@ -1763,7 +1783,8 @@ function renderBoardNotices(){
     el.innerHTML=items.map(r=>{
       const badge=r[2]?`<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:#fff3cd;color:#7c5c00;font-weight:700;margin-left:6px">${esc(r[2])}</span>`:'';
       const link=r[5]?`<a href="${esc(r[5])}" target="_blank" style="font-size:12px;color:var(--ac);display:block;margin-top:4px">🔗 添付資料を開く</a>`:'';
-      return `<div class="ni" style="border-left-color:var(--gd)"><div class="nd">${esc(r[1])}${badge}</div><div class="nt">${esc(r[3])}</div><div class="nb">${esc(r[4])}${link}</div></div>`;
+      const replyHtml=noticeReplyHTML(r[7],'opinion-b');
+      return `<div class="ni" style="border-left-color:var(--gd)"><div class="nd">${esc(r[1])}${badge}</div><div class="nt">${esc(r[3])}</div><div class="nb">${esc(r[4])}${link}${replyHtml}</div></div>`;
     }).join('');
   }, ()=>{
     el.innerHTML='';
