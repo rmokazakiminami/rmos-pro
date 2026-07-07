@@ -1606,7 +1606,7 @@ function renderRepairNotices(){
     const items=rows.filter(r=>{
       if(!r||!r[3])return false;                       // タイトルが空の行は除外
       if(r[3].startsWith('※'))return false;
-      if(r[6]){const ed=new Date(r[6]);if(!isNaN(ed)&&ed<today)return false;}
+      if(r[6]){const ed=parseFlexibleDate(r[6]);if(ed&&ed<today)return false;}
       return true;
     });
     if(!items.length){el.innerHTML='<div class="empty">お知らせはありません。</div>';return;}
@@ -1799,7 +1799,7 @@ function renderNotices(){
     const items=rows.filter(r=>{
       if(!r[3])return false;
       if(r[3].startsWith('※'))return false;
-      if(r[6]){const ed=new Date(r[6]);if(!isNaN(ed)&&ed<today)return false;}
+      if(r[6]){const ed=parseFlexibleDate(r[6]);if(ed&&ed<today)return false;}
       return true;
     });
     el.innerHTML='';
@@ -1842,7 +1842,7 @@ function renderBoardNotices(){
     const items=rows.filter(r=>{
       if(!r[3])return false;
       if(r[3].startsWith('※'))return false;
-      if(r[6]){const ed=new Date(r[6]);if(!isNaN(ed)&&ed<today)return false;}
+      if(r[6]){const ed=parseFlexibleDate(r[6]);if(ed&&ed<today)return false;}
       return true;
     });
     el.innerHTML='';
@@ -2041,6 +2041,19 @@ function logout(){
 /* ===== UTILS ===== */
 function tart(h){h.nextElementSibling.classList.toggle('op');h.parentElement.classList.toggle('op');}
 function tf(el){el.nextElementSibling.classList.toggle('op');}
+// スプレッドシートの日付表記ゆれ（2026-07-04／2026/7/4／2026年7月4日 等）を
+// 吸収して比較可能なDateを返す。解釈できない場合はnull。
+function parseFlexibleDate(s){
+  if(!s) return null;
+  s = String(s).trim();
+  const m = s.match(/^(\d{4})\s*[\/\-\.年]\s*(\d{1,2})\s*[\/\-\.月]\s*(\d{1,2})\s*日?/);
+  if(m){
+    const d = new Date(parseInt(m[1],10), parseInt(m[2],10)-1, parseInt(m[3],10));
+    return isNaN(d) ? null : d;
+  }
+  const d2 = new Date(s);
+  return isNaN(d2) ? null : d2;
+}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function hl(t,q){return t.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),m=>`<mark>${m}</mark>`);}
 function dlForm(file){
