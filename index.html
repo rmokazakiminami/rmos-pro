@@ -731,6 +731,7 @@ const CSV = {
   config:      SHEETS_BASE + '?gid=1888460971&single=true&output=csv',      // 設定シート
   notices:     SHEETS_BASE + '?gid=1638866659&single=true&output=csv',
   boardNotice: SHEETS_BASE + '?gid=629578915&single=true&output=csv',
+  repairNotice: SHEETS_BASE + '?gid=1650513215&single=true&output=csv',
   progress:    SHEETS_BASE + '?gid=441852426&single=true&output=csv',
   minutes:     SHEETS_BASE + '?gid=1943125760&single=true&output=csv',
   answers:     SHEETS_BASE + '?gid=1320217176&single=true&output=csv',
@@ -1596,19 +1597,25 @@ function renderFF(){
 function renderRepairNotices(){
   const el=document.getElementById('repair-notice-list');
   el.innerHTML=loadingHTML();
-  // 修繕委員会はお知らせ_住民シートと工事シートを共用
-  fetchCSV(CSV.notices,rows=>{
-    if(!rows.length){el.innerHTML='<div class="empty">お知らせはありません。</div>';return;}
-    el.innerHTML=rows.map(r=>{
-      const no=r[0]||'',date=r[1]||'',cat=r[2]||'',title=r[3]||'',body=r[4]||'',link=r[5]||'',end=r[6]||'',replyReq=r[7]||'';
-      if(end&&new Date(end)<new Date())return '';
+  // 修繕委員会専用シート（お知らせ_修繕）を参照
+  fetchCSV(CSV.repairNotice,rows=>{
+    const today=new Date();today.setHours(0,0,0,0);
+    const items=rows.filter(r=>{
+      if(!r||!r[3])return false;                       // タイトルが空の行は除外
+      if(r[3].startsWith('※'))return false;
+      if(r[6]){const ed=new Date(r[6]);if(!isNaN(ed)&&ed<today)return false;}
+      return true;
+    });
+    if(!items.length){el.innerHTML='<div class="empty">お知らせはありません。</div>';return;}
+    el.innerHTML=items.map(r=>{
+      const date=r[1]||'',cat=r[2]||'',title=r[3]||'',body=r[4]||'',link=r[5]||'',replyReq=r[7]||'';
       return `<div class="ni"><div class="ni-top"><span class="ni-cat">${esc(cat)}</span><span class="ni-date">${esc(date)}</span></div>
         <div class="ni-title">${esc(title)}</div>
         ${body?`<div class="ni-body">${esc(body)}</div>`:''}
         ${link?`<a href="${esc(link)}" target="_blank" class="ni-link">📎 詳細を見る</a>`:''}
         ${noticeReplyHTML(replyReq,'opinion-r')}
       </div>`;
-    }).filter(Boolean).join('')||'<div class="empty">お知らせはありません。</div>';
+    }).join('');
   },()=>{el.innerHTML=errHTML();});
 }
 
