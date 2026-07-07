@@ -611,7 +611,9 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
         <select id="np-reply-req" style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box">
           <option value="">なし（通常のお知らせ）</option>
           <option value="要返信（出席届）">要返信（出席届）</option>
+          <option value="要返信（参加確認）">要返信（参加確認）</option>
           <option value="要返信（配布物確認）">要返信（配布物確認）</option>
+          <option value="要返信（意向確認）">要返信（意向確認）</option>
           <option value="要返信（アンケート）">要返信（アンケート）</option>
           <option value="要返信（申請書提出）">要返信（申請書提出）</option>
           <option value="要返信（その他）">要返信（その他）</option>
@@ -1716,6 +1718,10 @@ function noticeQuickReplyHTML(replyType, title, date){
   let choices;
   if(replyType.indexOf('出席届') !== -1){
     choices = [{v:'出席',l:'✅ 出席する',bg:'#1a7f37'},{v:'欠席',l:'❌ 欠席する',bg:'#6b7280'}];
+  } else if(replyType.indexOf('参加確認') !== -1){
+    choices = [{v:'参加する',l:'✅ 参加する',bg:'#1a7f37'},{v:'参加しない',l:'❌ 参加しない',bg:'#6b7280'}];
+  } else if(replyType.indexOf('意向確認') !== -1){
+    choices = [{v:'希望する',l:'✅ 希望する',bg:'#1a7f37'},{v:'希望しない',l:'❌ 希望しない',bg:'#6b7280'}];
   } else if(replyType.indexOf('配布物確認') !== -1 || replyType.indexOf('その他') !== -1){
     choices = [{v:'確認しました',l:'👍 確認しました',bg:'#1a5276'}];
   } else {
