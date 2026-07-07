@@ -2823,7 +2823,8 @@ function rmPushBannerCheck() {
     banner.innerHTML = pushGrantedHTML('push-banner');
     banner.style.display = 'block';
   } else {
-    banner.style.display = 'none';
+    banner.innerHTML = pushDeniedHTML();
+    banner.style.display = 'block';
   }
 }
 
@@ -2840,7 +2841,8 @@ function rmPushBannerBoardCheck() {
     banner.innerHTML = pushGrantedHTML('push-banner-board');
     banner.style.display = 'block';
   } else {
-    banner.style.display = 'none';
+    banner.innerHTML = pushDeniedHTML();
+    banner.style.display = 'block';
   }
 }
 
@@ -2876,7 +2878,8 @@ function rmPushBannerRepairCheck() {
     banner.innerHTML = pushGrantedHTML('push-banner-repair');
     banner.style.display = 'block';
   } else {
-    banner.style.display = 'none';
+    banner.innerHTML = pushDeniedHTML();
+    banner.style.display = 'block';
   }
 }
 
@@ -2916,6 +2919,19 @@ async function rmPushSubscribe() {
     console.warn('購読失敗:', e);
     if (btn) { btn.textContent = '🔔 通知を受け取る'; btn.disabled = false; }
   }
+}
+
+// ── 通知ブロック時の案内UI ───────────────────────────
+function pushDeniedHTML() {
+  return `<div style="font-size:13px;color:#c0392b;text-align:left">
+    <div style="font-weight:700;margin-bottom:6px">🔕 通知がブロックされています</div>
+    <div style="font-size:12px;line-height:1.6;color:var(--tx2)">
+      以前「許可しない」を選んだか、端末側で通知がオフになっている可能性があります。<br>
+      ① Chromeのアドレスバーに <code>chrome://settings/content/notifications</code> と入力し、このサイトが「許可しない」欄にあれば削除<br>
+      ② Android設定 → アプリ → Chrome → 通知 が ON になっているか確認<br>
+      設定後、このページを再読み込みしてください。
+    </div>
+  </div>`;
 }
 
 // ── 通知ON/OFF共通UI生成 ───────────────────────────
