@@ -611,6 +611,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
         <select id="np-reply-req" style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box">
           <option value="">なし（通常のお知らせ）</option>
           <option value="要返信（出席届）">要返信（出席届）</option>
+          <option value="要返信（配布物確認）">要返信（配布物確認）</option>
           <option value="要返信（アンケート）">要返信（アンケート）</option>
           <option value="要返信（申請書提出）">要返信（申請書提出）</option>
           <option value="要返信（その他）">要返信（その他）</option>
@@ -1613,7 +1614,7 @@ function renderRepairNotices(){
         <div class="ni-title">${esc(title)}</div>
         ${body?`<div class="ni-body">${esc(body)}</div>`:''}
         ${link?`<a href="${esc(link)}" target="_blank" class="ni-link">📎 詳細を見る</a>`:''}
-        ${noticeReplyHTML(replyReq,'opinion-r')}
+        ${noticeReplyHTML(replyReq,'opinion-r',title,date)}
       </div>`;
     }).join('');
   },()=>{el.innerHTML=errHTML();});
@@ -1709,17 +1710,67 @@ function fetchCSV(url, render, fallback){
 }
 
 // ===== お知らせ：要返信バッジ＋返信導線 =====
-function noticeReplyHTML(replyType, opinionSec){
+// ワンタップで回答できるタイプ（出席届／配布物確認／その他）と、
+// 意見箱での自由記述が必要なタイプ（アンケート／申請書提出）を分けて処理する。
+function noticeQuickReplyHTML(replyType, title, date){
+  let choices;
+  if(replyType.indexOf('出席届') !== -1){
+    choices = [{v:'出席',l:'✅ 出席する',bg:'#1a7f37'},{v:'欠席',l:'❌ 欠席する',bg:'#6b7280'}];
+  } else if(replyType.indexOf('配布物確認') !== -1 || replyType.indexOf('その他') !== -1){
+    choices = [{v:'確認しました',l:'👍 確認しました',bg:'#1a5276'}];
+  } else {
+    return null; // アンケート・申請書提出は意見箱誘導のまま
+  }
+  const key = 'rmos_qr_' + encodeURIComponent((title||'')+'|'+(date||''));
+  let done = null;
+  try{ done = localStorage.getItem(key); }catch(e){}
+  const btns = choices.map(c=>
+    `<button class="qr-btn" data-choice="${esc(c.v)}" onclick="rmQuickReplySend(this)"
+      style="padding:7px 16px;background:${c.bg};color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;margin-right:6px;margin-top:4px">${c.l}</button>`
+  ).join('');
+  const proxyLink = replyType.indexOf('出席届') !== -1
+    ? `<div style="margin-top:6px"><a href="https://docs.google.com/forms/d/1RjiGe7wWeYjgSaEvfVf2nQzjbGyxYp_6tuFYLdabbAs/viewform" target="_blank" style="font-size:11px;color:var(--tx2);text-decoration:underline">委任状を提出する方はこちら</a></div>`
+    : '';
+  const body = done
+    ? `<div style="font-size:12px;color:#1a7f37;font-weight:700">✅ 回答済み（${esc(done)}）</div>`
+    : `${btns}${proxyLink}`;
+  return `<div class="qr-box" data-qrkey="${esc(key)}" data-cat="${esc(replyType)}" style="margin-top:4px">${body}</div>`;
+}
+
+function rmQuickReplySend(btnEl){
+  const box = btnEl.closest('.qr-box');
+  if(!box) return;
+  const choice = btnEl.getAttribute('data-choice');
+  const cat = box.getAttribute('data-cat') || '';
+  const key = box.getAttribute('data-qrkey') || '';
+  let room = '';
+  try{ room = localStorage.getItem('rmos_room') || ''; }catch(e){}
+  room = prompt('号室を入力してください（例：502）', room);
+  if(room === null) return; // キャンセル
+  room = room.trim();
+  if(!room){ alert('号室を入力してください。'); return; }
+  try{ localStorage.setItem('rmos_room', room); }catch(e){}
+  box.innerHTML = '<span style="font-size:12px;color:var(--tx2)">送信中…</span>';
+  const params = new URLSearchParams({
+    action:'submitOpinion', category:cat, message:choice, room:room,
+    email:'（未記入）', reply:'公開（掲示板・RMOS Pro）', source:'ワンタップ回答'
+  });
+  fetch(GAS_URL+'?'+params.toString(),{method:'GET',mode:'no-cors'})
+    .then(()=>{
+      box.innerHTML = `<div style="font-size:12px;color:#1a7f37;font-weight:700">✅ 送信しました（${esc(choice)}／${esc(room)}号室）</div>`;
+      try{ localStorage.setItem(key, choice); }catch(e){}
+    })
+    .catch(()=>{
+      box.innerHTML = '<div style="font-size:12px;color:#c0392b">送信に失敗しました。<button onclick="location.reload()" style="margin-left:6px;font-size:11px;cursor:pointer">再読み込み</button></div>';
+    });
+}
+
+function noticeReplyHTML(replyType, opinionSec, title, date){
   if(!replyType) return '';
   opinionSec = opinionSec || 'opinion';
-  let cta;
-  if(replyType.indexOf('出席届') !== -1){
-    cta = `<a href="https://docs.google.com/forms/d/1RjiGe7wWeYjgSaEvfVf2nQzjbGyxYp_6tuFYLdabbAs/viewform" target="_blank"
-      style="display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:6px 14px;background:#c0392b;color:#fff;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none">📋 出席届を提出する</a>`;
-  } else {
-    cta = `<button onclick="goSec('${opinionSec}')"
+  const quick = noticeQuickReplyHTML(replyType, title||'', date||'');
+  const cta = quick !== null ? quick : `<button onclick="goSec('${opinionSec}')"
       style="margin-top:8px;padding:6px 14px;background:#c0392b;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">💬 意見箱から返信する</button>`;
-  }
   return `<div style="margin-top:8px;padding:8px 10px;background:#fdecea;border-left:3px solid #c0392b;border-radius:6px">
     <div style="font-size:12px;color:#c0392b;font-weight:700">⚠ ${esc(replyType)}</div>
     ${cta}
@@ -1747,7 +1798,7 @@ function renderNotices(){
     el.innerHTML=items.map(r=>{
       const badge=r[2]?`<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--ac-bg);color:var(--ac);font-weight:700;margin-left:6px">${esc(r[2])}</span>`:'';
       const link=r[5]?`<a href="${esc(r[5])}" target="_blank" style="font-size:12px;color:var(--ac);display:block;margin-top:4px">🔗 添付資料を開く</a>`:'';
-      const replyHtml=noticeReplyHTML(r[7],'opinion');
+      const replyHtml=noticeReplyHTML(r[7],'opinion',r[3],r[1]);
       return `<div class="ni"><div class="nd">${esc(r[1])}${badge}</div><div class="nt">${esc(r[3])}</div><div class="nb">${esc(r[4])}${link}${replyHtml}</div></div>`;
     }).join('');
   }, ()=>{
@@ -1790,7 +1841,7 @@ function renderBoardNotices(){
     el.innerHTML=items.map(r=>{
       const badge=r[2]?`<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:#fff3cd;color:#7c5c00;font-weight:700;margin-left:6px">${esc(r[2])}</span>`:'';
       const link=r[5]?`<a href="${esc(r[5])}" target="_blank" style="font-size:12px;color:var(--ac);display:block;margin-top:4px">🔗 添付資料を開く</a>`:'';
-      const replyHtml=noticeReplyHTML(r[7],'opinion-b');
+      const replyHtml=noticeReplyHTML(r[7],'opinion-b',r[3],r[1]);
       return `<div class="ni" style="border-left-color:var(--gd)"><div class="nd">${esc(r[1])}${badge}</div><div class="nt">${esc(r[3])}</div><div class="nb">${esc(r[4])}${link}${replyHtml}</div></div>`;
     }).join('');
   }, ()=>{
