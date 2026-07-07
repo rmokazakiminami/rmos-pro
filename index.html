@@ -1616,7 +1616,7 @@ function renderRepairNotices(){
         <div class="ni-title">${esc(title)}</div>
         ${body?`<div class="ni-body">${esc(body)}</div>`:''}
         ${link?`<a href="${esc(link)}" target="_blank" class="ni-link">📎 詳細を見る</a>`:''}
-        ${noticeReplyHTML(replyReq,'opinion-r',title,date)}
+        ${noticeReplyHTML(replyReq,'opinion-r',title,date,link)}
       </div>`;
     }).join('');
   },()=>{el.innerHTML=errHTML();});
@@ -1714,7 +1714,7 @@ function fetchCSV(url, render, fallback){
 // ===== お知らせ：要返信バッジ＋返信導線 =====
 // ワンタップで回答できるタイプ（出席届／配布物確認／その他）と、
 // 意見箱での自由記述が必要なタイプ（アンケート／申請書提出）を分けて処理する。
-function noticeQuickReplyHTML(replyType, title, date){
+function noticeQuickReplyHTML(replyType, title, date, link){
   let choices;
   if(replyType.indexOf('出席届') !== -1){
     choices = [{v:'出席',l:'✅ 出席する',bg:'#1a7f37'},{v:'欠席',l:'❌ 欠席する',bg:'#6b7280'}];
@@ -1734,8 +1734,12 @@ function noticeQuickReplyHTML(replyType, title, date){
     `<button class="qr-btn" data-choice="${esc(c.v)}" onclick="rmQuickReplySend(this)"
       style="padding:7px 16px;background:${c.bg};color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;margin-right:6px;margin-top:4px">${c.l}</button>`
   ).join('');
+  // 出席届の委任状リンク：お知らせごとの「添付リンク」欄が入力されていればそれを優先し、
+  // 未入力の場合のみ既定の出席届フォームにフォールバックする。
+  const DEFAULT_ATTENDANCE_FORM = 'https://docs.google.com/forms/d/1RjiGe7wWeYjgSaEvfVf2nQzjbGyxYp_6tuFYLdabbAs/viewform';
+  const formUrl = link || DEFAULT_ATTENDANCE_FORM;
   const proxyLink = replyType.indexOf('出席届') !== -1
-    ? `<div style="margin-top:6px"><a href="https://docs.google.com/forms/d/1RjiGe7wWeYjgSaEvfVf2nQzjbGyxYp_6tuFYLdabbAs/viewform" target="_blank" style="font-size:11px;color:var(--tx2);text-decoration:underline">委任状を提出する方はこちら</a></div>`
+    ? `<div style="margin-top:6px"><a href="${esc(formUrl)}" target="_blank" style="font-size:11px;color:var(--tx2);text-decoration:underline">委任状を提出する方はこちら</a></div>`
     : '';
   const body = done
     ? `<div style="font-size:12px;color:#1a7f37;font-weight:700">✅ 回答済み（${esc(done)}）</div>`
@@ -1771,10 +1775,10 @@ function rmQuickReplySend(btnEl){
     });
 }
 
-function noticeReplyHTML(replyType, opinionSec, title, date){
+function noticeReplyHTML(replyType, opinionSec, title, date, link){
   if(!replyType) return '';
   opinionSec = opinionSec || 'opinion';
-  const quick = noticeQuickReplyHTML(replyType, title||'', date||'');
+  const quick = noticeQuickReplyHTML(replyType, title||'', date||'', link||'');
   const cta = quick !== null ? quick : `<button onclick="goSec('${opinionSec}')"
       style="margin-top:8px;padding:6px 14px;background:#c0392b;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">💬 意見箱から返信する</button>`;
   return `<div style="margin-top:8px;padding:8px 10px;background:#fdecea;border-left:3px solid #c0392b;border-radius:6px">
@@ -1804,7 +1808,7 @@ function renderNotices(){
     el.innerHTML=items.map(r=>{
       const badge=r[2]?`<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--ac-bg);color:var(--ac);font-weight:700;margin-left:6px">${esc(r[2])}</span>`:'';
       const link=r[5]?`<a href="${esc(r[5])}" target="_blank" style="font-size:12px;color:var(--ac);display:block;margin-top:4px">🔗 添付資料を開く</a>`:'';
-      const replyHtml=noticeReplyHTML(r[7],'opinion',r[3],r[1]);
+      const replyHtml=noticeReplyHTML(r[7],'opinion',r[3],r[1],r[5]);
       return `<div class="ni"><div class="nd">${esc(r[1])}${badge}</div><div class="nt">${esc(r[3])}</div><div class="nb">${esc(r[4])}${link}${replyHtml}</div></div>`;
     }).join('');
   }, ()=>{
@@ -1847,7 +1851,7 @@ function renderBoardNotices(){
     el.innerHTML=items.map(r=>{
       const badge=r[2]?`<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:#fff3cd;color:#7c5c00;font-weight:700;margin-left:6px">${esc(r[2])}</span>`:'';
       const link=r[5]?`<a href="${esc(r[5])}" target="_blank" style="font-size:12px;color:var(--ac);display:block;margin-top:4px">🔗 添付資料を開く</a>`:'';
-      const replyHtml=noticeReplyHTML(r[7],'opinion-b',r[3],r[1]);
+      const replyHtml=noticeReplyHTML(r[7],'opinion-b',r[3],r[1],r[5]);
       return `<div class="ni" style="border-left-color:var(--gd)"><div class="nd">${esc(r[1])}${badge}</div><div class="nt">${esc(r[3])}</div><div class="nb">${esc(r[4])}${link}${replyHtml}</div></div>`;
     }).join('');
   }, ()=>{
