@@ -866,50 +866,10 @@ function renderUpcomingEvents(elId) {
   elId = elId || 'upcoming-events-list';
   const el = document.getElementById(elId);
   if (!el) return;
-  el.innerHTML = loadingHTML();
-
-  fetch(GAS_URL + '?action=getEvents&t=' + Date.now(), { method:'GET', mode:'cors' })
-    .then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-    .then(data => {
-      const events = (data.events || []).map(ev => ({
-        title: ev.title,
-        date: new Date(ev.date + 'T00:00:00'),
-        description: ev.description || '',
-      }));
-
-      const today = new Date(); today.setHours(0,0,0,0);
-      const upcoming = events.filter(e => e.date >= today).slice(0, 5);
-
-      if (!upcoming.length) {
-        el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--tx3);font-size:12px">直近の予定はありません。</div>'
-          + `<a href="${CALENDAR_LINK_URL}" target="_blank" style="display:block;text-align:center;font-size:11px;color:var(--ac);margin-top:6px;text-decoration:none">📅 カレンダーで予定を見る →</a>`;
-        return;
-      }
-
-      const dayNames = ['日','月','火','水','木','金','土'];
-      el.innerHTML = upcoming.map(ev => {
-        const m = ev.date.getMonth()+1, d = ev.date.getDate(), w = dayNames[ev.date.getDay()];
-        const isToday = ev.date.getTime() === today.getTime();
-        const badge = isToday ? '<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--rd);color:#fff;font-weight:700;margin-left:6px">本日</span>' : '';
-        const desc = ev.description ? `<div style="font-size:11px;color:var(--tx3);margin-top:2px">${esc(ev.description)}</div>` : '';
-        return `<div style="display:flex;align-items:center;gap:12px;padding:9px 13px;border:1px solid var(--bd);border-radius:var(--r);margin-bottom:6px;background:var(--sf)">
-          <div style="text-align:center;min-width:44px;flex-shrink:0">
-            <div style="font-size:10px;color:var(--tx3)">${m}月</div>
-            <div style="font-size:18px;font-weight:700;color:var(--ac)">${d}</div>
-            <div style="font-size:10px;color:var(--tx3)">(${w})</div>
-          </div>
-          <div style="flex:1">
-            <div style="font-size:13px;color:var(--tx)">${esc(ev.title)}${badge}</div>
-            ${desc}
-          </div>
-        </div>`;
-      }).join('') +
-      `<a href="${CALENDAR_LINK_URL}" target="_blank" style="display:block;text-align:center;font-size:11px;color:var(--ac);margin-top:4px;text-decoration:none">📅 すべての予定をカレンダーで見る →</a>`;
-    })
-    .catch(e => {
-      console.warn('予定取得失敗:', e);
-      el.innerHTML = `<a href="${CALENDAR_LINK_URL}" target="_blank" style="display:block;text-align:center;padding:12px;color:var(--ac);font-size:12px;text-decoration:none;border:1px solid var(--bd);border-radius:var(--r)">📅 カレンダーで予定を確認する →</a>`;
-    });
+  // 個々の予定内容はエリアを問わず同じカレンダーから取得されており、
+  // エリア限定の予定まで表示されてしまうため、内容の一覧表示はやめて
+  // カレンダーへのリンクのみを表示する。
+  el.innerHTML = `<a href="${CALENDAR_LINK_URL}" target="_blank" style="display:block;text-align:center;padding:12px;color:var(--ac);font-size:12px;text-decoration:none;border:1px solid var(--bd);border-radius:var(--r);background:var(--sf)">📅 すべての予定をカレンダーで見る →</a>`;
 }
 
 // ════════════════════════════════════════════════════════════
