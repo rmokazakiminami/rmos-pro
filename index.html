@@ -411,6 +411,22 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
     <div id="ans-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">公開中の回答はありません。</div>
   </div>
 
+  <!-- 回答確認（個別・居住者） -->
+  <div id="sec-myanswers" class="sec">
+    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;margin-bottom:14px">
+      <div style="font-size:13px;color:var(--tx2);margin-bottom:10px;line-height:1.6">
+        意見箱で個別にいただいたご質問への回答を確認できます。お部屋番号を入力してください。
+      </div>
+      <div style="display:flex;gap:8px">
+        <input id="my-ans-room" type="text" placeholder="例：502" inputmode="numeric" maxlength="10"
+          style="flex:1;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
+        <button class="sbtn" onclick="loadMyAnswers()" id="my-ans-btn" style="width:auto;padding:0 18px">確認する</button>
+      </div>
+    </div>
+    <div id="my-ans-list"></div>
+    <div id="my-ans-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px"></div>
+  </div>
+
   <!-- Wendy-Net FAQ -->
   <div id="sec-wendyfaq" class="sec">
     <div id="wendy-faq-content"></div>
@@ -744,7 +760,7 @@ const AREA_TABS = {
   public:   [{s:'kiyaku',i:'📖',l:'規約'},{s:'hosoku',i:'📜',l:'細則'},{s:'gyakubiki',i:'🔍',l:'逆引き'},
              {s:'f-forms',i:'⚖️',l:'是正'},{s:'wendyfaq',i:'📚',l:'FAQ'},{s:'bousai',i:'🚨',l:'防災'}],
   resident: [{s:'notices',i:'📢',l:'お知らせ'},{s:'progress',i:'🏗',l:'工事'},
-             {s:'opinion',i:'📬',l:'意見箱'},{s:'answers',i:'💬',l:'回答'}],
+             {s:'opinion',i:'📬',l:'意見箱'},{s:'answers',i:'💬',l:'回答'},{s:'myanswers',i:'🔒',l:'個別回答'}],
   board:    [{s:'minutes',i:'📄',l:'議事録'},{s:'board-notice',i:'📣',l:'お知らせ'},
              {s:'progress',i:'🏗',l:'工事'},{s:'opinion-b',i:'📬',l:'意見箱'},{s:'answers-b',i:'💬',l:'回答'}],
   repair:   [{s:'progress',i:'🏗',l:'工事'},{s:'repair-notice',i:'📢',l:'お知らせ'},
@@ -1253,7 +1269,7 @@ function buildNav(){
 const SEARCH_SECS=['kiyaku','hosoku','gyakubiki'];
 function goSec(name){
   // 認証チェック
-  const RESIDENT_SECS=['notices','opinion','answers'];
+  const RESIDENT_SECS=['notices','opinion','answers','myanswers'];
   const BOARD_SECS=['minutes','board-notice','opinion-b','answers-b'];
   const REPAIR_SECS=['repair-notice','opinion-r','answers-r'];
   if(BOARD_SECS.includes(name)&&!auth.board){return;}
@@ -1282,6 +1298,7 @@ function goSec(name){
   if(name==='board-notice'){renderBoardNotices();initNoticePostPanel();renderUpcomingEvents('upcoming-events-list-board');}
   if(name==='progress')renderProgress();
   if(name==='answers')renderAnswers('ans-list','ans-empty');
+  else if(name==='myanswers'){const mr=document.getElementById('my-ans-list');const me=document.getElementById('my-ans-empty');if(mr)mr.innerHTML='';if(me)me.style.display='none';}
   else if(name==='answers-b'){renderAnswers('ans-list-b','ans-empty-b');initOpinionAdminPanel();}
   else if(name==='answers-r')renderAnswers('ans-list-r','ans-empty-r');
   if(name==='wendyfaq')renderWendyFAQPage();
@@ -2181,6 +2198,50 @@ function renderAnswers(listId,emptyId){
 }
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+/* ===== 個別回答確認（居住者・部屋番号のみで照合／パスワードなし） ===== */
+function loadMyAnswers(){
+  const room=(document.getElementById('my-ans-room').value||'').trim();
+  const list=document.getElementById('my-ans-list');
+  const empty=document.getElementById('my-ans-empty');
+  const btn=document.getElementById('my-ans-btn');
+  if(!room){alert('お部屋番号を入力してください');return;}
+  if(btn){btn.disabled=true;btn.textContent='確認中…';}
+  list.innerHTML=loadingHTML();
+  empty.style.display='none';
+  fetch(GAS_URL+'?action=getMyAnswers&room='+encodeURIComponent(room)+'&t='+Date.now(),{method:'GET',mode:'cors'})
+    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(data=>{
+      list.innerHTML='';
+      if(!data||data.length===0){
+        empty.style.display='block';
+        empty.textContent='現在、'+esc(room)+'号室あての個別回答はありません。';
+        return;
+      }
+      empty.style.display='none';
+      data.forEach(row=>{
+        const div=document.createElement('div');
+        div.style.cssText='border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:10px;background:var(--sf)';
+        div.innerHTML=
+          '<div style="padding:10px 13px;background:var(--sf2);display:flex;justify-content:space-between;align-items:center;gap:8px">'+
+            '<span style="font-size:13px;font-weight:500">'+esc(row.message)+'</span>'+
+            '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--ac-bg);color:var(--ac);flex-shrink:0">'+esc(row.category)+'</span>'+
+          '</div>'+
+          '<div style="padding:10px 13px;font-size:13px;color:var(--tx2);border-top:1px solid var(--bd)">'+
+            '<div style="font-size:11px;font-weight:700;color:var(--gn);margin-bottom:4px">▶ 理事会からの回答（'+esc(room)+'号室あて）</div>'+
+            '<div style="line-height:1.75">'+esc(row.answer)+'</div>'+
+            '<div style="font-size:11px;color:var(--tx2);margin-top:6px">受付：'+esc(row.date)+'</div>'+
+          '</div>';
+        list.appendChild(div);
+      });
+    })
+    .catch(()=>{
+      list.innerHTML='';
+      empty.style.display='block';
+      empty.textContent='読み込みに失敗しました。時間をおいて再度お試しください。';
+    })
+    .finally(()=>{if(btn){btn.disabled=false;btn.textContent='確認する';}});
+}
+
 /* ===== 意見箱管理（理事会・kanri2026専用） ===== */
 function initOpinionAdminPanel(){
   const panel=document.getElementById('opinion-admin-panel');
@@ -2201,8 +2262,9 @@ function loadOpinionAdmin(){
       if(!data||data.length===0){empty.style.display='block';empty.textContent='届いている意見はありません。';return;}
       data.forEach(op=>{
         const isPublic=op.public==='公開'&&op.answer;
-        const statusLabel=isPublic?'✅ 公開済み':(op.answer?'📝 回答済み（未公開）':'🆕 未回答');
-        const statusColor=isPublic?'var(--gn)':(op.answer?'#e8a33d':'#e53935');
+        const isIndividual=op.public==='個別'&&op.answer;
+        const statusLabel=isPublic?'✅ 公開済み':(isIndividual?'🔒 個別回答済み':(op.answer?'📝 回答済み（未公開）':'🆕 未回答'));
+        const statusColor=isPublic?'var(--gn)':(isIndividual?'var(--ac)':(op.answer?'#e8a33d':'#e53935'));
         const replyNote=(op.replyMethod&&op.replyMethod!=='公開（掲示板・RMOS Pro）')
           ?'<div style="font-size:11px;color:#c0392b;margin-top:4px">⚠ 希望回答方法：'+esc(op.replyMethod)+(op.contact&&op.contact!=='（未記入）'?'（'+esc(op.contact)+'）':'')+'</div>'
           :'';
@@ -2220,8 +2282,14 @@ function loadOpinionAdmin(){
             '<div style="font-size:13px;line-height:1.7;margin-bottom:4px;white-space:pre-wrap">'+esc(op.message)+'</div>'+
             replyNote+
             '<textarea id="oa-ans-'+op.row+'" rows="3" placeholder="回答を入力してください" style="width:100%;margin-top:10px;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box;resize:vertical">'+esc(op.answer)+'</textarea>'+
-            '<button onclick="publishOpinionAnswer('+op.row+')" id="oa-btn-'+op.row+'" style="margin-top:8px;padding:9px 18px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">💬 '+(isPublic?'回答を更新する':'回答を公開する')+'</button>'+
-            '<span id="oa-result-'+op.row+'" style="margin-left:10px;font-size:12px;display:none"></span>'+
+            '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">'+
+              '<select id="oa-scope-'+op.row+'" style="padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">'+
+                '<option value="公開"'+(op.public==='個別'?'':' selected')+'>🌐 公開（掲示板・全員が閲覧可）</option>'+
+                '<option value="個別"'+(op.public==='個別'?' selected':'')+'>🔒 個別（その部屋番号のみ閲覧可）</option>'+
+              '</select>'+
+              '<button onclick="publishOpinionAnswer('+op.row+')" id="oa-btn-'+op.row+'" style="padding:9px 18px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">💬 '+(isPublic||op.public==='個別'?'回答を更新する':'回答を送信する')+'</button>'+
+              '<span id="oa-result-'+op.row+'" style="font-size:12px;display:none"></span>'+
+            '</div>'+
           '</div>';
         list.appendChild(div);
       });
@@ -2234,15 +2302,17 @@ function loadOpinionAdmin(){
 }
 function publishOpinionAnswer(row){
   const ta=document.getElementById('oa-ans-'+row);
+  const sel=document.getElementById('oa-scope-'+row);
   const btn=document.getElementById('oa-btn-'+row);
   const result=document.getElementById('oa-result-'+row);
   const answer=(ta&&ta.value||'').trim();
+  const scope=(sel&&sel.value)||'公開';
   if(!answer){alert('回答を入力してください');return;}
   if(btn){btn.disabled=true;btn.textContent='送信中…';}
-  const params=new URLSearchParams({action:'publishAnswer',row:row,answer:answer});
+  const params=new URLSearchParams({action:'publishAnswer',row:row,answer:answer,public:scope});
   fetch(GAS_URL+'?'+params.toString(),{method:'GET',mode:'no-cors'})
     .then(()=>{
-      if(result){result.style.display='inline';result.style.color='var(--gn)';result.textContent='✅ 公開しました';}
+      if(result){result.style.display='inline';result.style.color='var(--gn)';result.textContent=(scope==='個別'?'✅ 個別回答として送信しました':'✅ 公開しました');}
       renderAnswers('ans-list-b','ans-empty-b');
       setTimeout(loadOpinionAdmin,800);
     })
