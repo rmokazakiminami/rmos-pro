@@ -1630,21 +1630,35 @@ function loadingHTML(){return '<div style="text-align:center;padding:24px;color:
 function errHTML(){return '<div style="text-align:center;padding:24px;color:var(--tx3);font-size:13px">⚠ データを取得できませんでした</div>';}
 
 function parseCSVRows(text){
-  // ヘッダー2行（タイトル行＋列名行）をスキップして返す
+  // 引用符（"）で囲まれたセル内の改行は「行区切り」として扱わないよう、
+  // テキスト全体を1文字ずつ走査して解析する（本文が複数行のお知らせでも
+  // 列がズレないようにするため）。
   const rows=[];
-  const lines=text.split(/\r?\n/);
-  for(const line of lines){
-    if(!line.trim())continue;
-    const cols=[];let cur='';let inQ=false;
-    for(let i=0;i<line.length;i++){
-      const c=line[i];
-      if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
-      else if(c===','&&!inQ){cols.push(cur.trim());cur='';}
-      else cur+=c;
+  let row=[];let cur='';let inQ=false;
+  const pushCell=()=>{row.push(cur.trim());cur='';};
+  const pushRow=()=>{
+    pushCell();
+    if(!(row.length===1 && row[0]==='')) rows.push(row);
+    row=[];
+  };
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(inQ){
+      if(c==='"'){
+        if(text[i+1]==='"'){cur+='"';i++;}
+        else inQ=false;
+      } else {
+        cur+=c;
+      }
+    } else {
+      if(c==='"'){inQ=true;}
+      else if(c===','){pushCell();}
+      else if(c==='\r'){/* 改行(\r\n)の\rは無視 */}
+      else if(c==='\n'){pushRow();}
+      else{cur+=c;}
     }
-    cols.push(cur.trim());
-    rows.push(cols);
   }
+  if(cur!==''||row.length){pushRow();}
   return rows;
 }
 
