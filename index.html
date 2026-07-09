@@ -576,6 +576,9 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
           <label style="display:flex;align-items:center;gap:5px;font-size:13px">
             <input type="checkbox" id="np-target-repair"> 修繕委員会
           </label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px">
+            <input type="checkbox" id="np-target-system"> 🛠 システム（管理者テスト用）
+          </label>
         </div>
       </div>
       <!-- 掲載日 -->
@@ -639,6 +642,14 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
       <button onclick="submitNotice()" id="np-btn" style="padding:11px 24px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📢 投稿してプッシュ通知送信</button>
       <div id="np-result" style="margin-top:10px;font-size:13px;display:none"></div>
     </div>
+
+    <!-- システムお知らせ一覧（バグ修正・仕様変更の記録／kanri2026のみ表示・テスト用） -->
+    <div id="system-notice-panel" style="display:none;margin-bottom:20px;padding:16px;background:rgba(230,126,34,.06);border:1px solid rgba(230,126,34,.3);border-radius:10px">
+      <div style="font-size:13px;font-weight:700;color:#c0621e;margin-bottom:10px">🛠 システムお知らせ（バグ修正・仕様変更の記録／管理者のみ表示・プッシュ通知は送信されません）</div>
+      <div id="system-notice-list"></div>
+      <div id="system-notice-empty" style="display:none;text-align:center;padding:20px;color:var(--tx2);font-size:13px">記録はまだありません。</div>
+    </div>
+
     <div id="board-notice-list"></div>
     <div id="board-notice-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">理事会お知らせはありません。</div>
       <!-- 出席届・参加確認フォームリンク -->
@@ -789,6 +800,43 @@ function initNoticePostPanel() {
     const d = String(today.getDate()).padStart(2,'0');
     dateEl.value = y + '-' + m + '-' + d;
   }
+  // システムお知らせ欄（管理者のみ）
+  const sysPanel = document.getElementById('system-notice-panel');
+  if (sysPanel) {
+    sysPanel.style.display = auth.kanri ? 'block' : 'none';
+    if (auth.kanri) renderSystemNotices();
+  }
+}
+
+function renderSystemNotices() {
+  const list  = document.getElementById('system-notice-list');
+  const empty = document.getElementById('system-notice-empty');
+  if (!list) return;
+  list.innerHTML = loadingHTML();
+  empty.style.display = 'none';
+  fetch(GAS_URL + '?action=getSystemNotices&t=' + Date.now(), { method:'GET', mode:'cors' })
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(data => {
+      list.innerHTML = '';
+      if (!data || data.length === 0) { empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      data.forEach(row => {
+        const div = document.createElement('div');
+        div.style.cssText = 'border:1px solid rgba(230,126,34,.3);border-radius:var(--rl);overflow:hidden;margin-bottom:8px;background:var(--sf)';
+        div.innerHTML =
+          '<div style="padding:9px 12px;background:var(--sf2);display:flex;justify-content:space-between;align-items:center;gap:8px">' +
+            '<span style="font-size:13px;font-weight:600">' + esc(row.title) + '</span>' +
+            '<span style="font-size:10px;color:var(--tx2);flex-shrink:0">' + esc(row.date) + '</span>' +
+          '</div>' +
+          '<div style="padding:10px 12px;font-size:13px;color:var(--tx2);line-height:1.7;white-space:pre-wrap">' + esc(row.body) + '</div>';
+        list.appendChild(div);
+      });
+    })
+    .catch(() => {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      empty.textContent = '読み込みに失敗しました。';
+    });
 }
 
 async function submitNotice() {
@@ -819,6 +867,7 @@ async function submitNotice() {
   if (document.getElementById('np-target-resident')?.checked) targets.push('居住者');
   if (document.getElementById('np-target-board')?.checked)    targets.push('理事会');
   if (document.getElementById('np-target-repair')?.checked)   targets.push('修繕委員');
+  if (document.getElementById('np-target-system')?.checked)   targets.push('システム');
   if (!targets.length) {
     if (errEl) { errEl.textContent='配信先を選択してください。'; errEl.style.display='block'; }
     window._submitNoticeInProgress = false;
@@ -859,6 +908,8 @@ async function submitNotice() {
     document.getElementById('np-target-resident').checked = true;
     document.getElementById('np-target-board').checked    = false;
     document.getElementById('np-target-repair').checked   = false;
+    document.getElementById('np-target-system').checked   = false;
+    if (auth.kanri) renderSystemNotices();
   } catch(e) {
     if (resEl) {
       resEl.style.display = 'block';
