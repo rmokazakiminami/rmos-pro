@@ -95,6 +95,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP'
         background:var(--ac-bg);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
 .ke-sec:first-of-type{border-top:none}
 
+/* ===== 回答方法：常時展開の選択ボタン群 ===== */
+.reply-opts{display:flex;flex-direction:column;gap:6px}
+.reply-opt{width:100%;text-align:left;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;
+  background:var(--bg);color:var(--tx);font-size:14px;cursor:pointer;transition:border-color .15s,background .15s;
+  font-family:inherit}
+.reply-opt.sel{border-color:var(--ac);border-width:2px;background:var(--ac-bg);color:var(--ac);font-weight:700}
+
 /* ===== 細則: 全件展開固定 ===== */
 .he{border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:12px;
     overflow:hidden;background:var(--sf)}
@@ -379,15 +386,17 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
           <textarea id="op-msg" rows="5" placeholder="ご自由にお書きください（必須）" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;resize:vertical;box-sizing:border-box;line-height:1.6"></textarea>
         </div>
         <div style="margin-bottom:16px">
-          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法（任意）</label>
-          <select id="op-reply" onchange="updateReplyHint('op-reply','op-reply-hint')" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px">
-            <option value="公開（掲示板・RMOS Pro）">公開（掲示板・RMOS Pro）</option>
-            <option value="個別回答">個別回答</option>
-            <option value="電話">電話</option>
-            <option value="書面">書面</option>
-            <option value="訪問">訪問</option>
-            <option value="回答不要">回答不要</option>
-          </select>
+          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法 <span style="color:#e53935">*</span></label>
+          <div class="reply-opts" id="op-reply-group">
+            <button type="button" class="reply-opt" data-val="公開（掲示板・RMOS Pro）" onclick="pickReply('op-reply','op-reply-hint','op-reply-group','公開（掲示板・RMOS Pro）')">公開（掲示板・RMOS Pro）</button>
+            <button type="button" class="reply-opt" data-val="個別回答" onclick="pickReply('op-reply','op-reply-hint','op-reply-group','個別回答')">個別回答</button>
+            <button type="button" class="reply-opt" data-val="電話" onclick="pickReply('op-reply','op-reply-hint','op-reply-group','電話')">電話</button>
+            <button type="button" class="reply-opt" data-val="書面" onclick="pickReply('op-reply','op-reply-hint','op-reply-group','書面')">書面</button>
+            <button type="button" class="reply-opt" data-val="訪問" onclick="pickReply('op-reply','op-reply-hint','op-reply-group','訪問')">訪問</button>
+            <button type="button" class="reply-opt" data-val="回答不要" onclick="pickReply('op-reply','op-reply-hint','op-reply-group','回答不要')">回答不要</button>
+          </div>
+          <input type="hidden" id="op-reply" value="">
+          <div id="op-reply-req-err" style="font-size:12px;color:#e53935;margin-top:6px;display:none">⚠ 回答方法を選択してください。</div>
           <div id="op-reply-hint" style="margin-top:6px;font-size:12px;color:#1B4F8A;display:none;padding:6px 10px;background:#EBF5FF;border-radius:6px"></div>
         </div>
         <div style="margin-bottom:12px">
@@ -530,15 +539,17 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
           <textarea id="opb-msg" rows="5" placeholder="ご自由にお書きください（必須）" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;resize:vertical;box-sizing:border-box;line-height:1.6"></textarea>
         </div>
         <div style="margin-bottom:16px">
-          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法（任意）</label>
-          <select id="opb-reply" onchange="updateReplyHint('opb-reply','opb-reply-hint')" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px">
-            <option value="公開（掲示板・RMOS Pro）">公開（掲示板・RMOS Pro）</option>
-            <option value="個別回答">個別回答</option>
-            <option value="電話">電話</option>
-            <option value="書面">書面</option>
-            <option value="訪問">訪問</option>
-            <option value="回答不要">回答不要</option>
-          </select>
+          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法 <span style="color:#e53935">*</span></label>
+          <div class="reply-opts" id="opb-reply-group">
+            <button type="button" class="reply-opt" data-val="公開（掲示板・RMOS Pro）" onclick="pickReply('opb-reply','opb-reply-hint','opb-reply-group','公開（掲示板・RMOS Pro）')">公開（掲示板・RMOS Pro）</button>
+            <button type="button" class="reply-opt" data-val="個別回答" onclick="pickReply('opb-reply','opb-reply-hint','opb-reply-group','個別回答')">個別回答</button>
+            <button type="button" class="reply-opt" data-val="電話" onclick="pickReply('opb-reply','opb-reply-hint','opb-reply-group','電話')">電話</button>
+            <button type="button" class="reply-opt" data-val="書面" onclick="pickReply('opb-reply','opb-reply-hint','opb-reply-group','書面')">書面</button>
+            <button type="button" class="reply-opt" data-val="訪問" onclick="pickReply('opb-reply','opb-reply-hint','opb-reply-group','訪問')">訪問</button>
+            <button type="button" class="reply-opt" data-val="回答不要" onclick="pickReply('opb-reply','opb-reply-hint','opb-reply-group','回答不要')">回答不要</button>
+          </div>
+          <input type="hidden" id="opb-reply" value="">
+          <div id="opb-reply-req-err" style="font-size:12px;color:#e53935;margin-top:6px;display:none">⚠ 回答方法を選択してください。</div>
           <div id="opb-reply-hint" style="margin-top:6px;font-size:12px;color:#1B4F8A;display:none;padding:6px 10px;background:#EBF5FF;border-radius:6px"></div>
         </div>
         <div style="margin-bottom:12px">
@@ -743,14 +754,15 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
       </select>
       <textarea id="op-txt-r" placeholder="ご意見・ご要望をご記入ください（匿名可）" rows="5"
         style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;background:var(--bg);color:var(--tx)"></textarea>
-      <select id="op-reply-r" onchange="updateReplyHint('op-reply-r','op-reply-hint-r')" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;margin-top:8px;background:var(--bg);color:var(--tx)">
-        <option value="公開（掲示板・RMOS Pro）">回答方法：公開（掲示板・RMOS Pro）</option>
-        <option value="個別回答">回答方法：個別回答</option>
-        <option value="電話">回答方法：電話</option>
-        <option value="書面">回答方法：書面</option>
-        <option value="訪問">回答方法：訪問</option>
-        <option value="回答不要">回答方法：回答不要</option>
-      </select>
+      <div class="reply-opts" id="op-reply-r-group" style="margin-top:8px">
+        <button type="button" class="reply-opt" data-val="公開（掲示板・RMOS Pro）" onclick="pickReply('op-reply-r','op-reply-hint-r','op-reply-r-group','公開（掲示板・RMOS Pro）')">回答方法：公開（掲示板・RMOS Pro）</button>
+        <button type="button" class="reply-opt" data-val="個別回答" onclick="pickReply('op-reply-r','op-reply-hint-r','op-reply-r-group','個別回答')">回答方法：個別回答</button>
+        <button type="button" class="reply-opt" data-val="電話" onclick="pickReply('op-reply-r','op-reply-hint-r','op-reply-r-group','電話')">回答方法：電話</button>
+        <button type="button" class="reply-opt" data-val="書面" onclick="pickReply('op-reply-r','op-reply-hint-r','op-reply-r-group','書面')">回答方法：書面</button>
+        <button type="button" class="reply-opt" data-val="訪問" onclick="pickReply('op-reply-r','op-reply-hint-r','op-reply-r-group','訪問')">回答方法：訪問</button>
+        <button type="button" class="reply-opt" data-val="回答不要" onclick="pickReply('op-reply-r','op-reply-hint-r','op-reply-r-group','回答不要')">回答方法：回答不要</button>
+      </div>
+      <input type="hidden" id="op-reply-r" value="">
       <div id="op-reply-hint-r" style="margin-top:4px;font-size:12px;color:#1B4F8A;display:none;padding:6px 10px;background:#EBF5FF;border-radius:6px"></div>
       <input id="op-room-r" type="text" placeholder="部屋番号（任意）" maxlength="10"
         style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;margin-top:8px;background:var(--bg);color:var(--tx)">
@@ -1488,6 +1500,15 @@ function buildFilter(){
 }
 
 /* ===== SEARCH ===== */
+function pickReply(hiddenId, hintId, groupId, val){
+  const hidden=document.getElementById(hiddenId);
+  if(hidden) hidden.value=val;
+  const group=document.getElementById(groupId);
+  if(group) group.querySelectorAll('.reply-opt').forEach(b=>b.classList.toggle('sel', b.dataset.val===val));
+  const errEl=document.getElementById(hiddenId+'-req-err');
+  if(errEl) errEl.style.display='none';
+  updateReplyHint(hiddenId, hintId);
+}
 function updateReplyHint(selectId, hintId){
   selectId = selectId || 'op-reply';
   hintId = hintId || 'op-reply-hint';
@@ -1774,10 +1795,11 @@ function submitOpinionR(){
   const cat=document.getElementById('op-cat-r').value||'工事全般';
   const room=(document.getElementById('op-room-r').value||'').trim();
   const mail=(document.getElementById('op-mail-r').value||'').trim();
-  const reply=(document.getElementById('op-reply-r').value||'公開（掲示板・RMOS Pro）');
+  const reply=document.getElementById('op-reply-r').value;
   const msg=document.getElementById('op-msg-r');
   const btn=document.getElementById('op-btn-r');
   if(!txt){msg.textContent='⚠ 内容を入力してください';msg.style.color='var(--rd)';return;}
+  if(!reply){msg.textContent='⚠ 回答方法を選択してください';msg.style.color='var(--rd)';return;}
   btn.disabled=true;btn.textContent='送信中…';msg.textContent='';
   const params=new URLSearchParams({action:'submitOpinion',category:cat+'（修繕委員会）',message:txt,room:room,email:mail,reply:reply,source:'修繕委員会'});
   fetch(GAS_URL+'?'+params.toString(),{method:'GET',mode:'no-cors'})
@@ -1787,6 +1809,9 @@ function submitOpinionR(){
       document.getElementById('op-txt-r').value='';
       document.getElementById('op-room-r').value='';
       document.getElementById('op-mail-r').value='';
+      document.getElementById('op-reply-r').value='';
+      document.querySelectorAll('#op-reply-r-group .reply-opt').forEach(b=>b.classList.remove('sel'));
+      const hintR=document.getElementById('op-reply-hint-r');if(hintR)hintR.style.display='none';
       btn.disabled=false;btn.textContent='📨 送信する';
     })
     .catch(()=>{
@@ -2270,8 +2295,11 @@ function submitOpinion(){
   const email=document.getElementById('op-email').value.trim();
   const reply=document.getElementById('op-reply').value;
   const errEl=document.getElementById('op-msg-err');
-  if(!msg){errEl.style.display='block';return;}
-  errEl.style.display='none';
+  const replyErrEl=document.getElementById('op-reply-req-err');
+  let hasError=false;
+  if(!msg){errEl.style.display='block';hasError=true;} else {errEl.style.display='none';}
+  if(!reply){replyErrEl.style.display='block';hasError=true;} else {replyErrEl.style.display='none';}
+  if(hasError) return;
   const btn=document.getElementById('op-btn');
   btn.disabled=true;btn.textContent='送信中…';
   const params=new URLSearchParams({action:'submitOpinion',category:cat,message:msg,room:room,email:email||'（未記入）',reply:reply,source:'居住者'});
@@ -2292,6 +2320,10 @@ function resetOpinion(){
   document.getElementById('op-room').value='';
   document.getElementById('op-email').value='';
   document.getElementById('op-cat').value='管理全般';
+  document.getElementById('op-reply').value='';
+  document.querySelectorAll('#op-reply-group .reply-opt').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('op-reply-hint').style.display='none';
+  document.getElementById('op-reply-req-err').style.display='none';
   document.getElementById('opinion-done').style.display='none';
   document.getElementById('opinion-err').style.display='none';
   document.getElementById('opinion-form').style.display='block';
@@ -2305,8 +2337,11 @@ function submitOpinionB(){
   const email=document.getElementById('opb-email').value.trim();
   const reply=document.getElementById('opb-reply').value;
   const errEl=document.getElementById('opb-msg-err');
-  if(!msg){errEl.style.display='block';return;}
-  errEl.style.display='none';
+  const replyErrEl=document.getElementById('opb-reply-req-err');
+  let hasError=false;
+  if(!msg){errEl.style.display='block';hasError=true;} else {errEl.style.display='none';}
+  if(!reply){replyErrEl.style.display='block';hasError=true;} else {replyErrEl.style.display='none';}
+  if(hasError) return;
   const btn=document.getElementById('opb-btn');
   btn.disabled=true;btn.textContent='送信中…';
   const params=new URLSearchParams({action:'submitOpinion',category:cat,message:msg,room:room,email:email||'（未記入）',reply:reply,source:'理事会'});
@@ -2326,6 +2361,10 @@ function resetOpinionB(){
   document.getElementById('opb-room').value='';
   document.getElementById('opb-email').value='';
   document.getElementById('opb-cat').value='管理全般';
+  document.getElementById('opb-reply').value='';
+  document.querySelectorAll('#opb-reply-group .reply-opt').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('opb-reply-hint').style.display='none';
+  document.getElementById('opb-reply-req-err').style.display='none';
   document.getElementById('opinion-b-done').style.display='none';
   document.getElementById('opinion-b-err').style.display='none';
   document.getElementById('opinion-b-form').style.display='block';
