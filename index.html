@@ -371,7 +371,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
           <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法（任意）</label>
           <select id="op-reply" onchange="updateReplyHint('op-reply','op-reply-hint')" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px">
             <option value="公開（掲示板・RMOS Pro）">公開（掲示板・RMOS Pro）</option>
-            <option value="メール">メール</option>
+            <option value="個別回答">個別回答</option>
             <option value="電話">電話</option>
             <option value="書面">書面</option>
             <option value="訪問">訪問</option>
@@ -522,7 +522,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
           <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法（任意）</label>
           <select id="opb-reply" onchange="updateReplyHint('opb-reply','opb-reply-hint')" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px">
             <option value="公開（掲示板・RMOS Pro）">公開（掲示板・RMOS Pro）</option>
-            <option value="メール">メール</option>
+            <option value="個別回答">個別回答</option>
             <option value="電話">電話</option>
             <option value="書面">書面</option>
             <option value="訪問">訪問</option>
@@ -734,7 +734,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
         style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;background:var(--bg);color:var(--tx)"></textarea>
       <select id="op-reply-r" onchange="updateReplyHint('op-reply-r','op-reply-hint-r')" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;margin-top:8px;background:var(--bg);color:var(--tx)">
         <option value="公開（掲示板・RMOS Pro）">回答方法：公開（掲示板・RMOS Pro）</option>
-        <option value="メール">回答方法：メール</option>
+        <option value="個別回答">回答方法：個別回答</option>
         <option value="電話">回答方法：電話</option>
         <option value="書面">回答方法：書面</option>
         <option value="訪問">回答方法：訪問</option>
@@ -1421,7 +1421,7 @@ function updateReplyHint(selectId, hintId){
   const emailLabel=document.querySelector('label[for="op-email"]')||
     [...document.querySelectorAll('label')].find(l=>l.textContent.includes('メールアドレス'));
   const msgs={
-    'メール':'メールアドレスを下欄に入力してください。',
+    '個別回答':'部屋番号を下欄にご記入ください。回答はRMOS Proの「個別回答」からご確認いただけます。',
     '電話':'電話番号を下欄に入力してください。',
     '書面':'部屋番号を下欄に入力してください。',
     '訪問':'部屋番号を下欄に入力してください。',
