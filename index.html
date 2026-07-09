@@ -91,6 +91,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP'
 .ka-label{font-size:13px;font-weight:500;color:var(--ac);padding:9px 13px 4px;
           line-height:1.4;display:flex;justify-content:space-between;align-items:center}
 .ka-text{font-size:13px;color:var(--tx2);padding:0 13px 11px;white-space:pre-wrap;line-height:1.8}
+.ke-sec{font-size:11px;font-weight:700;color:var(--ac);padding:8px 13px 4px;
+        background:var(--ac-bg);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.ke-sec:first-of-type{border-top:none}
 
 /* ===== 細則: 全件展開固定 ===== */
 .he{border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:12px;
@@ -1531,6 +1534,7 @@ function searchK(q){
   el.innerHTML=Object.entries(groups).map(([chapter,arts])=>{
     const chNumM=chapter.match(/第[０-９\d]+章/);const chNum=chNumM?chNumM[0]:(chapter==='附則'?'附則':(chapter==='別表'?'別表':chapter.slice(0,4)));
     const chTitle=chNumM?chapter.replace(/第[０-９\d]+章\s*/,''):(chapter==='附則'||chapter==='別表'?'':chapter);
+    let lastSec=null;
     return `<div class="ke">
       <div class="ke-head">
         <span class="ke-badge">${esc(chNum)}</span>
@@ -1541,7 +1545,14 @@ function searchK(q){
         const lbl=q?hl(esc(a.label),q):esc(a.label);
         const txt=q?hl(esc(a.text),q):esc(a.text);
         const starred=bms.some(b=>b.key===key);
-        return `<div class="ai" id="k-${a.id}">
+        // 節が変わったら節見出しを挿入（省略されがちな構造を明示）
+        let secHead='';
+        const sec=a.section||'';
+        if(sec!==lastSec){
+          if(sec) secHead=`<div class="ke-sec">${esc(sec)}</div>`;
+          lastSec=sec;
+        }
+        return `${secHead}<div class="ai" id="k-${a.id}">
           <div class="ka-label">
             <span>${lbl}</span>
             <span class="astar${starred?' on':''}"
