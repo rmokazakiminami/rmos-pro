@@ -420,7 +420,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
       <div style="display:flex;gap:8px">
         <input id="my-ans-room" type="text" placeholder="例：502" inputmode="numeric" maxlength="10"
           style="flex:1;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
-        <button class="sbtn" onclick="loadMyAnswers()" id="my-ans-btn" style="width:auto;padding:0 18px">確認する</button>
+        <button class="sbtn" onclick="loadMyAnswers('')" id="my-ans-btn" style="width:auto;padding:0 18px">確認する</button>
       </div>
     </div>
     <div id="my-ans-list"></div>
@@ -456,10 +456,42 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
     <div id="ans-empty-b" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">公開中の回答はありません。</div>
   </div>
 
+  <!-- 回答確認（個別・理事会） -->
+  <div id="sec-myanswers-b" class="sec">
+    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;margin-bottom:14px">
+      <div style="font-size:13px;color:var(--tx2);margin-bottom:10px;line-height:1.6">
+        意見箱で個別にいただいたご質問への回答を確認できます。お部屋番号を入力してください。
+      </div>
+      <div style="display:flex;gap:8px">
+        <input id="my-ans-room-b" type="text" placeholder="例：502" inputmode="numeric" maxlength="10"
+          style="flex:1;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
+        <button class="sbtn" onclick="loadMyAnswers('-b')" id="my-ans-btn-b" style="width:auto;padding:0 18px">確認する</button>
+      </div>
+    </div>
+    <div id="my-ans-list-b"></div>
+    <div id="my-ans-empty-b" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px"></div>
+  </div>
+
   <!-- 回答閲覧（修繕委員） -->
   <div id="sec-answers-r" class="sec">
     <div id="ans-list-r"></div>
     <div id="ans-empty-r" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">公開中の回答はありません。</div>
+  </div>
+
+  <!-- 回答確認（個別・修繕委員） -->
+  <div id="sec-myanswers-r" class="sec">
+    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;margin-bottom:14px">
+      <div style="font-size:13px;color:var(--tx2);margin-bottom:10px;line-height:1.6">
+        意見箱で個別にいただいたご質問への回答を確認できます。お部屋番号を入力してください。
+      </div>
+      <div style="display:flex;gap:8px">
+        <input id="my-ans-room-r" type="text" placeholder="例：502" inputmode="numeric" maxlength="10"
+          style="flex:1;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
+        <button class="sbtn" onclick="loadMyAnswers('-r')" id="my-ans-btn-r" style="width:auto;padding:0 18px">確認する</button>
+      </div>
+    </div>
+    <div id="my-ans-list-r"></div>
+    <div id="my-ans-empty-r" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px"></div>
   </div>
 
   <!-- 理事会用意見箱 -->
@@ -773,9 +805,9 @@ const AREA_TABS = {
   resident: [{s:'notices',i:'📢',l:'お知らせ'},{s:'progress',i:'🏗',l:'工事'},
              {s:'opinion',i:'📬',l:'意見箱'},{s:'answers',i:'💬',l:'回答'},{s:'myanswers',i:'🔒',l:'個別回答'}],
   board:    [{s:'minutes',i:'📄',l:'議事録'},{s:'board-notice',i:'📣',l:'お知らせ'},
-             {s:'progress',i:'🏗',l:'工事'},{s:'opinion-b',i:'📬',l:'意見箱'},{s:'answers-b',i:'💬',l:'回答'}],
+             {s:'progress',i:'🏗',l:'工事'},{s:'opinion-b',i:'📬',l:'意見箱'},{s:'answers-b',i:'💬',l:'回答'},{s:'myanswers-b',i:'🔒',l:'個別回答'}],
   repair:   [{s:'progress',i:'🏗',l:'工事'},{s:'repair-notice',i:'📢',l:'お知らせ'},
-             {s:'opinion-r',i:'📬',l:'意見箱'},{s:'answers-r',i:'💬',l:'回答'}],
+             {s:'opinion-r',i:'📬',l:'意見箱'},{s:'answers-r',i:'💬',l:'回答'},{s:'myanswers-r',i:'🔒',l:'個別回答'}],
 };
 
 let curSec='kiyaku', curArea='public';
@@ -1321,8 +1353,8 @@ const SEARCH_SECS=['kiyaku','hosoku','gyakubiki'];
 function goSec(name){
   // 認証チェック
   const RESIDENT_SECS=['notices','opinion','answers','myanswers'];
-  const BOARD_SECS=['minutes','board-notice','opinion-b','answers-b'];
-  const REPAIR_SECS=['repair-notice','opinion-r','answers-r'];
+  const BOARD_SECS=['minutes','board-notice','opinion-b','answers-b','myanswers-b'];
+  const REPAIR_SECS=['repair-notice','opinion-r','answers-r','myanswers-r'];
   if(BOARD_SECS.includes(name)&&!auth.board){return;}
   if(REPAIR_SECS.includes(name)&&!auth.repair&&!auth.board){return;}
   if(RESIDENT_SECS.includes(name)&&!auth.resident&&!auth.board&&!auth.repair){return;}
@@ -1351,7 +1383,9 @@ function goSec(name){
   if(name==='answers')renderAnswers('ans-list','ans-empty');
   else if(name==='myanswers'){const mr=document.getElementById('my-ans-list');const me=document.getElementById('my-ans-empty');if(mr)mr.innerHTML='';if(me)me.style.display='none';}
   else if(name==='answers-b'){renderAnswers('ans-list-b','ans-empty-b');initOpinionAdminPanel();}
+  else if(name==='myanswers-b'){const mr=document.getElementById('my-ans-list-b');const me=document.getElementById('my-ans-empty-b');if(mr)mr.innerHTML='';if(me)me.style.display='none';}
   else if(name==='answers-r')renderAnswers('ans-list-r','ans-empty-r');
+  else if(name==='myanswers-r'){const mr=document.getElementById('my-ans-list-r');const me=document.getElementById('my-ans-empty-r');if(mr)mr.innerHTML='';if(me)me.style.display='none';}
   if(name==='wendyfaq')renderWendyFAQPage();
   if(name==='minutes')renderMinutes();
   window.scrollTo(0,0);
@@ -2249,12 +2283,13 @@ function renderAnswers(listId,emptyId){
 }
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-/* ===== 個別回答確認（居住者・部屋番号のみで照合／パスワードなし） ===== */
-function loadMyAnswers(){
-  const room=(document.getElementById('my-ans-room').value||'').trim();
-  const list=document.getElementById('my-ans-list');
-  const empty=document.getElementById('my-ans-empty');
-  const btn=document.getElementById('my-ans-btn');
+/* ===== 個別回答確認（居住者・理事会・修繕委員 共通／部屋番号のみで照合／パスワードなし） ===== */
+function loadMyAnswers(suffix){
+  suffix=suffix||'';
+  const room=(document.getElementById('my-ans-room'+suffix).value||'').trim();
+  const list=document.getElementById('my-ans-list'+suffix);
+  const empty=document.getElementById('my-ans-empty'+suffix);
+  const btn=document.getElementById('my-ans-btn'+suffix);
   if(!room){alert('お部屋番号を入力してください');return;}
   if(btn){btn.disabled=true;btn.textContent='確認中…';}
   list.innerHTML=loadingHTML();
