@@ -2354,6 +2354,9 @@ function loadOpinionAdmin(){
         const replyNote=(op.replyMethod&&op.replyMethod!=='公開（掲示板・RMOS Pro）')
           ?'<div style="font-size:11px;color:#c0392b;margin-top:4px">⚠ 希望回答方法：'+esc(op.replyMethod)+(op.contact&&op.contact!=='（未記入）'?'（'+esc(op.contact)+'）':'')+'</div>'
           :'';
+        // 公開範囲が未確定（まだ回答していない）の場合、希望回答方法が「個別回答」なら
+        // プルダウンの初期選択を自動的に「個別」にする（選び忘れによる誤公開の防止）
+        const defaultScope = op.public || (op.replyMethod==='個別回答' ? '個別' : '公開');
         const div=document.createElement('div');
         div.style.cssText='border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:12px;background:var(--sf)';
         div.innerHTML=
@@ -2370,9 +2373,10 @@ function loadOpinionAdmin(){
             '<textarea id="oa-ans-'+op.row+'" rows="3" placeholder="回答を入力してください" style="width:100%;margin-top:10px;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box;resize:vertical">'+esc(op.answer)+'</textarea>'+
             '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">'+
               '<select id="oa-scope-'+op.row+'" style="padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">'+
-                '<option value="公開"'+(op.public==='個別'?'':' selected')+'>🌐 公開（掲示板・全員が閲覧可）</option>'+
-                '<option value="個別"'+(op.public==='個別'?' selected':'')+'>🔒 個別（その部屋番号のみ閲覧可）</option>'+
+                '<option value="公開"'+(defaultScope==='個別'?'':' selected')+'>🌐 公開（掲示板・全員が閲覧可）</option>'+
+                '<option value="個別"'+(defaultScope==='個別'?' selected':'')+'>🔒 個別（その部屋番号のみ閲覧可）</option>'+
               '</select>'+
+              (!op.public && op.replyMethod==='個別回答' ? '<span style="font-size:11px;color:#c0621e">（希望に合わせて自動選択）</span>' : '')+
               '<button onclick="publishOpinionAnswer('+op.row+')" id="oa-btn-'+op.row+'" style="padding:9px 18px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">💬 '+(isPublic||op.public==='個別'?'回答を更新する':'回答を送信する')+'</button>'+
               '<span id="oa-result-'+op.row+'" style="font-size:12px;display:none"></span>'+
             '</div>'+
