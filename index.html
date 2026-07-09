@@ -2633,7 +2633,7 @@ const RMOS_FAQ = [
         a:'理事をもって構成し、管理組合の業務執行を決定します。理事の過半数が出席し、出席理事の過半数で決議します。',
         refs:[{type:'k',id:'k65',label:'第51条（理事会）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'}] },
       { q:'役員の任期はどのくらいですか？',
-        a:'役員の任期は2年です。再任は妨げません。補欠役員の任期は前任者の残任期間です。',
+        a:'役員の任期は原則1年で、再任を妨げません。任期満了後も、後任者が選任されるまでは引き続き職務を行います。ただし、渉外理事・修繕理事などの専門理事については、業務の継続性を確保するため、総会の決議により任期を2年とすることができます。',
         refs:[{type:'k',id:'k44',label:'第36条（役員の任期）'}] },
       { q:'単身赴任や高齢などの事情で理事に就任できない場合はどうすればよいですか？',
         a:'単身赴任・長期出張その他一時的な事由で職務遂行が困難な場合は、申出により理事会の承認をもって就任を次順位に順延できます。また満80歳以上で本人が希望しない場合、または傷病により職務遂行が困難な場合は、申出により理事会の承認をもって就任を免除できます。傷病を理由とする免除の申出には医師の診断書の添付が必要です。その他の具体的な取扱いは理事会が別に定めます。',
@@ -3119,7 +3119,9 @@ function rmFaqJump(type, id){
     setTimeout(()=>{
       const art = KIYAKU_DATA.find(a=>a.id===id);
       if(!art) return;
-      // 検索ボックスにlabelを入れて絞り込み
+      // 章で絞り込んでから、検索ボックスにlabelを入れて絞り込み（同名条文の章またぎヒットを防ぐ）
+      const kch = document.getElementById('kch');
+      if(kch){ kch.value = art.chapter; }
       const qi = document.getElementById('qi');
       if(qi){ qi.value=art.label; }
       searchK(art.label);
@@ -3134,6 +3136,9 @@ function rmFaqJump(type, id){
     setTimeout(()=>{
       const art = HOSOKU_DATA.find(a=>a.id===id);
       if(!art) return;
+      // 編で絞り込んでから、検索ボックスにlabelを入れて絞り込み（同名条文の編またぎヒットを防ぐ）
+      const hed = document.getElementById('hed');
+      if(hed){ hed.value = art.edition; }
       const qi = document.getElementById('qi');
       if(qi){ qi.value=art.label; }
       searchH(art.label);
