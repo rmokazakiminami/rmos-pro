@@ -62,14 +62,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP'
 .bic{font-size:18px;line-height:1}
 .blb{font-size:9px;line-height:1}
 
-/* ===== グローバル戻るボタン（全画面共通） ===== */
-#global-back-btn{position:fixed;right:16px;bottom:70px;z-index:250;
-  display:none;align-items:center;gap:6px;padding:10px 16px 10px 14px;
-  background:var(--ac);color:#fff;border:none;border-radius:24px;
-  box-shadow:0 2px 10px rgba(0,0,0,.25);font-size:13px;font-weight:600;cursor:pointer}
-#global-back-btn.show{display:flex}
-#global-back-btn .gb-ic{font-size:16px;line-height:1}
-
 /* CONTENT */
 .ct{padding:10px 14px}
 
@@ -91,16 +83,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP'
 .ka-label{font-size:13px;font-weight:500;color:var(--ac);padding:9px 13px 4px;
           line-height:1.4;display:flex;justify-content:space-between;align-items:center}
 .ka-text{font-size:13px;color:var(--tx2);padding:0 13px 11px;white-space:pre-wrap;line-height:1.8}
-.ke-sec{font-size:11px;font-weight:700;color:var(--ac);padding:8px 13px 4px;
-        background:var(--ac-bg);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
-.ke-sec:first-of-type{border-top:none}
-
-/* ===== 回答方法：常時展開の選択ボタン群 ===== */
-.reply-opts{display:flex;flex-direction:column;gap:6px}
-.reply-opt{width:100%;text-align:left;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;
-  background:var(--bg);color:var(--tx);font-size:14px;cursor:pointer;transition:border-color .15s,background .15s;
-  font-family:inherit}
-.reply-opt.sel{border-color:var(--ac);border-width:2px;background:var(--ac-bg);color:var(--ac);font-weight:700}
 
 /* ===== 細則: 全件展開固定 ===== */
 .he{border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:12px;
@@ -386,17 +368,15 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
           <textarea id="op-msg" rows="5" placeholder="ご自由にお書きください（必須）" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;resize:vertical;box-sizing:border-box;line-height:1.6"></textarea>
         </div>
         <div style="margin-bottom:16px">
-          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法 <span style="color:#e53935">*</span></label>
-          <div class="reply-opts" id="op-reply-group">
-            <button type="button" class="reply-opt" data-val="公開（掲示板・RMOS Pro）" onclick="pickReply('op-reply','op-reply-hint','op-reply-group','公開（掲示板・RMOS Pro）')">公開（掲示板・RMOS Pro）</button>
-            <button type="button" class="reply-opt" data-val="個別回答" onclick="pickReply('op-reply','op-reply-hint','op-reply-group','個別回答')">個別回答</button>
-            <button type="button" class="reply-opt" data-val="電話" onclick="pickReply('op-reply','op-reply-hint','op-reply-group','電話')">電話</button>
-            <button type="button" class="reply-opt" data-val="書面" onclick="pickReply('op-reply','op-reply-hint','op-reply-group','書面')">書面</button>
-            <button type="button" class="reply-opt" data-val="訪問" onclick="pickReply('op-reply','op-reply-hint','op-reply-group','訪問')">訪問</button>
-            <button type="button" class="reply-opt" data-val="回答不要" onclick="pickReply('op-reply','op-reply-hint','op-reply-group','回答不要')">回答不要</button>
-          </div>
-          <input type="hidden" id="op-reply" value="">
-          <div id="op-reply-req-err" style="font-size:12px;color:#e53935;margin-top:6px;display:none">⚠ 回答方法を選択してください。</div>
+          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法（任意）</label>
+          <select id="op-reply" onchange="updateReplyHint('op-reply','op-reply-hint')" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px">
+            <option value="公開（掲示板・RMOS Pro）">公開（掲示板・RMOS Pro）</option>
+            <option value="メール">メール</option>
+            <option value="電話">電話</option>
+            <option value="書面">書面</option>
+            <option value="訪問">訪問</option>
+            <option value="回答不要">回答不要</option>
+          </select>
           <div id="op-reply-hint" style="margin-top:6px;font-size:12px;color:#1B4F8A;display:none;padding:6px 10px;background:#EBF5FF;border-radius:6px"></div>
         </div>
         <div style="margin-bottom:12px">
@@ -431,22 +411,6 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
     <div id="ans-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">公開中の回答はありません。</div>
   </div>
 
-  <!-- 回答確認（個別・居住者） -->
-  <div id="sec-myanswers" class="sec">
-    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;margin-bottom:14px">
-      <div style="font-size:13px;color:var(--tx2);margin-bottom:10px;line-height:1.6">
-        意見箱で個別にいただいたご質問への回答を確認できます。お部屋番号を入力してください。
-      </div>
-      <div style="display:flex;gap:8px">
-        <input id="my-ans-room" type="text" placeholder="例：502" inputmode="numeric" maxlength="10"
-          style="flex:1;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
-        <button class="sbtn" onclick="loadMyAnswers('')" id="my-ans-btn" style="width:auto;padding:0 18px">確認する</button>
-      </div>
-    </div>
-    <div id="my-ans-list"></div>
-    <div id="my-ans-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px"></div>
-  </div>
-
   <!-- Wendy-Net FAQ -->
   <div id="sec-wendyfaq" class="sec">
     <div id="wendy-faq-content"></div>
@@ -476,42 +440,10 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
     <div id="ans-empty-b" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">公開中の回答はありません。</div>
   </div>
 
-  <!-- 回答確認（個別・理事会） -->
-  <div id="sec-myanswers-b" class="sec">
-    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;margin-bottom:14px">
-      <div style="font-size:13px;color:var(--tx2);margin-bottom:10px;line-height:1.6">
-        意見箱で個別にいただいたご質問への回答を確認できます。お部屋番号を入力してください。
-      </div>
-      <div style="display:flex;gap:8px">
-        <input id="my-ans-room-b" type="text" placeholder="例：502" inputmode="numeric" maxlength="10"
-          style="flex:1;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
-        <button class="sbtn" onclick="loadMyAnswers('-b')" id="my-ans-btn-b" style="width:auto;padding:0 18px">確認する</button>
-      </div>
-    </div>
-    <div id="my-ans-list-b"></div>
-    <div id="my-ans-empty-b" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px"></div>
-  </div>
-
   <!-- 回答閲覧（修繕委員） -->
   <div id="sec-answers-r" class="sec">
     <div id="ans-list-r"></div>
     <div id="ans-empty-r" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">公開中の回答はありません。</div>
-  </div>
-
-  <!-- 回答確認（個別・修繕委員） -->
-  <div id="sec-myanswers-r" class="sec">
-    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;margin-bottom:14px">
-      <div style="font-size:13px;color:var(--tx2);margin-bottom:10px;line-height:1.6">
-        意見箱で個別にいただいたご質問への回答を確認できます。お部屋番号を入力してください。
-      </div>
-      <div style="display:flex;gap:8px">
-        <input id="my-ans-room-r" type="text" placeholder="例：502" inputmode="numeric" maxlength="10"
-          style="flex:1;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
-        <button class="sbtn" onclick="loadMyAnswers('-r')" id="my-ans-btn-r" style="width:auto;padding:0 18px">確認する</button>
-      </div>
-    </div>
-    <div id="my-ans-list-r"></div>
-    <div id="my-ans-empty-r" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px"></div>
   </div>
 
   <!-- 理事会用意見箱 -->
@@ -539,17 +471,15 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
           <textarea id="opb-msg" rows="5" placeholder="ご自由にお書きください（必須）" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;resize:vertical;box-sizing:border-box;line-height:1.6"></textarea>
         </div>
         <div style="margin-bottom:16px">
-          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法 <span style="color:#e53935">*</span></label>
-          <div class="reply-opts" id="opb-reply-group">
-            <button type="button" class="reply-opt" data-val="公開（掲示板・RMOS Pro）" onclick="pickReply('opb-reply','opb-reply-hint','opb-reply-group','公開（掲示板・RMOS Pro）')">公開（掲示板・RMOS Pro）</button>
-            <button type="button" class="reply-opt" data-val="個別回答" onclick="pickReply('opb-reply','opb-reply-hint','opb-reply-group','個別回答')">個別回答</button>
-            <button type="button" class="reply-opt" data-val="電話" onclick="pickReply('opb-reply','opb-reply-hint','opb-reply-group','電話')">電話</button>
-            <button type="button" class="reply-opt" data-val="書面" onclick="pickReply('opb-reply','opb-reply-hint','opb-reply-group','書面')">書面</button>
-            <button type="button" class="reply-opt" data-val="訪問" onclick="pickReply('opb-reply','opb-reply-hint','opb-reply-group','訪問')">訪問</button>
-            <button type="button" class="reply-opt" data-val="回答不要" onclick="pickReply('opb-reply','opb-reply-hint','opb-reply-group','回答不要')">回答不要</button>
-          </div>
-          <input type="hidden" id="opb-reply" value="">
-          <div id="opb-reply-req-err" style="font-size:12px;color:#e53935;margin-top:6px;display:none">⚠ 回答方法を選択してください。</div>
+          <label style="font-size:13px;color:var(--tx2);display:block;margin-bottom:4px">回答方法（任意）</label>
+          <select id="opb-reply" onchange="updateReplyHint('opb-reply','opb-reply-hint')" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px">
+            <option value="公開（掲示板・RMOS Pro）">公開（掲示板・RMOS Pro）</option>
+            <option value="メール">メール</option>
+            <option value="電話">電話</option>
+            <option value="書面">書面</option>
+            <option value="訪問">訪問</option>
+            <option value="回答不要">回答不要</option>
+          </select>
           <div id="opb-reply-hint" style="margin-top:6px;font-size:12px;color:#1B4F8A;display:none;padding:6px 10px;background:#EBF5FF;border-radius:6px"></div>
         </div>
         <div style="margin-bottom:12px">
@@ -601,7 +531,8 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
     </div>
     <!-- 緊急通知送信UI（理事会のみ） -->
     <div id="push-send-panel" style="margin-bottom:20px;padding:16px;background:rgba(231,76,60,.05);border:1px solid rgba(231,76,60,.25);border-radius:10px">
-      <div style="font-size:13px;font-weight:700;color:#c0392b;margin-bottom:12px">📣 緊急プッシュ通知の送信</div>
+      <div style="font-size:13px;font-weight:700;color:#c0392b;margin-bottom:4px">📣 緊急プッシュ通知の送信</div>
+      <div style="font-size:11px;color:var(--tx2);margin-bottom:12px">Web PushとLINE（@118ketww）の両方に同時配信されます。本当に緊急のときだけご利用ください。</div>
       <div style="margin-bottom:10px">
         <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">タイトル</label>
         <input type="text" id="push-title" placeholder="例：重要なお知らせ" style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box">
@@ -610,7 +541,7 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
         <label style="font-size:12px;color:var(--tx2);display:block;margin-bottom:4px">本文</label>
         <textarea id="push-body" rows="3" placeholder="例：本日15時より共用部の停電作業を行います。" style="width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box;resize:vertical"></textarea>
       </div>
-      <button onclick="rmPushSend()" style="padding:10px 24px;background:#c0392b;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📣 全居住者に送信</button>
+      <button onclick="rmPushSend()" style="padding:10px 24px;background:#c0392b;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📣 Web Push + LINEで送信</button>
       <div id="push-send-result" style="margin-top:10px;font-size:13px;display:none"></div>
     </div>
 
@@ -629,9 +560,6 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
           </label>
           <label style="display:flex;align-items:center;gap:5px;font-size:13px">
             <input type="checkbox" id="np-target-repair"> 修繕委員会
-          </label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px">
-            <input type="checkbox" id="np-target-system"> 🛠 システム（管理者テスト用）
           </label>
         </div>
       </div>
@@ -696,14 +624,6 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
       <button onclick="submitNotice()" id="np-btn" style="padding:11px 24px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📢 投稿してプッシュ通知送信</button>
       <div id="np-result" style="margin-top:10px;font-size:13px;display:none"></div>
     </div>
-
-    <!-- システムお知らせ一覧（バグ修正・仕様変更の記録／kanri2026のみ表示・テスト用） -->
-    <div id="system-notice-panel" style="display:none;margin-bottom:20px;padding:16px;background:rgba(230,126,34,.06);border:1px solid rgba(230,126,34,.3);border-radius:10px">
-      <div style="font-size:13px;font-weight:700;color:#c0621e;margin-bottom:10px">🛠 システムお知らせ（バグ修正・仕様変更の記録／管理者のみ表示・プッシュ通知は送信されません）</div>
-      <div id="system-notice-list"></div>
-      <div id="system-notice-empty" style="display:none;text-align:center;padding:20px;color:var(--tx2);font-size:13px">記録はまだありません。</div>
-    </div>
-
     <div id="board-notice-list"></div>
     <div id="board-notice-empty" style="display:none;text-align:center;padding:32px;color:var(--tx2);font-size:14px">理事会お知らせはありません。</div>
       <!-- 出席届・参加確認フォームリンク -->
@@ -754,15 +674,14 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
       </select>
       <textarea id="op-txt-r" placeholder="ご意見・ご要望をご記入ください（匿名可）" rows="5"
         style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;background:var(--bg);color:var(--tx)"></textarea>
-      <div class="reply-opts" id="op-reply-r-group" style="margin-top:8px">
-        <button type="button" class="reply-opt" data-val="公開（掲示板・RMOS Pro）" onclick="pickReply('op-reply-r','op-reply-hint-r','op-reply-r-group','公開（掲示板・RMOS Pro）')">回答方法：公開（掲示板・RMOS Pro）</button>
-        <button type="button" class="reply-opt" data-val="個別回答" onclick="pickReply('op-reply-r','op-reply-hint-r','op-reply-r-group','個別回答')">回答方法：個別回答</button>
-        <button type="button" class="reply-opt" data-val="電話" onclick="pickReply('op-reply-r','op-reply-hint-r','op-reply-r-group','電話')">回答方法：電話</button>
-        <button type="button" class="reply-opt" data-val="書面" onclick="pickReply('op-reply-r','op-reply-hint-r','op-reply-r-group','書面')">回答方法：書面</button>
-        <button type="button" class="reply-opt" data-val="訪問" onclick="pickReply('op-reply-r','op-reply-hint-r','op-reply-r-group','訪問')">回答方法：訪問</button>
-        <button type="button" class="reply-opt" data-val="回答不要" onclick="pickReply('op-reply-r','op-reply-hint-r','op-reply-r-group','回答不要')">回答方法：回答不要</button>
-      </div>
-      <input type="hidden" id="op-reply-r" value="">
+      <select id="op-reply-r" onchange="updateReplyHint('op-reply-r','op-reply-hint-r')" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;margin-top:8px;background:var(--bg);color:var(--tx)">
+        <option value="公開（掲示板・RMOS Pro）">回答方法：公開（掲示板・RMOS Pro）</option>
+        <option value="メール">回答方法：メール</option>
+        <option value="電話">回答方法：電話</option>
+        <option value="書面">回答方法：書面</option>
+        <option value="訪問">回答方法：訪問</option>
+        <option value="回答不要">回答方法：回答不要</option>
+      </select>
       <div id="op-reply-hint-r" style="margin-top:4px;font-size:12px;color:#1B4F8A;display:none;padding:6px 10px;background:#EBF5FF;border-radius:6px"></div>
       <input id="op-room-r" type="text" placeholder="部屋番号（任意）" maxlength="10"
         style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:13px;margin-top:8px;background:var(--bg);color:var(--tx)">
@@ -778,7 +697,6 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 
 <!-- BOTTOM NAV -->
 <nav class="bnav" id="bnav"></nav>
-<button id="global-back-btn" onclick="goBackGlobal()"><span class="gb-ic">←</span>戻る</button>
 
 <!-- LOGIN MODAL -->
 <div class="mw" id="mw">
@@ -827,11 +745,11 @@ const AREA_TABS = {
   public:   [{s:'kiyaku',i:'📖',l:'規約'},{s:'hosoku',i:'📜',l:'細則'},{s:'gyakubiki',i:'🔍',l:'逆引き'},
              {s:'f-forms',i:'⚖️',l:'是正'},{s:'wendyfaq',i:'📚',l:'FAQ'},{s:'bousai',i:'🚨',l:'防災'}],
   resident: [{s:'notices',i:'📢',l:'お知らせ'},{s:'progress',i:'🏗',l:'工事'},
-             {s:'opinion',i:'📬',l:'意見箱'},{s:'answers',i:'💬',l:'回答'},{s:'myanswers',i:'🔒',l:'個別回答'}],
+             {s:'opinion',i:'📬',l:'意見箱'},{s:'answers',i:'💬',l:'回答'}],
   board:    [{s:'minutes',i:'📄',l:'議事録'},{s:'board-notice',i:'📣',l:'お知らせ'},
-             {s:'progress',i:'🏗',l:'工事'},{s:'opinion-b',i:'📬',l:'意見箱'},{s:'answers-b',i:'💬',l:'回答'},{s:'myanswers-b',i:'🔒',l:'個別回答'}],
+             {s:'progress',i:'🏗',l:'工事'},{s:'opinion-b',i:'📬',l:'意見箱'},{s:'answers-b',i:'💬',l:'回答'}],
   repair:   [{s:'progress',i:'🏗',l:'工事'},{s:'repair-notice',i:'📢',l:'お知らせ'},
-             {s:'opinion-r',i:'📬',l:'意見箱'},{s:'answers-r',i:'💬',l:'回答'},{s:'myanswers-r',i:'🔒',l:'個別回答'}],
+             {s:'opinion-r',i:'📬',l:'意見箱'},{s:'answers-r',i:'💬',l:'回答'}],
 };
 
 let curSec='kiyaku', curArea='public';
@@ -856,43 +774,6 @@ function initNoticePostPanel() {
     const d = String(today.getDate()).padStart(2,'0');
     dateEl.value = y + '-' + m + '-' + d;
   }
-  // システムお知らせ欄（管理者のみ）
-  const sysPanel = document.getElementById('system-notice-panel');
-  if (sysPanel) {
-    sysPanel.style.display = auth.kanri ? 'block' : 'none';
-    if (auth.kanri) renderSystemNotices();
-  }
-}
-
-function renderSystemNotices() {
-  const list  = document.getElementById('system-notice-list');
-  const empty = document.getElementById('system-notice-empty');
-  if (!list) return;
-  list.innerHTML = loadingHTML();
-  empty.style.display = 'none';
-  fetch(GAS_URL + '?action=getSystemNotices&t=' + Date.now(), { method:'GET', mode:'cors' })
-    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(data => {
-      list.innerHTML = '';
-      if (!data || data.length === 0) { empty.style.display = 'block'; return; }
-      empty.style.display = 'none';
-      data.forEach(row => {
-        const div = document.createElement('div');
-        div.style.cssText = 'border:1px solid rgba(230,126,34,.3);border-radius:var(--rl);overflow:hidden;margin-bottom:8px;background:var(--sf)';
-        div.innerHTML =
-          '<div style="padding:9px 12px;background:var(--sf2);display:flex;justify-content:space-between;align-items:center;gap:8px">' +
-            '<span style="font-size:13px;font-weight:600">' + esc(row.title) + '</span>' +
-            '<span style="font-size:10px;color:var(--tx2);flex-shrink:0">' + esc(row.date) + '</span>' +
-          '</div>' +
-          '<div style="padding:10px 12px;font-size:13px;color:var(--tx2);line-height:1.7;white-space:pre-wrap">' + esc(row.body) + '</div>';
-        list.appendChild(div);
-      });
-    })
-    .catch(() => {
-      list.innerHTML = '';
-      empty.style.display = 'block';
-      empty.textContent = '読み込みに失敗しました。';
-    });
 }
 
 async function submitNotice() {
@@ -923,7 +804,6 @@ async function submitNotice() {
   if (document.getElementById('np-target-resident')?.checked) targets.push('居住者');
   if (document.getElementById('np-target-board')?.checked)    targets.push('理事会');
   if (document.getElementById('np-target-repair')?.checked)   targets.push('修繕委員');
-  if (document.getElementById('np-target-system')?.checked)   targets.push('システム');
   if (!targets.length) {
     if (errEl) { errEl.textContent='配信先を選択してください。'; errEl.style.display='block'; }
     window._submitNoticeInProgress = false;
@@ -964,8 +844,6 @@ async function submitNotice() {
     document.getElementById('np-target-resident').checked = true;
     document.getElementById('np-target-board').checked    = false;
     document.getElementById('np-target-repair').checked   = false;
-    document.getElementById('np-target-system').checked   = false;
-    if (auth.kanri) renderSystemNotices();
   } catch(e) {
     if (resEl) {
       resEl.style.display = 'block';
@@ -1372,80 +1250,16 @@ function buildNav(){
     ).join('')+auth_btn;
 }
 
-/* ===== グローバル戻る（全画面共通の画面遷移履歴） ===== */
-let NAV_HISTORY = [];
-const NAV_HISTORY_MAX = 30;
-
-function captureNavState(secName){
-  const snap = { sec: secName, scrollY: window.scrollY };
-  if(secName === 'wendyfaq'){
-    const el = document.getElementById('wendy-faq-content');
-    if(el) snap.faq = { selCat: el.dataset.selCat || '', selQ: el.dataset.selQ };
-  }
-  if(SEARCH_SECS.includes(secName)){
-    const qi = document.getElementById('qi');
-    if(qi) snap.qi = qi.value;
-    const kch = document.getElementById('kch');
-    const hed = document.getElementById('hed');
-    if(kch) snap.filterVal = kch.value;
-    if(hed) snap.filterVal = hed.value;
-  }
-  return snap;
-}
-
-function updateBackBtnVisibility(){
-  const btn = document.getElementById('global-back-btn');
-  if(!btn) return;
-  btn.classList.toggle('show', NAV_HISTORY.length > 0);
-}
-
-function goBackGlobal(){
-  if(!NAV_HISTORY.length) return;
-  const state = NAV_HISTORY.pop();
-  if(state.sec === 'wendyfaq' && state.faq){
-    const el = document.getElementById('wendy-faq-content');
-    if(el){
-      el.dataset.selCat = state.faq.selCat || '';
-      el.dataset.selQ = state.faq.selQ !== undefined ? state.faq.selQ : -1;
-    }
-  }
-  goSec(state.sec, {fromBack:true});
-  setTimeout(()=>{
-    if(SEARCH_SECS.includes(state.sec) && state.qi){
-      const qi = document.getElementById('qi');
-      if(qi) qi.value = state.qi;
-      if(state.sec==='kiyaku'){
-        const kch=document.getElementById('kch'); if(kch && state.filterVal) kch.value=state.filterVal;
-        searchK(state.qi);
-      } else if(state.sec==='hosoku'){
-        const hed=document.getElementById('hed'); if(hed && state.filterVal) hed.value=state.filterVal;
-        searchH(state.qi);
-      } else if(state.sec==='gyakubiki'){
-        searchGB(state.qi);
-      }
-    }
-    if(typeof state.scrollY === 'number') window.scrollTo(0, state.scrollY);
-  }, 250);
-  updateBackBtnVisibility();
-}
-
 /* ===== SECTIONS ===== */
 const SEARCH_SECS=['kiyaku','hosoku','gyakubiki'];
-function goSec(name, opts){
-  opts = opts || {};
+function goSec(name){
   // 認証チェック
-  const RESIDENT_SECS=['notices','opinion','answers','myanswers'];
-  const BOARD_SECS=['minutes','board-notice','opinion-b','answers-b','myanswers-b'];
-  const REPAIR_SECS=['repair-notice','opinion-r','answers-r','myanswers-r'];
+  const RESIDENT_SECS=['notices','opinion','answers'];
+  const BOARD_SECS=['minutes','board-notice','opinion-b','answers-b'];
+  const REPAIR_SECS=['repair-notice','opinion-r','answers-r'];
   if(BOARD_SECS.includes(name)&&!auth.board){return;}
   if(REPAIR_SECS.includes(name)&&!auth.repair&&!auth.board){return;}
   if(RESIDENT_SECS.includes(name)&&!auth.resident&&!auth.board&&!auth.repair){return;}
-  // グローバル戻る履歴：戻る操作自体でない実際の画面遷移のみ記録
-  if(!opts.fromBack && curSec && curSec!==name){
-    NAV_HISTORY.push(captureNavState(curSec));
-    if(NAV_HISTORY.length>NAV_HISTORY_MAX) NAV_HISTORY.shift();
-    updateBackBtnVisibility();
-  }
   curSec=name;
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   const s=document.getElementById('sec-'+name);
@@ -1469,11 +1283,8 @@ function goSec(name, opts){
   if(name==='board-notice'){renderBoardNotices();initNoticePostPanel();renderUpcomingEvents('upcoming-events-list-board');}
   if(name==='progress')renderProgress();
   if(name==='answers')renderAnswers('ans-list','ans-empty');
-  else if(name==='myanswers'){const mr=document.getElementById('my-ans-list');const me=document.getElementById('my-ans-empty');if(mr)mr.innerHTML='';if(me)me.style.display='none';}
   else if(name==='answers-b'){renderAnswers('ans-list-b','ans-empty-b');initOpinionAdminPanel();}
-  else if(name==='myanswers-b'){const mr=document.getElementById('my-ans-list-b');const me=document.getElementById('my-ans-empty-b');if(mr)mr.innerHTML='';if(me)me.style.display='none';}
   else if(name==='answers-r')renderAnswers('ans-list-r','ans-empty-r');
-  else if(name==='myanswers-r'){const mr=document.getElementById('my-ans-list-r');const me=document.getElementById('my-ans-empty-r');if(mr)mr.innerHTML='';if(me)me.style.display='none';}
   if(name==='wendyfaq')renderWendyFAQPage();
   if(name==='minutes')renderMinutes();
   window.scrollTo(0,0);
@@ -1500,15 +1311,6 @@ function buildFilter(){
 }
 
 /* ===== SEARCH ===== */
-function pickReply(hiddenId, hintId, groupId, val){
-  const hidden=document.getElementById(hiddenId);
-  if(hidden) hidden.value=val;
-  const group=document.getElementById(groupId);
-  if(group) group.querySelectorAll('.reply-opt').forEach(b=>b.classList.toggle('sel', b.dataset.val===val));
-  const errEl=document.getElementById(hiddenId+'-req-err');
-  if(errEl) errEl.style.display='none';
-  updateReplyHint(hiddenId, hintId);
-}
 function updateReplyHint(selectId, hintId){
   selectId = selectId || 'op-reply';
   hintId = hintId || 'op-reply-hint';
@@ -1518,7 +1320,7 @@ function updateReplyHint(selectId, hintId){
   const emailLabel=document.querySelector('label[for="op-email"]')||
     [...document.querySelectorAll('label')].find(l=>l.textContent.includes('メールアドレス'));
   const msgs={
-    '個別回答':'部屋番号を下欄にご記入ください。回答はRMOS Proの「個別回答」からご確認いただけます。',
+    'メール':'メールアドレスを下欄に入力してください。',
     '電話':'電話番号を下欄に入力してください。',
     '書面':'部屋番号を下欄に入力してください。',
     '訪問':'部屋番号を下欄に入力してください。',
@@ -1555,7 +1357,6 @@ function searchK(q){
   el.innerHTML=Object.entries(groups).map(([chapter,arts])=>{
     const chNumM=chapter.match(/第[０-９\d]+章/);const chNum=chNumM?chNumM[0]:(chapter==='附則'?'附則':(chapter==='別表'?'別表':chapter.slice(0,4)));
     const chTitle=chNumM?chapter.replace(/第[０-９\d]+章\s*/,''):(chapter==='附則'||chapter==='別表'?'':chapter);
-    let lastSec=null;
     return `<div class="ke">
       <div class="ke-head">
         <span class="ke-badge">${esc(chNum)}</span>
@@ -1566,14 +1367,7 @@ function searchK(q){
         const lbl=q?hl(esc(a.label),q):esc(a.label);
         const txt=q?hl(esc(a.text),q):esc(a.text);
         const starred=bms.some(b=>b.key===key);
-        // 節が変わったら節見出しを挿入（省略されがちな構造を明示）
-        let secHead='';
-        const sec=a.section||'';
-        if(sec!==lastSec){
-          if(sec) secHead=`<div class="ke-sec">${esc(sec)}</div>`;
-          lastSec=sec;
-        }
-        return `${secHead}<div class="ai" id="k-${a.id}">
+        return `<div class="ai" id="k-${a.id}">
           <div class="ka-label">
             <span>${lbl}</span>
             <span class="astar${starred?' on':''}"
@@ -1795,11 +1589,10 @@ function submitOpinionR(){
   const cat=document.getElementById('op-cat-r').value||'工事全般';
   const room=(document.getElementById('op-room-r').value||'').trim();
   const mail=(document.getElementById('op-mail-r').value||'').trim();
-  const reply=document.getElementById('op-reply-r').value;
+  const reply=(document.getElementById('op-reply-r').value||'公開（掲示板・RMOS Pro）');
   const msg=document.getElementById('op-msg-r');
   const btn=document.getElementById('op-btn-r');
   if(!txt){msg.textContent='⚠ 内容を入力してください';msg.style.color='var(--rd)';return;}
-  if(!reply){msg.textContent='⚠ 回答方法を選択してください';msg.style.color='var(--rd)';return;}
   btn.disabled=true;btn.textContent='送信中…';msg.textContent='';
   const params=new URLSearchParams({action:'submitOpinion',category:cat+'（修繕委員会）',message:txt,room:room,email:mail,reply:reply,source:'修繕委員会'});
   fetch(GAS_URL+'?'+params.toString(),{method:'GET',mode:'no-cors'})
@@ -1809,9 +1602,6 @@ function submitOpinionR(){
       document.getElementById('op-txt-r').value='';
       document.getElementById('op-room-r').value='';
       document.getElementById('op-mail-r').value='';
-      document.getElementById('op-reply-r').value='';
-      document.querySelectorAll('#op-reply-r-group .reply-opt').forEach(b=>b.classList.remove('sel'));
-      const hintR=document.getElementById('op-reply-hint-r');if(hintR)hintR.style.display='none';
       btn.disabled=false;btn.textContent='📨 送信する';
     })
     .catch(()=>{
@@ -2295,11 +2085,8 @@ function submitOpinion(){
   const email=document.getElementById('op-email').value.trim();
   const reply=document.getElementById('op-reply').value;
   const errEl=document.getElementById('op-msg-err');
-  const replyErrEl=document.getElementById('op-reply-req-err');
-  let hasError=false;
-  if(!msg){errEl.style.display='block';hasError=true;} else {errEl.style.display='none';}
-  if(!reply){replyErrEl.style.display='block';hasError=true;} else {replyErrEl.style.display='none';}
-  if(hasError) return;
+  if(!msg){errEl.style.display='block';return;}
+  errEl.style.display='none';
   const btn=document.getElementById('op-btn');
   btn.disabled=true;btn.textContent='送信中…';
   const params=new URLSearchParams({action:'submitOpinion',category:cat,message:msg,room:room,email:email||'（未記入）',reply:reply,source:'居住者'});
@@ -2320,10 +2107,6 @@ function resetOpinion(){
   document.getElementById('op-room').value='';
   document.getElementById('op-email').value='';
   document.getElementById('op-cat').value='管理全般';
-  document.getElementById('op-reply').value='';
-  document.querySelectorAll('#op-reply-group .reply-opt').forEach(b=>b.classList.remove('sel'));
-  document.getElementById('op-reply-hint').style.display='none';
-  document.getElementById('op-reply-req-err').style.display='none';
   document.getElementById('opinion-done').style.display='none';
   document.getElementById('opinion-err').style.display='none';
   document.getElementById('opinion-form').style.display='block';
@@ -2337,11 +2120,8 @@ function submitOpinionB(){
   const email=document.getElementById('opb-email').value.trim();
   const reply=document.getElementById('opb-reply').value;
   const errEl=document.getElementById('opb-msg-err');
-  const replyErrEl=document.getElementById('opb-reply-req-err');
-  let hasError=false;
-  if(!msg){errEl.style.display='block';hasError=true;} else {errEl.style.display='none';}
-  if(!reply){replyErrEl.style.display='block';hasError=true;} else {replyErrEl.style.display='none';}
-  if(hasError) return;
+  if(!msg){errEl.style.display='block';return;}
+  errEl.style.display='none';
   const btn=document.getElementById('opb-btn');
   btn.disabled=true;btn.textContent='送信中…';
   const params=new URLSearchParams({action:'submitOpinion',category:cat,message:msg,room:room,email:email||'（未記入）',reply:reply,source:'理事会'});
@@ -2361,10 +2141,6 @@ function resetOpinionB(){
   document.getElementById('opb-room').value='';
   document.getElementById('opb-email').value='';
   document.getElementById('opb-cat').value='管理全般';
-  document.getElementById('opb-reply').value='';
-  document.querySelectorAll('#opb-reply-group .reply-opt').forEach(b=>b.classList.remove('sel'));
-  document.getElementById('opb-reply-hint').style.display='none';
-  document.getElementById('opb-reply-req-err').style.display='none';
   document.getElementById('opinion-b-done').style.display='none';
   document.getElementById('opinion-b-err').style.display='none';
   document.getElementById('opinion-b-form').style.display='block';
@@ -2406,51 +2182,6 @@ function renderAnswers(listId,emptyId){
 }
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-/* ===== 個別回答確認（居住者・理事会・修繕委員 共通／部屋番号のみで照合／パスワードなし） ===== */
-function loadMyAnswers(suffix){
-  suffix=suffix||'';
-  const room=(document.getElementById('my-ans-room'+suffix).value||'').trim();
-  const list=document.getElementById('my-ans-list'+suffix);
-  const empty=document.getElementById('my-ans-empty'+suffix);
-  const btn=document.getElementById('my-ans-btn'+suffix);
-  if(!room){alert('お部屋番号を入力してください');return;}
-  if(btn){btn.disabled=true;btn.textContent='確認中…';}
-  list.innerHTML=loadingHTML();
-  empty.style.display='none';
-  fetch(GAS_URL+'?action=getMyAnswers&room='+encodeURIComponent(room)+'&t='+Date.now(),{method:'GET',mode:'cors'})
-    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
-    .then(data=>{
-      list.innerHTML='';
-      if(!data||data.length===0){
-        empty.style.display='block';
-        empty.textContent='現在、'+esc(room)+'号室あての個別回答はありません。';
-        return;
-      }
-      empty.style.display='none';
-      data.forEach(row=>{
-        const div=document.createElement('div');
-        div.style.cssText='border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:10px;background:var(--sf)';
-        div.innerHTML=
-          '<div style="padding:10px 13px;background:var(--sf2);display:flex;justify-content:space-between;align-items:center;gap:8px">'+
-            '<span style="font-size:13px;font-weight:500">'+esc(row.message)+'</span>'+
-            '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--ac-bg);color:var(--ac);flex-shrink:0">'+esc(row.category)+'</span>'+
-          '</div>'+
-          '<div style="padding:10px 13px;font-size:13px;color:var(--tx2);border-top:1px solid var(--bd)">'+
-            '<div style="font-size:11px;font-weight:700;color:var(--gn);margin-bottom:4px">▶ 理事会からの回答（'+esc(room)+'号室あて）</div>'+
-            '<div style="line-height:1.75">'+esc(row.answer)+'</div>'+
-            '<div style="font-size:11px;color:var(--tx2);margin-top:6px">受付：'+esc(row.date)+'</div>'+
-          '</div>';
-        list.appendChild(div);
-      });
-    })
-    .catch(()=>{
-      list.innerHTML='';
-      empty.style.display='block';
-      empty.textContent='読み込みに失敗しました。時間をおいて再度お試しください。';
-    })
-    .finally(()=>{if(btn){btn.disabled=false;btn.textContent='確認する';}});
-}
-
 /* ===== 意見箱管理（理事会・kanri2026専用） ===== */
 function initOpinionAdminPanel(){
   const panel=document.getElementById('opinion-admin-panel');
@@ -2471,15 +2202,11 @@ function loadOpinionAdmin(){
       if(!data||data.length===0){empty.style.display='block';empty.textContent='届いている意見はありません。';return;}
       data.forEach(op=>{
         const isPublic=op.public==='公開'&&op.answer;
-        const isIndividual=op.public==='個別'&&op.answer;
-        const statusLabel=isPublic?'✅ 公開済み':(isIndividual?'🔒 個別回答済み':(op.answer?'📝 回答済み（未公開）':'🆕 未回答'));
-        const statusColor=isPublic?'var(--gn)':(isIndividual?'var(--ac)':(op.answer?'#e8a33d':'#e53935'));
+        const statusLabel=isPublic?'✅ 公開済み':(op.answer?'📝 回答済み（未公開）':'🆕 未回答');
+        const statusColor=isPublic?'var(--gn)':(op.answer?'#e8a33d':'#e53935');
         const replyNote=(op.replyMethod&&op.replyMethod!=='公開（掲示板・RMOS Pro）')
           ?'<div style="font-size:11px;color:#c0392b;margin-top:4px">⚠ 希望回答方法：'+esc(op.replyMethod)+(op.contact&&op.contact!=='（未記入）'?'（'+esc(op.contact)+'）':'')+'</div>'
           :'';
-        // 公開範囲が未確定（まだ回答していない）の場合、希望回答方法が「個別回答」なら
-        // プルダウンの初期選択を自動的に「個別」にする（選び忘れによる誤公開の防止）
-        const defaultScope = op.public || (op.replyMethod==='個別回答' ? '個別' : '公開');
         const div=document.createElement('div');
         div.style.cssText='border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:12px;background:var(--sf)';
         div.innerHTML=
@@ -2494,15 +2221,8 @@ function loadOpinionAdmin(){
             '<div style="font-size:13px;line-height:1.7;margin-bottom:4px;white-space:pre-wrap">'+esc(op.message)+'</div>'+
             replyNote+
             '<textarea id="oa-ans-'+op.row+'" rows="3" placeholder="回答を入力してください" style="width:100%;margin-top:10px;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;box-sizing:border-box;resize:vertical">'+esc(op.answer)+'</textarea>'+
-            '<div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">'+
-              '<select id="oa-scope-'+op.row+'" style="padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">'+
-                '<option value="公開"'+(defaultScope==='個別'?'':' selected')+'>🌐 公開（掲示板・全員が閲覧可）</option>'+
-                '<option value="個別"'+(defaultScope==='個別'?' selected':'')+'>🔒 個別（その部屋番号のみ閲覧可）</option>'+
-              '</select>'+
-              (!op.public && op.replyMethod==='個別回答' ? '<span style="font-size:11px;color:#c0621e">（希望に合わせて自動選択）</span>' : '')+
-              '<button onclick="publishOpinionAnswer('+op.row+')" id="oa-btn-'+op.row+'" style="padding:9px 18px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">💬 '+(isPublic||op.public==='個別'?'回答を更新する':'回答を送信する')+'</button>'+
-              '<span id="oa-result-'+op.row+'" style="font-size:12px;display:none"></span>'+
-            '</div>'+
+            '<button onclick="publishOpinionAnswer('+op.row+')" id="oa-btn-'+op.row+'" style="margin-top:8px;padding:9px 18px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">💬 '+(isPublic?'回答を更新する':'回答を公開する')+'</button>'+
+            '<span id="oa-result-'+op.row+'" style="margin-left:10px;font-size:12px;display:none"></span>'+
           '</div>';
         list.appendChild(div);
       });
@@ -2515,17 +2235,15 @@ function loadOpinionAdmin(){
 }
 function publishOpinionAnswer(row){
   const ta=document.getElementById('oa-ans-'+row);
-  const sel=document.getElementById('oa-scope-'+row);
   const btn=document.getElementById('oa-btn-'+row);
   const result=document.getElementById('oa-result-'+row);
   const answer=(ta&&ta.value||'').trim();
-  const scope=(sel&&sel.value)||'公開';
   if(!answer){alert('回答を入力してください');return;}
   if(btn){btn.disabled=true;btn.textContent='送信中…';}
-  const params=new URLSearchParams({action:'publishAnswer',row:row,answer:answer,public:scope});
+  const params=new URLSearchParams({action:'publishAnswer',row:row,answer:answer});
   fetch(GAS_URL+'?'+params.toString(),{method:'GET',mode:'no-cors'})
     .then(()=>{
-      if(result){result.style.display='inline';result.style.color='var(--gn)';result.textContent=(scope==='個別'?'✅ 個別回答として送信しました':'✅ 公開しました');}
+      if(result){result.style.display='inline';result.style.color='var(--gn)';result.textContent='✅ 公開しました';}
       renderAnswers('ans-list-b','ans-empty-b');
       setTimeout(loadOpinionAdmin,800);
     })
@@ -2559,13 +2277,13 @@ const RMOS_FAQ = [
     qa:[
       { q:'管理組合とは何ですか？', 
         a:'区分所有者全員で構成される団体で、マンションの管理を行う組織です。区分所有者になった時点で自動的に組合員となります。',
-        refs:[{type:'k',id:'k6',label:'第6条（管理組合）'},{type:'k',id:'k33',label:'第30条（組合員の資格）'}] },
+        refs:[{type:'k',id:'k6',label:'第6条（管理組合）'},{type:'k',id:'k30',label:'第30条（組合員の資格）'}] },
       { q:'専有部分と共用部分の違いは何ですか？',
         a:'専有部分は各区分所有者が単独で所有・使用する部分（住戸内部）です。共用部分は全組合員が共有する部分（廊下・エレベーター・外壁等）で、各自の共有持分に応じて所有します。',
         refs:[{type:'k',id:'k7',label:'第7条（専有部分の範囲）'},{type:'k',id:'k8',label:'第8条（共用部分の範囲）'},{type:'k',id:'k9',label:'第9条（共有）'}] },
       { q:'管理規約とは何ですか？',
         a:'区分所有者の共同生活のルールを定めた最上位の規範です。当マンションでは令和８年５月に改正された管理規約（全75条）が適用されます。規約の改正には組合員・議決権各4分の3以上の賛成が必要です。',
-        refs:[{type:'k',id:'k1',label:'第1条（目的）'},{type:'k',id:'k92',label:'第74条（規約の改正）'}] },
+        refs:[{type:'k',id:'k1',label:'第1条（目的）'},{type:'k',id:'k74',label:'第74条（規約の改正）'}] },
       { q:'区分所有者が守らなければならないルールは何ですか？',
         a:'規約・総会決議・使用細則等を誠実に遵守する義務があります。また占有者（賃借人等）にも同様の義務があります。',
         refs:[{type:'k',id:'k3',label:'第3条（規約及び総会の決議の遵守義務）'},{type:'k',id:'k5',label:'第5条（規約及び総会の決議の効力）'}] },
@@ -2574,7 +2292,7 @@ const RMOS_FAQ = [
         refs:[{type:'h',id:'h4',label:'第1編 一般管理細則 第4条（届出及び申請）'}] },
       { q:'細則に書かれていないことが起きた場合はどうなりますか？',
         a:'管理規約または理事会の決議によって対応します。',
-        refs:[{type:'h',id:'h14',label:'第1編 一般管理細則 第11条（細則の位置付け）'}] },
+        refs:[{type:'h',id:'h11',label:'第1編 一般管理細則 第11条（細則の位置付け）'}] },
     ]
   },
   // ===== カテゴリ2: 生活ルール =====
@@ -2583,34 +2301,34 @@ const RMOS_FAQ = [
     qa:[
       { q:'専有部分の使用に制限はありますか？',
         a:'住居専用です。騒音・振動・臭気等で他の居住者に迷惑をかけてはなりません。ペット・楽器等は使用細則の定めに従います。',
-        refs:[{type:'k',id:'k12',label:'第12条（専有部分の用途）'},{type:'k',id:'k13',label:'第13条（専有部分の使用に関する注意）'},{type:'h',id:'h15',label:'第2編 生活使用細則'}] },
+        refs:[{type:'k',id:'k12',label:'第12条（専有部分の用途）'},{type:'k',id:'k13',label:'第13条（専有部分の使用に関する注意）'},{type:'h',id:'h10',label:'第2編 生活使用細則'}] },
       { q:'バルコニーは自由に使えますか？',
         a:'バルコニーは専用使用部分ですが、共用部分です。管理規約・細則の定める方法でのみ使用できます。避難経路の確保が必要です。',
-        refs:[{type:'k',id:'k14',label:'第14条（専用使用部分）'},{type:'h',id:'h15',label:'第2編 生活使用細則'}] },
+        refs:[{type:'k',id:'k14',label:'第14条（専用使用部分）'},{type:'h',id:'h18',label:'第2編 生活使用細則'}] },
       { q:'駐車場の使用ルールを教えてください。',
         a:'駐車場は管理組合との使用契約に基づき使用します。管理費等を滞納している場合は使用が制限・停止されます。また滞納中は新規申込みができません。',
-        refs:[{type:'k',id:'k15',label:'第15条（駐車場の使用）'},{type:'k',id:'k16',label:'第15条の2（駐車場使用制限）'},{type:'h',id:'h88',label:'第7編 滞納対応細則 第16条'}] },
+        refs:[{type:'k',id:'k15',label:'第15条（駐車場の使用）'},{type:'k',id:'k15b',label:'第15条の2（駐車場使用制限）'},{type:'h',id:'h70',label:'第7編 滞納対応細則 第16条'}] },
       { q:'暴力団員が入居している場合はどうなりますか？',
         a:'暴力団員等への専有部分の貸与・売却は禁止されています。発覚した場合、管理組合は使用停止・契約解除を求めることができます。',
-        refs:[{type:'k',id:'k21',label:'第19条の2（暴力団員の排除）'}] },
+        refs:[{type:'k',id:'k19b',label:'第19条の2（暴力団員の排除）'}] },
       { q:'敷地内の空き地に一時的に車を停めたいと言われたらどうしますか？',
         a:'原則禁止です。安全上支障がなく一時的な必要性がある場合に限り、理事会決議で期間・条件を定めて許可できます。緊急時は理事長が暫定的に許可し、事後に理事会へ報告して承認を得ます。許可は専用使用権を生じさせるものではなく、理由を示さずいつでも撤回できます。',
-        refs:[{type:'h',id:'h12',label:'第1編 一般管理細則 第9条（使用細則への委任等）'}] },
+        refs:[{type:'h',id:'h9',label:'第1編 一般管理細則 第9条（使用細則への委任等）'}] },
       { q:'壁に穴を開けたい・重い物を運び込みたいと相談されたら？',
         a:'建物の構造・耐久性・外観に影響する変更、他住戸に影響する設備の新設・変更、500kg超の重量物の搬入、冷暖房配管等のための壁の無断貫通は禁止です。',
-        refs:[{type:'h',id:'h16',label:'第2編 生活使用細則 第2条（専有部分の構造変更等）'}] },
+        refs:[{type:'h',id:'h13',label:'第2編 生活使用細則 第2条（専有部分の構造変更等）'}] },
       { q:'西側空き地に来客が一時的に車を停めたいと言ってきたら？',
         a:'訪問客または専有部分工事に係る業者に限り、事前承認・期間・条件付きで臨時駐車できます。住戸番号等の車両表示と連絡先の届出が必要です。専用使用権は生じず、支障が出れば移動を命じられます。',
-        refs:[{type:'h',id:'h18',label:'第2編 生活使用細則 第4条（共用部分の使用）'}] },
+        refs:[{type:'h',id:'h15',label:'第2編 生活使用細則 第4条（共用部分の使用）'}] },
       { q:'バルコニーの避難経路を塞いでいる・物が多いと苦情が来たら？',
         a:'避難経路を妨げる物の放置は禁止です。違反があった場合、理事長は理事会の決議を経て勧告または指示を行うことができます。',
-        refs:[{type:'h',id:'h20',label:'第2編 生活使用細則 第6条（バルコニー等の使用）'},{type:'h',id:'h25',label:'第2編 生活使用細則 第11条（是正措置）'},{type:'k',id:'k81',label:'第67条（理事長の勧告及び指示等）'}] },
+        refs:[{type:'h',id:'h17',label:'第2編 生活使用細則 第6条（バルコニー等の使用）'},{type:'h',id:'h22',label:'第2編 生活使用細則 第11条（是正措置）'},{type:'k',id:'k80',label:'第67条（理事長の勧告及び指示等）'}] },
       { q:'ペットの鳴き声・共用部での扱いに苦情が来たら？',
         a:'飼育は室内に限ります。共用部分では抱えて移動し、近隣に迷惑を及ぼす鳴き声等は禁止です。',
-        refs:[{type:'h',id:'h23',label:'第2編 生活使用細則 第9条（ペットの飼育）'}] },
+        refs:[{type:'h',id:'h20',label:'第2編 生活使用細則 第9条（ペットの飼育）'}] },
       { q:'長期不在にすると言われた場合はどうしますか？',
         a:'1か月以上の長期不在は管理組合へ届出が必要です。',
-        refs:[{type:'h',id:'h24',label:'第2編 生活使用細則 第10条（届出義務）'}] },
+        refs:[{type:'h',id:'h21',label:'第2編 生活使用細則 第10条（届出義務）'}] },
     ]
   },
   // ===== カテゴリ3: 総会・理事会の運営 =====
@@ -2619,58 +2337,55 @@ const RMOS_FAQ = [
     qa:[
       { q:'総会の招集手続きはどうなっていますか？',
         a:'少なくとも会議を開く日の2週間前までに、開催日時・場所・目的等を記載した書面を全組合員に通知します。緊急の場合は理事会決議で短縮できます。',
-        refs:[{type:'k',id:'k56',label:'第43条（招集手続）'}] },
+        refs:[{type:'k',id:'k43',label:'第43条（招集手続）'}] },
       { q:'総会の定足数と議決要件はどのくらいですか？',
         a:'通常決議は議決権総数の過半数が出席し、出席者の過半数の賛成で可決です。規約改正等の特別決議は出席組合員・議決権各4分の3以上の賛成が必要です。',
-        refs:[{type:'k',id:'k60',label:'第47条（総会決議要件）'},{type:'k',id:'k61',label:'第48条（議決事項）'}] },
+        refs:[{type:'k',id:'k47',label:'第47条（総会決議要件）'},{type:'k',id:'k48',label:'第48条（議決事項）'}] },
       { q:'委任状と議決権行使書の違いは何ですか？',
         a:'委任状は他の組合員等に議決権を委任するものです。議決権行使書は賛否を記入して事前提出するものです。どちらも出席したものとみなされ定足数に算入されます。',
-        refs:[{type:'k',id:'k59',label:'第46条（議決権）'},{type:'k',id:'k60',label:'第47条（総会決議要件）'}] },
+        refs:[{type:'k',id:'k46',label:'第46条（議決権）'},{type:'k',id:'k47',label:'第47条（総会決議要件）'}] },
       { q:'書面決議（みなし総会）とはどういうものですか？',
         a:'総会を開かずに全組合員の書面による合意があった場合、総会の決議と同じ効力を持ちます。ただし組合員全員の合意が必要です。',
-        refs:[{type:'k',id:'k64',label:'第50条（書面による決議）'}] },
+        refs:[{type:'k',id:'k50',label:'第50条（書面による決議）'}] },
       { q:'理事会はどのように運営されますか？',
         a:'理事をもって構成し、管理組合の業務執行を決定します。理事の過半数が出席し、出席理事の過半数で決議します。',
-        refs:[{type:'k',id:'k65',label:'第51条（理事会）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'}] },
+        refs:[{type:'k',id:'k51',label:'第51条（理事会）'},{type:'k',id:'k53',label:'第53条（理事会の会議及び議事）'}] },
       { q:'役員の任期はどのくらいですか？',
-        a:'役員の任期は原則1年で、再任を妨げません。任期満了後も、後任者が選任されるまでは引き続き職務を行います。ただし、渉外理事・修繕理事などの専門理事については、業務の継続性を確保するため、総会の決議により任期を2年とすることができます。',
-        refs:[{type:'k',id:'k44',label:'第36条（役員の任期）'}] },
-      { q:'単身赴任や高齢などの事情で理事に就任できない場合はどうすればよいですか？',
-        a:'単身赴任・長期出張その他一時的な事由で職務遂行が困難な場合は、申出により理事会の承認をもって就任を次順位に順延できます。また満80歳以上で本人が希望しない場合、または傷病により職務遂行が困難な場合は、申出により理事会の承認をもって就任を免除できます。傷病を理由とする免除の申出には医師の診断書の添付が必要です。その他の具体的な取扱いは理事会が別に定めます。',
-        refs:[{type:'k',id:'k46',label:'第36条の3（役員就任の順延及び免除）'}] },
+        a:'役員の任期は2年です。再任は妨げません。補欠役員の任期は前任者の残任期間です。',
+        refs:[{type:'k',id:'k36',label:'第36条（役員の任期）'}] },
       { q:'監事にはどのような権限がありますか？',
         a:'管理組合の業務執行・財産状況を監査し総会に報告する権限を持ちます。不正発見時の臨時総会招集権、帳簿等の資料提出請求権（拒否禁止）、専門家委嘱権も認められています。',
-        refs:[{type:'k',id:'k54',label:'第41条（監事）'}] },
+        refs:[{type:'k',id:'k41',label:'第41条（監事）'}] },
       { q:'理事会はいつ開くものですか？',
         a:'原則2か月に1回以上、定例で開催します。年度当初に日程を決定し組合員に周知します。緊急時等は理事長が臨時理事会を招集できます。',
-        refs:[{type:'h',id:'h113',label:'第9編 理事会運営細則 第7条（定例理事会）'},{type:'h',id:'h114',label:'第9編 理事会運営細則 第8条（臨時理事会）'}] },
+        refs:[{type:'h',id:'h109',label:'第9編 理事会運営細則 第7条（定例理事会）'},{type:'h',id:'h110',label:'第9編 理事会運営細則 第8条（臨時理事会）'}] },
       { q:'理事会の招集通知はいつまでに出しますか？',
         a:'開催日の7日前までに、開催日時・場所・議題を記載した通知を発します。緊急の場合は期間を短縮し、電話・メール等によることができます。全員の同意があれば招集手続を省略できます。',
-        refs:[{type:'h',id:'h115',label:'第9編 理事会運営細則 第9条（招集手続）'}] },
+        refs:[{type:'h',id:'h111',label:'第9編 理事会運営細則 第9条（招集手続）'}] },
       { q:'理事会の決議は何人の賛成で成立しますか？',
         a:'出席理事の過半数で決議します。可否同数の場合は議長が決します。特別の利害関係を有する理事は議決に加わることができません。',
-        refs:[{type:'h',id:'h121',label:'第9編 理事会運営細則 第15条（決議の方法）'},{type:'h',id:'h122',label:'第9編 理事会運営細則 第16条（特別利害関係理事の除外）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'}] },
+        refs:[{type:'h',id:'h117',label:'第9編 理事会運営細則 第15条（決議の方法）'},{type:'h',id:'h118',label:'第9編 理事会運営細則 第16条（特別利害関係理事の除外）'},{type:'k',id:'k66',label:'第53条（理事会の会議及び議事）'}] },
       { q:'緊急で理事会を開けないとき意思決定できますか？',
         a:'理事長がLINE・電子メール等の電磁的方法で全理事の意思確認を行い、過半数の賛成があれば暫定的に業務を執行できます。次回理事会で必ず報告・審議のうえ正式に追認しなければなりません。追認が得られなければ原状回復等の措置を講じます。',
-        refs:[{type:'h',id:'h125',label:'第9編 理事会運営細則 第19条（電磁的方法による意思確認と追認）'}] },
+        refs:[{type:'h',id:'h121',label:'第9編 理事会運営細則 第19条（電磁的方法による意思確認と追認）'}] },
       { q:'理事会を開かずに決議したい（書面決議）ときはどうしますか？',
         a:'専有部分工事の承認・不承認に関する事項に限れば、理事の過半数の承諾で書面決議ができます。それ以外の事項でも、理事全員の同意があれば会議を開かず書面決議で決定できます。',
-        refs:[{type:'h',id:'h124',label:'第9編 理事会運営細則 第18条（書面決議）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'}] },
+        refs:[{type:'h',id:'h120',label:'第9編 理事会運営細則 第18条（書面決議）'},{type:'k',id:'k66',label:'第53条（理事会の会議及び議事）'}] },
       { q:'理事会議事録はいつまでに作成し、誰が署名しますか？',
         a:'開催後2週間以内に理事長が作成します。議長（理事長）と、出席理事の中から互選された署名人2名が署名押印します。紙・デジタルデータの双方で保管し、保管期間は10年間です。',
-        refs:[{type:'h',id:'h126',label:'第9編 理事会運営細則 第20条（議事録の作成）'},{type:'h',id:'h128',label:'第9編 理事会運営細則 第22条（議事録の署名）'},{type:'h',id:'h129',label:'第9編 理事会運営細則 第23条（議事録の保管・開示）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'},{type:'k',id:'k62',label:'第49条（議事録の作成、保管等）'}] },
+        refs:[{type:'h',id:'h122',label:'第9編 理事会運営細則 第20条（議事録の作成）'},{type:'h',id:'h124',label:'第9編 理事会運営細則 第22条（議事録の署名）'},{type:'h',id:'h125',label:'第9編 理事会運営細則 第23条（議事録の保管・開示）'},{type:'k',id:'k66',label:'第53条（理事会の会議及び議事）'},{type:'k',id:'k61',label:'第49条（議事録の作成、保管等）'}] },
       { q:'理事を退任するとき何を引き継ぎますか？',
         a:'保管文書の所在、パスワード・認証情報、進行中案件の状況、管理会社・弁護士等の連絡先、銀行口座・印鑑・鍵類を引き継ぎます。原則として総会承認後2週間以内に完了し、引継書に新旧役員が署名押印します。',
-        refs:[{type:'h',id:'h132',label:'第9編 理事会運営細則 第26条（引き継ぎの義務）'},{type:'h',id:'h133',label:'第9編 理事会運営細則 第27条（引き継ぎ事項）'}] },
+        refs:[{type:'h',id:'h128',label:'第9編 理事会運営細則 第26条（引き継ぎの義務）'},{type:'h',id:'h129',label:'第9編 理事会運営細則 第27条（引き継ぎ事項）'}] },
       { q:'渉外理事は理事長の代わりに何ができますか？',
         a:'理事会決議を経て理事長の代理人に指定された場合、弁護士等との連絡調整、滞納督促・交渉、内容証明の作成発送、訴訟等の法的手続の準備行為などを行えます。代理行為の法的効果は管理組合に帰属し、理事長が監督責任を負います。',
-        refs:[{type:'h',id:'h137',label:'第9編 理事会運営細則 第31条（理事長の代理）'}] },
+        refs:[{type:'h',id:'h133',label:'第9編 理事会運営細則 第31条（理事長の代理）'}] },
       { q:'専門委員会（修繕委員会など）を作りたいと言われたら？',
         a:'理事会が設立目的を定め委員を公募します。原則5名以上（軽微な事項なら3名以上も可）とし、設立後14日以内に取組方針等の報告書を理事会に提出します。委員会は決定権限を持たず、理事会の諮問機関にとどまります。',
-        refs:[{type:'h',id:'h121',label:'第9編 理事会運営細則 第15条（決議の方法）'},{type:'k',id:'k69',label:'第55条（専門委員会の設置）'}] },
+        refs:[{type:'h',id:'h117',label:'第9編 理事会運営細則 第15条（決議の方法）'},{type:'k',id:'k68',label:'第55条（専門委員会の設置）'}] },
       { q:'電磁的方法（RMOS Pro等）はいつから使えるようになりますか？',
         a:'理事会が電磁的方法の運用基準を決議した時点から使用できます。理事全員の同意があれば会議を開かず書面決議で決めることもできます。総会の承認は不要ですが、新たに電磁的方法を採用するときは総会へ報告しなければなりません。',
-        refs:[{type:'k',id:'k91',label:'第73条（改正区分所有法への対応）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'}] },
+        refs:[{type:'k',id:'k90',label:'第73条（改正区分所有法への対応）'},{type:'k',id:'k66',label:'第53条（理事会の会議及び議事）'}] },
     ]
   },
   // ===== カテゴリ4: 管理費の滞納問題 =====
@@ -2679,49 +2394,49 @@ const RMOS_FAQ = [
     qa:[
       { q:'管理費等を滞納するとどうなりますか？',
         a:'理事長は書面等で催告します。それでも支払いがない場合は訴訟提起予定通知→異議申立期間（30日）→訴訟提起と段階的に法的措置を進めます。',
-        refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'},{type:'h',id:'h72',label:'第7編 滞納対応細則'}] },
+        refs:[{type:'k',id:'k60',label:'第60条（管理費等の徴収及び滞納対応）'},{type:'h',id:'h70',label:'第7編 滞納対応細則'}] },
       { q:'遅延損害金はいくらですか？',
-        a:'施行前（平成22年規約）の滞納分は年10%、令和8年7月19日以降は年14.6%の遅延損害金が発生します（弁護士確認済）。',
-        refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'},{type:'h',id:'h72',label:'第7編 滞納対応細則'}] },
+        a:'施行前（平成22年規約）の滞納分は年10%、令和8年5月17日以降は年14.6%の遅延損害金が発生します（弁護士確認済）。',
+        refs:[{type:'k',id:'k60',label:'第60条（管理費等の徴収及び滞納対応）'},{type:'h',id:'h70',label:'第7編 滞納対応細則'}] },
       { q:'弁済の充当順序はどうなっていますか？',
         a:'民法第489条の規定に従い、①費用→②遅延損害金→③管理費等元本の順に充当されます。',
-        refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'},{type:'h',id:'h72',label:'第7編 滞納対応細則'}] },
+        refs:[{type:'k',id:'k60',label:'第60条（管理費等の徴収及び滞納対応）'},{type:'h',id:'h70',label:'第7編 滞納対応細則'}] },
       { q:'滞納者の駐車場は止められますか？',
         a:'3か月以上の滞納がある場合、14日の猶予通知を行った上で駐車場使用を停止できます。また滞納中は新規申込みも受理しません。',
-        refs:[{type:'k',id:'k16',label:'第15条の2（駐車場使用制限）'},{type:'h',id:'h88',label:'第7編 滞納対応細則 第16条'}] },
+        refs:[{type:'k',id:'k15b',label:'第15条の2（駐車場使用制限）'},{type:'h',id:'h70',label:'第7編 滞納対応細則 第16条'}] },
       { q:'訴訟提起は総会決議が必要ですか？',
         a:'管理費等の回収に係る訴訟提起は、理事会の決議をもって足りるとされています（第60条第5項）。総会決議は不要です。',
-        refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'}] },
+        refs:[{type:'k',id:'k60',label:'第60条（管理費等の徴収及び滞納対応）'}] },
       { q:'弁護士費用は滞納者に請求できますか？',
         a:'相当因果関係のある範囲の費用（弁護士費用・訴訟費用等）は滞納者に請求できます。',
-        refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'}] },
+        refs:[{type:'k',id:'k60',label:'第60条（管理費等の徴収及び滞納対応）'}] },
       { q:'管理費等の先取特権とは何ですか？',
         a:'管理費等の債権は区分所有法第7条に基づく先取特権（法定担保物権）を有し、他の一般債権より優先して債務者の専有部分から回収できます。',
-        refs:[{type:'k',id:'k29',label:'第26条（承継人に対する債権の行使）'},{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'}] },
+        refs:[{type:'k',id:'k26',label:'第26条（承継人に対する債権の行使）'},{type:'k',id:'k60',label:'第60条（管理費等の徴収及び滞納対応）'}] },
       { q:'区分所有者が変わっても滞納はどうなりますか？',
         a:'特定承継人（購入者等）に対しても管理費等の支払いを請求できます。売却されても滞納債権は消滅しません。',
-        refs:[{type:'k',id:'k29',label:'第26条（承継人に対する債権の行使）'}] },
+        refs:[{type:'k',id:'k26',label:'第26条（承継人に対する債権の行使）'}] },
       { q:'滞納者への対応方法を聞かれたら、まずどこを見ますか？',
         a:'滞納対応細則（第7編）の規定によります。',
-        refs:[{type:'h',id:'h11',label:'第1編 一般管理細則 第8条（滞納への対応）'}] },
+        refs:[{type:'h',id:'h8',label:'第1編 一般管理細則 第8条（滞納への対応）'}] },
       { q:'支払いが遅れている組合員にいつ督促を出しますか？',
         a:'支払期限から14日経過した時点で督促状を発送します（滞納額・支払期限を明記し、受領後7日以内の支払いを求めます）。30日経過した時点で内容証明郵便（民法第150条の催告）を発送します。',
-        refs:[{type:'h',id:'h75',label:'第7編 滞納対応細則 第3条（督促状の発送時期）'},{type:'h',id:'h77',label:'第7編 滞納対応細則 第5条（内容証明郵便の発送）'}] },
+        refs:[{type:'h',id:'h71',label:'第7編 滞納対応細則 第3条（督促状の発送時期）'},{type:'h',id:'h73',label:'第7編 滞納対応細則 第5条（内容証明郵便の発送）'}] },
       { q:'180日以上滞納が続いている場合、次はどうしますか？',
         a:'原則として理事会で法的措置への移行を決議します。強制執行認諾文言付き公正証書による分割返済契約が締結され履行中である場合は例外とし、その理由を議事録に記録します。',
-        refs:[{type:'h',id:'h79',label:'第7編 滞納対応細則 第7条（法的措置の実施時期）'}] },
+        refs:[{type:'h',id:'h75',label:'第7編 滞納対応細則 第7条（法的措置の実施時期）'}] },
       { q:'分割返済を求められたら応じてよいですか？',
         a:'強制執行認諾文言付き公正証書を作成しない限り分割契約は成立しません。期間は最長24か月以内です。新たな滞納や支払遅延が生じれば期限の利益を喪失し、直ちに法的措置へ移行します。',
-        refs:[{type:'h',id:'h81',label:'第7編 滞納対応細則 第9条（公正証書）'},{type:'h',id:'h82',label:'第7編 滞納対応細則 第10条（分割返済）'}] },
+        refs:[{type:'h',id:'h77',label:'第7編 滞納対応細則 第9条（公正証書）'},{type:'h',id:'h78',label:'第7編 滞納対応細則 第10条（分割返済）'}] },
       { q:'滞納額が50万円未満かどうかで対応は変わりますか？',
         a:'50万円未満は公正証書の作成が原則です。ただし債務者が協議に応じない、所在不明、悪質な滞納、競売開始決定等の場合は直ちに訴訟を提起できます。',
-        refs:[{type:'h',id:'h80',label:'第7編 滞納対応細則 第8条（法的措置の選択）'}] },
+        refs:[{type:'h',id:'h76',label:'第7編 滞納対応細則 第8条（法的措置の選択）'}] },
       { q:'滞納者の駐車場はすぐに止められますか？',
         a:'3か月以上滞納していても、理事会決議・通知のみでの一方的な使用停止・解除はできません。本人の書面同意、または確定判決等の執行力ある債務名義が必要です。新規申込みも滞納を理由に拒否できません。',
-        refs:[{type:'h',id:'h88',label:'第7編 滞納対応細則 第16条（駐車場使用制限）'},{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'}] },
+        refs:[{type:'h',id:'h84',label:'第7編 滞納対応細則 第16条（駐車場使用制限）'},{type:'k',id:'k73',label:'第60条（管理費等の徴収及び滞納対応）'}] },
       { q:'滞納している組合員が亡くなった場合はどうしますか？',
         a:'相続人を調査して請求します。相続放棄または不存在が確認された場合は、原則として相続財産管理人の選任を申し立てます。',
-        refs:[{type:'h',id:'h87',label:'第7編 滞納対応細則 第15条（相続人への請求）'}] },
+        refs:[{type:'h',id:'h83',label:'第7編 滞納対応細則 第15条（相続人への請求）'}] },
     ]
   },
   // ===== カテゴリ5: 専有部分について =====
@@ -2730,10 +2445,10 @@ const RMOS_FAQ = [
     qa:[
       { q:'専有部分をリフォームしたい場合はどうすればよいですか？',
         a:'事前に理事長へ申請し、承認を得る必要があります。工事は管理規約・細則の定める方法で行い、共用部分に影響する工事は別途手続きが必要です。',
-        refs:[{type:'k',id:'k18',label:'第17条（専有部分の修繕等）'},{type:'h',id:'h59',label:'第6編 専有部分工事管理細則'}] },
+        refs:[{type:'k',id:'k17',label:'第17条（専有部分の修繕等）'},{type:'h',id:'h55',label:'第6編 専有部分工事管理細則'}] },
       { q:'専有部分を賃貸に出してもよいですか？',
         a:'賃貸に出すこと自体は可能ですが、賃借人にも管理規約・細則を遵守させる義務があります。また賃貸開始時に理事長への届出が必要です。',
-        refs:[{type:'k',id:'k20',label:'第19条（専有部分の貸与）'}] },
+        refs:[{type:'k',id:'k19',label:'第19条（専有部分の貸与）'}] },
     ]
   },
   // ===== カテゴリ6: 共用部分について =====
@@ -2742,10 +2457,10 @@ const RMOS_FAQ = [
     qa:[
       { q:'共用部分の管理は誰が行いますか？',
         a:'管理組合が行います。保存行為は理事長が単独で行えます。変更・大規模修繕等は総会決議が必要です。',
-        refs:[{type:'k',id:'k23',label:'第21条（敷地及び共用部分等の管理）'},{type:'k',id:'k24',label:'第22条（共用部分の保存等）'}] },
+        refs:[{type:'k',id:'k21',label:'第21条（敷地及び共用部分等の管理）'},{type:'k',id:'k22',label:'第22条（共用部分の保存等）'}] },
       { q:'共用部分への立入りを拒否できますか？',
         a:'管理上必要な場合、理事長等は専有部分・専用使用部分への立入りを請求できます。正当な理由なく拒否した場合は損害賠償責任が生じます。',
-        refs:[{type:'k',id:'k25',label:'第23条（必要箇所への立入り等）'}] },
+        refs:[{type:'k',id:'k23',label:'第23条（必要箇所への立入り等）'}] },
     ]
   },
   // ===== カテゴリ7: 修繕工事 =====
@@ -2754,10 +2469,10 @@ const RMOS_FAQ = [
     qa:[
       { q:'修繕積立金はどのように使われますか？',
         a:'共用部分の大規模修繕工事・建替え・その他特別の管理に要する費用に充当されます。目的外への流用は原則禁止です。',
-        refs:[{type:'k',id:'k31',label:'第28条（修繕積立金）'}] },
+        refs:[{type:'k',id:'k28',label:'第28条（修繕積立金）'}] },
       { q:'長期修繕計画とは何ですか？',
         a:'将来の修繕工事を計画的に実施するための計画書です。理事会は長期修繕計画の作成・見直しを行い、修繕積立金の額の見直しを行います。',
-        refs:[{type:'k',id:'k37',label:'第32条（管理組合が行う業務）'},{type:'k',id:'k68',label:'第54条（理事会の決議事項）'}] },
+        refs:[{type:'k',id:'k32',label:'第32条（管理組合が行う業務）'},{type:'k',id:'k54',label:'第54条（理事会の決議事項）'}] },
     ]
   },
   // ===== カテゴリ8: 売買・賃貸 =====
@@ -2766,10 +2481,10 @@ const RMOS_FAQ = [
     qa:[
       { q:'部屋を売却するとき管理費の滞納はどうなりますか？',
         a:'滞納管理費等は購入者（特定承継人）に対しても請求できます。売却前に完納することが求められます。',
-        refs:[{type:'k',id:'k29',label:'第26条（承継人に対する債権の行使）'}] },
+        refs:[{type:'k',id:'k26',label:'第26条（承継人に対する債権の行使）'}] },
       { q:'組合員の資格はいつ取得・喪失しますか？',
         a:'区分所有権を取得した時点で組合員の資格を取得し、喪失した時点で資格を失います。',
-        refs:[{type:'k',id:'k33',label:'第30条（組合員の資格）'}] },
+        refs:[{type:'k',id:'k30',label:'第30条（組合員の資格）'}] },
     ]
   },
   // ===== カテゴリ9: 管理業務の委託 =====
@@ -2778,10 +2493,10 @@ const RMOS_FAQ = [
     qa:[
       { q:'管理会社に業務を委託する場合の手続きは？',
         a:'管理業務の委託契約は理事会が業者を選定し、総会で承認を得ます。契約内容・金額は総会議決事項です。',
-        refs:[{type:'k',id:'k39',label:'第33条（管理業務の委託）'},{type:'k',id:'k61',label:'第48条（議決事項）'}] },
+        refs:[{type:'k',id:'k33',label:'第33条（管理業務の委託）'},{type:'k',id:'k48',label:'第48条（議決事項）'}] },
       { q:'外部の専門家（第三者管理）を理事長にできますか？',
         a:'区分所有者以外の第三者が理事長・管理者となる第三者管理方式を採用できます。採用には総会の決議が必要で、監事による月次報告受領・資料請求等の監視体制が義務づけられます。',
-        refs:[{type:'k',id:'k42',label:'第35条の2（第三者理事長及び外部管理者方式）'},{type:'k',id:'k43',label:'第35条の3（外部管理者方式の特則）'},{type:'k',id:'k54',label:'第41条（監事）'}] },
+        refs:[{type:'k',id:'k35b',label:'第35条の2（第三者理事長及び外部管理者方式）'},{type:'k',id:'k35c',label:'第35条の3（外部管理者方式の特則）'},{type:'k',id:'k41',label:'第41条（監事）'}] },
     ]
   },
   // ===== カテゴリ10: その他 =====
@@ -2790,13 +2505,13 @@ const RMOS_FAQ = [
     qa:[
       { q:'所在不明の区分所有者への対応はどうなっていますか？',
         a:'所在等の探索を行い、不明のまま一定期間が経過した場合は裁判所への申立により総会決議の除外や専有部分管理命令の申立ができます。',
-        refs:[{type:'k',id:'k82',label:'第67条の2（区分所有者の所在等の探索）'},{type:'k',id:'k83',label:'第67条の3（所在等不明区分所有者の除外）'},{type:'k',id:'k84',label:'第67条の4（所有者不明専有部分管理命令）'}] },
+        refs:[{type:'k',id:'k67b',label:'第67条の2（区分所有者の所在等の探索）'},{type:'k',id:'k67c',label:'第67条の3（所在等不明区分所有者の除外）'},{type:'k',id:'k67d',label:'第67条の4（所有者不明専有部分管理命令）'}] },
       { q:'防火管理者はどのように選任されますか？',
         a:'消防法に基づき防火管理者を選任し、消防計画を作成します。理事長が管理します。',
-        refs:[{type:'k',id:'k38',label:'第32条の2（防火管理者）'}] },
+        refs:[{type:'k',id:'k32b',label:'第32条の2（防火管理者）'}] },
       { q:'義務違反者に対してどのような措置が取れますか？',
         a:'理事長は勧告・指示を行い、それでも是正されない場合は総会決議により行為の停止・専有部分の使用禁止・競売請求等の法的措置が取れます。',
-        refs:[{type:'k',id:'k80',label:'第66条（義務違反者に対する措置）'},{type:'k',id:'k81',label:'第67条（理事長の勧告及び指示等）'}] },
+        refs:[{type:'k',id:'k66',label:'第66条（義務違反者に対する措置）'},{type:'k',id:'k67',label:'第67条（理事長の勧告及び指示等）'}] },
     ]
   },
   // ===== カテゴリ11: 集会室の使用 =====
@@ -2804,19 +2519,19 @@ const RMOS_FAQ = [
     qa:[
       { q:'集会室を借りたいと言われたらどうしますか？',
         a:'使用日の2日前までに所定の方法で申請し、承認を受けます。対象は組合員・占有者です（理事会が認めた場合は例外があります）。',
-        refs:[{type:'h',id:'h27',label:'第3編 集会室使用細則 第2条（使用資格）'},{type:'h',id:'h29',label:'第3編 集会室使用細則 第4条（使用手続）'}] },
+        refs:[{type:'h',id:'h24',label:'第3編 集会室使用細則 第2条（使用資格）'},{type:'h',id:'h26',label:'第3編 集会室使用細則 第4条（使用手続）'}] },
       { q:'集会室の使用料はいくらですか・無料になる場合は？',
         a:'非営利目的は1時間200円、営利目的は1時間400円です（1時間未満も1時間として扱います）。総会・理事会等の公式会議、理事会が承認した防災訓練・住民説明会、非営利の管理運営目的での利用は無料です。',
-        refs:[{type:'h',id:'h30',label:'第3編 集会室使用細則 第5条（使用料）'}] },
+        refs:[{type:'h',id:'h27',label:'第3編 集会室使用細則 第5条（使用料）'}] },
       { q:'使用希望が重なったらどちらを優先しますか？',
         a:'原則として申込受付順です。災害等非常時、葬儀での利用、理事長が招集した理事会等での利用は優先されます。',
-        refs:[{type:'h',id:'h31',label:'第3編 集会室使用細則 第6条（使用順位）'}] },
+        refs:[{type:'h',id:'h28',label:'第3編 集会室使用細則 第6条（使用順位）'}] },
       { q:'使用後に汚損・破損があった場合はどうなりますか？',
         a:'原状回復に要する費用を使用者が負担します。',
-        refs:[{type:'h',id:'h33',label:'第3編 集会室使用細則 第8条（損害賠償）'}] },
+        refs:[{type:'h',id:'h30',label:'第3編 集会室使用細則 第8条（損害賠償）'}] },
       { q:'キャンセルしたら使用料は戻りますか？',
         a:'原則として返還しません。管理組合都合による中止の場合は例外です。',
-        refs:[{type:'h',id:'h30',label:'第3編 集会室使用細則 第5条（使用料）'}] },
+        refs:[{type:'h',id:'h27',label:'第3編 集会室使用細則 第5条（使用料）'}] },
     ]
   },
   // ===== カテゴリ12: 防犯カメラの運用 =====
@@ -2824,25 +2539,25 @@ const RMOS_FAQ = [
     qa:[
       { q:'防犯カメラの映像を見たいと言われたら？',
         a:'管理組合所定の書面で理事長に申請してもらいます。発生日時・場所・具体的事実を明記し、理事長が受理後、理事会に付議します。',
-        refs:[{type:'h',id:'h41',label:'第4編 防犯カメラ運用細則 第6条（閲覧の申請）'}] },
+        refs:[{type:'h',id:'h38',label:'第4編 防犯カメラ運用細則 第6条（閲覧の申請）'}] },
       { q:'防犯カメラの映像を実際に見せてよいですか？',
         a:'犯罪行為等が発生した場合、その予防保全措置として必要な場合、捜査機関から法令に基づく要請があった場合、理事会が相当の理由により必要と認めた場合に限ります。必要最小限の範囲で、理事会決議を経て複数名の立会いのもとで実施します。',
-        refs:[{type:'h',id:'h42',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'}] },
+        refs:[{type:'h',id:'h39',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'}] },
       { q:'緊急で今すぐ映像を見る必要があるときはどうしますか？',
         a:'理事長の判断で先に閲覧できます。事後速やかに理事会へ報告し、承認を得ます。',
-        refs:[{type:'h',id:'h42',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'}] },
+        refs:[{type:'h',id:'h39',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'}] },
       { q:'警察から映像の提供を求められたらどうしますか？',
         a:'法令に基づく要請であれば提供できます（第三者提供禁止の例外にあたります）。',
-        refs:[{type:'h',id:'h42',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'},{type:'h',id:'h43',label:'第4編 防犯カメラ運用細則 第8条（第三者提供）'}] },
+        refs:[{type:'h',id:'h39',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'},{type:'h',id:'h40',label:'第4編 防犯カメラ運用細則 第8条（第三者提供）'}] },
       { q:'被害者本人に映像を見せてほしいと言われたら？',
         a:'理事会決議を経て、必要最小限の範囲で提供できます。',
-        refs:[{type:'h',id:'h43',label:'第4編 防犯カメラ運用細則 第8条（第三者提供）'}] },
+        refs:[{type:'h',id:'h40',label:'第4編 防犯カメラ運用細則 第8条（第三者提供）'}] },
       { q:'防犯カメラの映像はどれくらい残っていますか？',
         a:'自動上書き方式で、原則30日間保存します。事故・事件に関係する場合は除きます。保存期間経過後は復元できない方法で消去します。',
-        refs:[{type:'h',id:'h40',label:'第4編 防犯カメラ運用細則 第5条（録画及び保存）'}] },
+        refs:[{type:'h',id:'h37',label:'第4編 防犯カメラ運用細則 第5条（録画及び保存）'}] },
       { q:'映像を閲覧・提供した後にすべきことは何ですか？',
         a:'日時、目的、閲覧者氏名等を記録し、3年間保存します。閲覧・提供により知り得た情報の守秘義務は、役職を退任した後も継続します。',
-        refs:[{type:'h',id:'h44',label:'第4編 防犯カメラ運用細則 第9条（記録）'},{type:'h',id:'h45',label:'第4編 防犯カメラ運用細則 第10条（守秘義務）'}] },
+        refs:[{type:'h',id:'h41',label:'第4編 防犯カメラ運用細則 第9条（記録）'},{type:'h',id:'h42',label:'第4編 防犯カメラ運用細則 第10条（守秘義務）'}] },
     ]
   },
   // ===== カテゴリ13: 契約・業者選定 =====
@@ -2850,28 +2565,28 @@ const RMOS_FAQ = [
     qa:[
       { q:'業者との契約・見積りの進め方を聞かれたら？',
         a:'契約及び業者選定に関する細則（第5編）の手続によります。',
-        refs:[{type:'h',id:'h13',label:'第1編 一般管理細則 第10条（契約手続への委任）'}] },
+        refs:[{type:'h',id:'h10',label:'第1編 一般管理細則 第10条（契約手続への委任）'}] },
       { q:'いくらまでなら理事長だけで決めてよいですか？',
         a:'10万円未満は理事長の専決とすることができます（理事会への報告は必要です）。10万円以上100万円未満は理事会の承認が必要です。100万円以上は総会の承認が必要です。',
-        refs:[{type:'h',id:'h50',label:'第5編 契約及び業者選定細則 第4条（金額区分及び決定権限）'}] },
+        refs:[{type:'h',id:'h47',label:'第5編 契約及び業者選定細則 第4条（金額区分及び決定権限）'}] },
       { q:'見積りは何社取ればいいですか？',
         a:'10万円以上の契約は原則2社以上、100万円以上の契約は原則3社以上から見積りを取得します。特定業者に限定する合理的理由がある場合は、その理由を議事録に明記します。',
-        refs:[{type:'h',id:'h51',label:'第5編 契約及び業者選定細則 第5条（見積取得）'}] },
+        refs:[{type:'h',id:'h48',label:'第5編 契約及び業者選定細則 第5条（見積取得）'}] },
       { q:'理事の知り合いの業者に発注したいという話が出たら？',
         a:'契約相手と利害関係がある理事・監事は、その案件の審議・議決に参加できません。利益相反申告書の提出が必要です。',
-        refs:[{type:'h',id:'h53',label:'第5編 契約及び業者選定細則 第7条（利益相反の排除）'}] },
+        refs:[{type:'h',id:'h50',label:'第5編 契約及び業者選定細則 第7条（利益相反の排除）'}] },
       { q:'災害等で緊急対応が必要で見積りを待てないときは？',
         a:'理事長が契約を締結できます。事後速やかに理事会へ報告し、承認を得ます。',
-        refs:[{type:'h',id:'h54',label:'第5編 契約及び業者選定細則 第8条（緊急時対応）'}] },
+        refs:[{type:'h',id:'h51',label:'第5編 契約及び業者選定細則 第8条（緊急時対応）'}] },
       { q:'一番安い業者を選べばよいですか？',
         a:'価格だけでなく、技術力・実績、提案内容の妥当性、履行体制・保証内容、アフターサービス体制、財務状況等を総合的に評価します。',
-        refs:[{type:'h',id:'h52',label:'第5編 契約及び業者選定細則 第6条（評価方法）'}] },
+        refs:[{type:'h',id:'h49',label:'第5編 契約及び業者選定細則 第6条（評価方法）'}] },
       { q:'契約関連書類はいつまで保管しますか？',
         a:'見積書・比較表・評価資料・議事録・契約書は、契約終了後5年間保存します。',
-        refs:[{type:'h',id:'h56',label:'第5編 契約及び業者選定細則 第10条（記録及び保存）'}] },
+        refs:[{type:'h',id:'h53',label:'第5編 契約及び業者選定細則 第10条（記録及び保存）'}] },
       { q:'第三者管理方式を採用した場合、契約のルールはどう読みますか？',
         a:'細則中の「理事長」は「管理者」に、「理事会」は「監督機関」に読み替えます。契約金額にかかわらず管理者単独では決定できず、監督機関の承認を得たうえで監事の確認・承認も必要になります。',
-        refs:[{type:'h',id:'h50',label:'第5編 契約及び業者選定細則 第4条（金額区分及び決定権限）'},{type:'h',id:'h57',label:'第5編 契約及び業者選定細則 第11条（第三者管理方式における読み替え）'}] },
+        refs:[{type:'h',id:'h47',label:'第5編 契約及び業者選定細則 第4条（金額区分及び決定権限）'},{type:'h',id:'h54',label:'第5編 契約及び業者選定細則 第11条（第三者管理方式における読み替え）'}] },
     ]
   },
   // ===== カテゴリ14: 専有部分の工事 =====
@@ -2879,28 +2594,28 @@ const RMOS_FAQ = [
     qa:[
       { q:'工事業者の駐車・共用部分使用について聞かれたら？',
         a:'専有部分工事管理細則（第6編）の規定によります。',
-        refs:[{type:'h',id:'h12',label:'第1編 一般管理細則 第9条（使用細則への委任等）'}] },
+        refs:[{type:'h',id:'h9',label:'第1編 一般管理細則 第9条（使用細則への委任等）'}] },
       { q:'リフォームしたいと相談されたらどうしますか？',
         a:'所定様式で事前に届け出てもらいます。軽微な内装工事は理事長の承認、構造・設備・共用部分に影響する工事は理事会の承認が必要です。',
-        refs:[{type:'h',id:'h61',label:'第6編 専有部分工事管理細則 第3条（事前届出及び承認）'}] },
+        refs:[{type:'h',id:'h58',label:'第6編 専有部分工事管理細則 第3条（事前届出及び承認）'}] },
       { q:'業者に規約・細則を守らせたいが、どう周知しますか？',
         a:'工事着手前に管理組合が規約・細則一式を貸し出し、施工業者に内容を周知させます。区分所有者・施工業者は受領確認欄に署名し、工事完了後7日以内に返却します（複写・複製は禁止です）。',
-        refs:[{type:'h',id:'h62',label:'第6編 専有部分工事管理細則 第3条の2（規約・細則の貸出および遵守）'}] },
+        refs:[{type:'h',id:'h59',label:'第6編 専有部分工事管理細則 第3条の2（規約・細則の貸出および遵守）'}] },
       { q:'工事は何時から何時まで可能ですか・土日祝はどうですか？',
         a:'原則として午前9時から午後5時までです。工事関係者は午後6時までに退室します。日曜は工事不可。土曜・国民の祝日は軽微な工程に限り理事長の承認があれば可能です。年末年始（12月29日〜1月3日）は工事を認めません。',
-        refs:[{type:'h',id:'h64',label:'第6編 専有部分工事管理細則 第4条（工事時間及び退室義務）'}] },
+        refs:[{type:'h',id:'h60',label:'第6編 専有部分工事管理細則 第4条（工事時間及び退室義務）'}] },
       { q:'工事中、エントランスを資材置き場にしたいと言われたら？',
         a:'エントランスは搬入出のための一時的使用のみ可能です。作業・保管・待機等はできません。',
-        refs:[{type:'h',id:'h65',label:'第6編 専有部分工事管理細則 第5条（共用部分の使用及び責任）'}] },
+        refs:[{type:'h',id:'h61',label:'第6編 専有部分工事管理細則 第5条（共用部分の使用及び責任）'}] },
       { q:'工事車両はどこに停めますか？',
         a:'原則として西側空き地です。区分所有者の専用区画を業者に一時使用させる場合は事前の届出が必要です。車両には住戸番号・連絡先を明示します。',
-        refs:[{type:'h',id:'h66',label:'第6編 専有部分工事管理細則 第6条（工事車両の取扱い）'}] },
+        refs:[{type:'h',id:'h62',label:'第6編 専有部分工事管理細則 第6条（工事車両の取扱い）'}] },
       { q:'工事保証金は必ず取りますか？',
         a:'工事の内容・規模・共用部分への影響に照らし必要と認める場合のみ預託を求めます。完了後に損傷がなければ返還し、損傷があれば原状回復費用に充当します。',
-        refs:[{type:'h',id:'h67',label:'第6編 専有部分工事管理細則 第7条（工事保証金）'}] },
+        refs:[{type:'h',id:'h63',label:'第6編 専有部分工事管理細則 第7条（工事保証金）'}] },
       { q:'貸し出した規約・細則を返してもらえないときはどうしますか？',
         a:'管理組合は返却を督促し、必要に応じて実費相当額を請求できます。',
-        refs:[{type:'h',id:'h62',label:'第6編 専有部分工事管理細則 第3条の2（規約・細則の貸出および遵守）'}] },
+        refs:[{type:'h',id:'h59',label:'第6編 専有部分工事管理細則 第3条の2（規約・細則の貸出および遵守）'}] },
     ]
   },
   // ===== カテゴリ15: 駐車場使用の詳細手続き =====
@@ -2908,22 +2623,22 @@ const RMOS_FAQ = [
     qa:[
       { q:'滞納している組合員から駐車場の新規申込みがあったら？',
         a:'滞納を理由に申込みを拒否してはなりません（管理組合が受理しない取扱いとなります）。滞納そのものへの対応は別途の手続によります。',
-        refs:[{type:'h',id:'h92',label:'第8編 駐車場使用細則 第4条（滞納者の申込制限）'},{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'}] },
+        refs:[{type:'h',id:'h88',label:'第8編 駐車場使用細則 第4条（滞納者の申込制限）'},{type:'k',id:'k73',label:'第60条（管理費等の徴収及び滞納対応）'}] },
       { q:'駐車場が空いたら誰に割り当てますか？',
         a:'定期割当（2年ごと）は総会で抽選を行います。契約期間中に空き区画が生じた場合は申込みを受け付け、希望者が複数なら抽選します。',
-        refs:[{type:'h',id:'h96',label:'第8編 駐車場使用細則 第8条（割当方法）'}] },
+        refs:[{type:'h',id:'h92',label:'第8編 駐車場使用細則 第8条（割当方法）'}] },
       { q:'抽選に外れた人はどうなりますか？',
         a:'次回の定期抽選で優先枠（空くじなし）に参加できます。優先権は1回限りで、行使しなかった場合・区画を割り当てられた場合・区分所有者の資格を喪失した場合に消滅します。',
-        refs:[{type:'h',id:'h98',label:'第8編 駐車場使用細則 第10条（落選者の優先権）'}] },
+        refs:[{type:'h',id:'h94',label:'第8編 駐車場使用細則 第10条（落選者の優先権）'}] },
       { q:'駐車場の契約期間と更新方法を聞かれたら？',
         a:'契約期間は2年です。総会議案書に記載された定期抽選への参加が更新の申込みとなります。参加しなければ契約期間満了で終了します。',
-        refs:[{type:'h',id:'h100',label:'第8編 駐車場使用細則 第12条（契約期間・更新）'}] },
+        refs:[{type:'h',id:'h96',label:'第8編 駐車場使用細則 第12条（契約期間・更新）'}] },
       { q:'契約者以外の車が長時間停まっているときはどうしますか？',
         a:'契約車両以外の駐車は原則禁止です（代車・家族・来客の一時使用は除きます）。割当区画の転貸も禁止です（同様の一時的使用は除きます）。',
-        refs:[{type:'h',id:'h102',label:'第8編 駐車場使用細則 第14条（使用上の遵守事項）'},{type:'h',id:'h103',label:'第8編 駐車場使用細則 第15条（転貸禁止）'}] },
+        refs:[{type:'h',id:'h98',label:'第8編 駐車場使用細則 第14条（使用上の遵守事項）'},{type:'h',id:'h99',label:'第8編 駐車場使用細則 第15条（転貸禁止）'}] },
       { q:'専有部分を売却・賃貸したら駐車場契約はどうなりますか？',
         a:'譲渡または貸与した時点で、駐車場使用契約は効力を失います。',
-        refs:[{type:'h',id:'h104',label:'第8編 駐車場使用細則 第16条（区分所有権譲渡時の取扱い）'}] },
+        refs:[{type:'h',id:'h100',label:'第8編 駐車場使用細則 第16条（区分所有権譲渡時の取扱い）'}] },
     ]
   },
 ];
@@ -3119,9 +2834,7 @@ function rmFaqJump(type, id){
     setTimeout(()=>{
       const art = KIYAKU_DATA.find(a=>a.id===id);
       if(!art) return;
-      // 章で絞り込んでから、検索ボックスにlabelを入れて絞り込み（同名条文の章またぎヒットを防ぐ）
-      const kch = document.getElementById('kch');
-      if(kch){ kch.value = art.chapter; }
+      // 検索ボックスにlabelを入れて絞り込み
       const qi = document.getElementById('qi');
       if(qi){ qi.value=art.label; }
       searchK(art.label);
@@ -3136,9 +2849,6 @@ function rmFaqJump(type, id){
     setTimeout(()=>{
       const art = HOSOKU_DATA.find(a=>a.id===id);
       if(!art) return;
-      // 編で絞り込んでから、検索ボックスにlabelを入れて絞り込み（同名条文の編またぎヒットを防ぐ）
-      const hed = document.getElementById('hed');
-      if(hed){ hed.value = art.edition; }
       const qi = document.getElementById('qi');
       if(qi){ qi.value=art.label; }
       searchH(art.label);
@@ -3390,18 +3100,15 @@ async function rmPushSend() {
   }
   if (res) { res.style.display='block'; res.style.color='var(--tx2)'; res.textContent='送信中…'; }
   try {
-    const r = await fetch(PUSH_WORKER_URL + '/notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, body, secret: 'riji2026' })
-    });
+    const params = new URLSearchParams({ action: 'sendUrgentAlert', title, body });
+    const r = await fetch(GAS_URL + '?' + params.toString(), { method:'GET', mode:'cors' });
     const json = await r.json().catch(() => ({}));
-    if (r.ok) {
-      if (res) { res.style.color='#1a5276'; res.textContent=`✅ 送信完了（${json.sent ?? '?'}件）`; }
+    if (r.ok && json.result === 'ok') {
+      if (res) { res.style.color='#1a5276'; res.textContent='✅ 送信完了（Web Push・LINE同時配信）'; }
       document.getElementById('push-title').value = '';
       document.getElementById('push-body').value  = '';
     } else {
-      if (res) { res.style.color='#c0392b'; res.textContent='❌ 送信失敗：' + (json.error || r.status); }
+      if (res) { res.style.color='#c0392b'; res.textContent='❌ 送信失敗：' + (json.message || r.status); }
     }
   } catch(e) {
     if (res) { res.style.color='#c0392b'; res.textContent='❌ 通信エラー：' + e.message; }
