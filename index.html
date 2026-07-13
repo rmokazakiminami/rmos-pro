@@ -561,7 +561,14 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
           <label style="display:flex;align-items:center;gap:5px;font-size:13px">
             <input type="checkbox" id="np-target-repair"> 修繕委員会
           </label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--tx2)">
+            <input type="checkbox" id="np-target-system"> 🛠 システム（管理者テスト用）
+          </label>
         </div>
+        <div id="np-system-note" style="display:none;font-size:11px;color:#c0392b;margin-top:6px">テスト用：どこにも投稿されず、Push/LINE/カレンダー/メールも送信されません（投稿ログにのみ記録）。</div>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--bd)">
+          <input type="checkbox" id="np-line-broadcast"> 📱 LINEにも配信する（緊急・重要なときだけ／無料枠を消費します）
+        </label>
       </div>
       <!-- 掲載日 -->
       <div style="margin-bottom:10px">
@@ -774,6 +781,22 @@ function initNoticePostPanel() {
     const d = String(today.getDate()).padStart(2,'0');
     dateEl.value = y + '-' + m + '-' + d;
   }
+  // 「システム（管理者テスト用）」は他の配信先と排他にする（二重チェック事故防止）
+  const sysCb = document.getElementById('np-target-system');
+  const sysNote = document.getElementById('np-system-note');
+  const otherCbs = ['np-target-resident','np-target-board','np-target-repair']
+    .map(id => document.getElementById(id)).filter(Boolean);
+  if (sysCb && !sysCb.dataset.bound) {
+    sysCb.dataset.bound = '1';
+    sysCb.addEventListener('change', () => {
+      if (sysCb.checked) otherCbs.forEach(cb => cb.checked = false);
+      if (sysNote) sysNote.style.display = sysCb.checked ? 'block' : 'none';
+    });
+    otherCbs.forEach(cb => cb.addEventListener('change', () => {
+      if (cb.checked) sysCb.checked = false;
+      if (sysNote) sysNote.style.display = 'none';
+    }));
+  }
 }
 
 async function submitNotice() {
@@ -788,6 +811,7 @@ async function submitNotice() {
   const endTime  = document.getElementById('np-end-time')?.value || '';
   const link     = (document.getElementById('np-link')?.value  || '').trim();
   const replyReq = document.getElementById('np-reply-req')?.value || '';
+  const lineNotify = document.getElementById('np-line-broadcast')?.checked ? '1' : '0';
   const errEl    = document.getElementById('np-err');
   const resEl    = document.getElementById('np-result');
   const btn      = document.getElementById('np-btn');
@@ -804,6 +828,7 @@ async function submitNotice() {
   if (document.getElementById('np-target-resident')?.checked) targets.push('居住者');
   if (document.getElementById('np-target-board')?.checked)    targets.push('理事会');
   if (document.getElementById('np-target-repair')?.checked)   targets.push('修繕委員');
+  if (document.getElementById('np-target-system')?.checked)   targets.push('システム');
   if (!targets.length) {
     if (errEl) { errEl.textContent='配信先を選択してください。'; errEl.style.display='block'; }
     window._submitNoticeInProgress = false;
@@ -824,6 +849,7 @@ async function submitNotice() {
     body     : body,
     link     : link,
     targets  : targets.join(','),
+    lineNotify: lineNotify,
     poster   : '管理者（kanri）',
   });
 
@@ -832,7 +858,7 @@ async function submitNotice() {
     if (resEl) {
       resEl.style.display = 'block';
       resEl.style.color   = 'var(--gn)';
-      resEl.textContent   = '✅ 投稿完了・プッシュ通知送信済み（' + targets.join('・') + '）';
+      resEl.textContent   = '✅ 投稿完了・プッシュ通知送信済み（' + targets.join('・') + '）' + (lineNotify === '1' ? '＋LINE配信' : '');
     }
     // フォームをリセット
     document.getElementById('np-title').value = '';
@@ -844,6 +870,10 @@ async function submitNotice() {
     document.getElementById('np-target-resident').checked = true;
     document.getElementById('np-target-board').checked    = false;
     document.getElementById('np-target-repair').checked   = false;
+    document.getElementById('np-target-system').checked   = false;
+    const sysNote = document.getElementById('np-system-note');
+    if (sysNote) sysNote.style.display = 'none';
+    document.getElementById('np-line-broadcast').checked = false;
   } catch(e) {
     if (resEl) {
       resEl.style.display = 'block';
