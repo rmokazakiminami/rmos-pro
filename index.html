@@ -453,6 +453,88 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
     <div id="wendy-faq-content"></div>
   </div>
 
+  <!-- 駐車場申請・集会室申請 -->
+  <div id="sec-parking" class="sec">
+    <div style="max-width:560px;margin:0 auto;padding:8px 0">
+      <h2 style="font-size:17px;font-weight:700;margin:0 0 12px">🅿️ 駐車場一時使用申請</h2>
+      <div style="padding:16px;background:var(--sf);border:1px solid var(--bd);border-radius:10px;margin-bottom:14px">
+        <p style="font-size:14px;color:var(--tx);margin:0 0 4px;font-weight:600">🚧 現在調整中です</p>
+        <p style="font-size:13px;color:var(--tx2);margin:0">駐車場一時使用の申請フォームは現在ご利用いただけません。駐車場専門委員会での検討を経て、あらためてご案内します。お急ぎの場合は管理組合までお問い合わせください。</p>
+      </div>
+
+<hr style="border:none;border-top:1px solid var(--bd);margin:32px 0">
+
+      <h2 style="font-size:17px;font-weight:700;margin:0 0 12px">🏛 集会室使用申請</h2>
+      <p style="font-size:13px;color:var(--tx2);margin:0 0 14px">使用時間は原則9:00〜21:00です。使用日の2日前までに申請してください。使用料は使用開始前までに現金にて管理組合へお支払いください。</p>
+      <div id="meeting-form">
+        <div class="fg" style="margin-bottom:10px">
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">号室 <span style="color:red">*</span></label>
+          <input type="text" id="mt-room" placeholder="例：502" maxlength="10" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
+        </div>
+        <div class="fg" style="margin-bottom:10px">
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">氏名 <span style="color:red">*</span></label>
+          <input type="text" id="mt-name" placeholder="例：岡崎　太郎" maxlength="30" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
+        </div>
+        <div class="fg" style="margin-bottom:10px">
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">利用目的 <span style="color:red">*</span></label>
+          <input type="text" id="mt-purpose" placeholder="例：親睦会、サークル活動など" maxlength="50" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
+        </div>
+        <div class="fg" style="margin-bottom:10px">
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">利用区分 <span style="color:red">*</span></label>
+          <select id="mt-category" onchange="calcMeetingFee()" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
+            <option value="非営利">非営利（親睦・自治活動等）</option>
+            <option value="営利">営利（金銭の授受・収益目的を含む）</option>
+            <option value="無料">無料対象（総会・理事会・理事会承認の防災訓練等、居住者親睦）</option>
+          </select>
+        </div>
+        <div class="fg" style="margin-bottom:10px">
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">使用日 <span style="color:red">*</span></label>
+          <input type="date" id="mt-date" onchange="checkMeetingConflict()" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
+        </div>
+        <div style="display:flex;gap:10px">
+          <div class="fg" style="margin-bottom:10px;flex:1">
+            <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">開始時刻 <span style="color:red">*</span></label>
+            <input type="time" id="mt-start" oninput="calcMeetingFee();checkMeetingConflict()" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
+          </div>
+          <div class="fg" style="margin-bottom:10px;flex:1">
+            <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">終了時刻 <span style="color:red">*</span></label>
+            <input type="time" id="mt-end" oninput="calcMeetingFee();checkMeetingConflict()" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;box-sizing:border-box">
+          </div>
+        </div>
+        <div id="mt-conflict-wrap" style="display:none;margin-bottom:14px;padding:10px 14px;background:#FDECEA;border:1px solid #f5c6cb;border-radius:8px;font-size:13px;color:#c0392b"></div>
+        <div id="mt-time-warn" style="display:none;margin-bottom:14px;padding:10px 14px;background:#FFF3CD;border:1px solid #ffe08a;border-radius:8px;font-size:13px;color:#7c5c00"></div>
+        <div id="mt-fee-wrap" style="display:none;margin-bottom:14px;padding:12px 16px;background:var(--sf);border:1px solid var(--bd);border-radius:10px">
+          <div style="font-size:13px;color:var(--tx2);margin-bottom:4px">使用時間・料金（自動計算）</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span id="mt-fee-hours" style="font-size:14px;color:var(--tx)"></span>
+            <span id="mt-fee-amount" style="font-size:20px;font-weight:700;color:var(--ac)"></span>
+          </div>
+          <div style="font-size:11px;color:var(--tx3);margin-top:4px">※1時間未満の使用も1時間として計算（非営利200円/時間・営利400円/時間）</div>
+        </div>
+        <p style="font-size:12px;color:var(--tx3);margin:0 0 12px">※既存の予約状況を確認のうえ、申込順に管理組合が承認します。葬儀・理事会招集の会議等は優先扱いとなります。</p>
+        <button class="sbtn" onclick="submitMeeting()" id="mt-btn" style="max-width:260px;display:block;margin:0 auto">🏛 申請する</button>
+        <div id="mt-msg" style="margin-top:12px;text-align:center;font-size:13px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 申請承認（管理者用） -->
+  <div id="sec-approvals" class="sec">
+    <div style="max-width:640px;margin:0 auto;padding:8px 0">
+      <h2 style="font-size:17px;font-weight:700;margin:0 0 4px">✅ 申請承認</h2>
+      <p style="font-size:12px;color:var(--tx3);margin:0 0 16px">駐車場・集会室の一時使用申請を承認・却下できます。承認するとカレンダーに登録され、お知らせに掲示（許可証代わり）、プッシュ通知（全体向け）が送信されます。</p>
+
+      <h3 style="font-size:14px;font-weight:700;margin:20px 0 10px">🅿️ 駐車場一時使用申請</h3>
+      <p style="font-size:12px;color:var(--tx2);margin:0 0 16px;padding:10px 14px;background:var(--sf);border:1px solid var(--bd);border-radius:8px">🚧 申請フォームを調整中のため、現在この項目に申請は入りません。</p>
+      <div id="apv-parking-list" style="display:none"></div>
+      <div id="apv-parking-empty" style="display:none;text-align:center;padding:20px;color:var(--tx2);font-size:13px">未処理の申請はありません。</div>
+
+      <h3 style="font-size:14px;font-weight:700;margin:28px 0 10px">🏛 集会室使用申請</h3>
+      <div id="apv-meeting-list"></div>
+      <div id="apv-meeting-empty" style="display:none;text-align:center;padding:20px;color:var(--tx2);font-size:13px">未処理の申請はありません。</div>
+    </div>
+  </div>
+
   <!-- F群：理事会是正 -->
   <div id="sec-f-forms" class="sec">
     <div class="f-notice">
@@ -834,11 +916,11 @@ const AREA_TABS = {
   public:   [{s:'kiyaku',i:'📖',l:'規約'},{s:'hosoku',i:'📜',l:'細則'},{s:'gyakubiki',i:'🔍',l:'逆引き'},
              {s:'f-forms',i:'⚖️',l:'是正'},{s:'wendyfaq',i:'📚',l:'FAQ'},{s:'bousai',i:'🚨',l:'防災'}],
   resident: [{s:'notices',i:'📢',l:'お知らせ'},{s:'progress',i:'🏗',l:'工事'},
-             {s:'opinion',i:'📬',l:'意見箱'},{s:'answers',i:'💬',l:'回答'},{s:'myanswers',i:'🔒',l:'個別回答'}],
+             {s:'opinion',i:'📬',l:'意見箱'},{s:'answers',i:'💬',l:'回答'},{s:'myanswers',i:'🔒',l:'個別回答'},{s:'parking',i:'🅿️',l:'使用申請'}],
   board:    [{s:'minutes',i:'📄',l:'議事録'},{s:'board-notice',i:'📣',l:'お知らせ'},
-             {s:'progress',i:'🏗',l:'工事'},{s:'opinion-b',i:'📬',l:'意見箱'},{s:'answers-b',i:'💬',l:'回答'},{s:'myanswers-b',i:'🔒',l:'個別回答'}],
+             {s:'progress',i:'🏗',l:'工事'},{s:'opinion-b',i:'📬',l:'意見箱'},{s:'answers-b',i:'💬',l:'回答'},{s:'myanswers-b',i:'🔒',l:'個別回答'},{s:'parking',i:'🅿️',l:'使用申請'},{s:'approvals',i:'✅',l:'申請承認'}],
   repair:   [{s:'progress',i:'🏗',l:'工事'},{s:'repair-notice',i:'📢',l:'お知らせ'},
-             {s:'opinion-r',i:'📬',l:'意見箱'},{s:'answers-r',i:'💬',l:'回答'},{s:'myanswers-r',i:'🔒',l:'個別回答'}],
+             {s:'opinion-r',i:'📬',l:'意見箱'},{s:'answers-r',i:'💬',l:'回答'},{s:'myanswers-r',i:'🔒',l:'個別回答'},{s:'parking',i:'🅿️',l:'使用申請'}],
 };
 
 let curSec='kiyaku', curArea='public';
@@ -1465,6 +1547,7 @@ function goSec(name, opts){
   const RESIDENT_SECS=['notices','opinion','answers','myanswers'];
   const BOARD_SECS=['minutes','board-notice','opinion-b','answers-b','myanswers-b'];
   const REPAIR_SECS=['repair-notice','opinion-r','answers-r','myanswers-r'];
+  if(name==='approvals'&&!auth.kanri){return;}
   if(BOARD_SECS.includes(name)&&!auth.board){return;}
   if(REPAIR_SECS.includes(name)&&!auth.repair&&!auth.board){return;}
   if(RESIDENT_SECS.includes(name)&&!auth.resident&&!auth.board&&!auth.repair){return;}
@@ -1504,6 +1587,8 @@ function goSec(name, opts){
   else if(name==='myanswers-r'){const mr=document.getElementById('my-ans-list-r');const me=document.getElementById('my-ans-empty-r');if(mr)mr.innerHTML='';if(me)me.style.display='none';}
   if(name==='wendyfaq')renderWendyFAQPage();
   if(name==='minutes')renderMinutes();
+  // 駐車場一時使用申請は調整中のためrenderParking()呼び出しを停止（フォームDOM未生成のため）
+  if(name==='approvals')renderApprovals();
   window.scrollTo(0,0);
 }
 
@@ -2596,48 +2681,6 @@ function mail(){
 /* ===== Wendy-Net FAQ 連携（APIなし・キーワードマッチング） ===== */
 
 const RMOS_FAQ = [
-  // ===== カテゴリ0: 届出・申請の早見表（届出・申請ガイドブックより） =====
-  { cat:'todokede', catLabel:'届出・申請の早見表',
-    qa:[
-      { q:'届出・申請書類はどこに提出すればよいですか？',
-        a:'特に記載のない限り、すべて「管理組合用ポスト」へ投函してください。管理会社が回収のうえ、理事長・理事会又は担当理事に取り次ぎます。様式は管理組合が定める所定の書式を使用してください（理事会・管理会社にお問い合わせください）。',
-        refs:[{type:'h',id:'h4',label:'第1編 一般管理細則 第4条（届出及び申請）'}] },
-      { q:'新しく区分所有者になりました。何をすればよいですか？',
-        a:'区分所有者となったときは、規約・細則を受領します。あわせて住所・連絡先の変更があれば速やかに届け出てください。',
-        refs:[{type:'h',id:'h6',label:'第1編 一般管理細則 第4条の3（規約等の交付）'},{type:'k',id:'k22',label:'第20条（区分所有者の責務）'}] },
-      { q:'1か月以上マンションを空ける場合、届出は必要ですか？',
-        a:'必要です。長期不在（1か月以上）となる前に、管理組合へ長期不在届を提出してください。',
-        refs:[{type:'h',id:'h25',label:'第2編 生活使用細則 第10条（届出義務）'}] },
-      { q:'海外在住などで国内に管理人を置く場合の届出は？',
-        a:'国内管理人を選任・変更したときは、速やかに理事長へ届け出てください。',
-        refs:[{type:'k',id:'k35',label:'第31条の2（国内管理人）'}] },
-      { q:'専有部分の工事をしたいのですが、何が必要ですか？',
-        a:'着工前に、工事の事前届出・承認申請、工程表の提出、規約・細則の借用（施工業者への周知用）が必要です。管理組合から求められた場合は工事保険証券の写しも提出します。',
-        refs:[{type:'k',id:'k18',label:'第17条（専有部分の修繕等）'},{type:'h',id:'h66',label:'第6編 専有部分工事管理細則 第3条（事前届出及び承認）'},{type:'h',id:'h68',label:'第6編 専有部分工事管理細則 第3条の3（工程表の提出）'},{type:'h',id:'h67',label:'第6編 専有部分工事管理細則 第3条の2（規約・細則の貸出および遵守）'},{type:'h',id:'h73',label:'第6編 専有部分工事管理細則 第8条（工事保険加入）'}] },
-      { q:'引越しなどで共用部分を一時的に使いたい場合は？',
-        a:'共用部分の一時使用届（引越し等）を事前に提出してください。工事車両を駐車区画に停める場合も、事前の駐車区画使用届が必要です。',
-        refs:[{type:'h',id:'h70',label:'第6編 専有部分工事管理細則 第5条（共用部分の使用及び責任）'},{type:'h',id:'h71',label:'第6編 専有部分工事管理細則 第6条（工事車両の取扱い）'}] },
-      { q:'集会室を使いたいときはいつまでに申請すればよいですか？',
-        a:'使用日の2日前までに、所定の方法で申請し承認を受けてください。',
-        refs:[{type:'h',id:'h31',label:'第3編 集会室使用細則 第4条（使用手続）'}] },
-      { q:'防犯カメラの録画映像を見たい場合はどうすればよいですか？',
-        a:'随時、書面で理事長へ閲覧申請を行ってください。犯罪行為に準ずる事案が発生した場合など、一定の要件に該当する場合に限り閲覧できます。',
-        refs:[{type:'h',id:'h44',label:'第4編 防犯カメラ運用細則 第6条（閲覧の申請）'},{type:'h',id:'h45',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'}] },
-      { q:'役員に選ばれたが、事情があって就任できません。どうすればよいですか？',
-        a:'単身赴任・長期出張など一時的な事由の場合は「順延」、満80歳以上や傷病の場合は「免除」を、当該会計年度末（3月31日）までに申し出てください。期限を過ぎた申出は原則として対象になりません（ただし、やむを得ない事情がある場合はこの限りではありません）。順延した事由が解消したときは、速やかに届け出てください。',
-        refs:[{type:'k',id:'k46',label:'第36条の3（役員就任の順延及び免除）'}] },
-      { q:'総会の招集を組合員から求めることはできますか？',
-        a:'組合員総数・議決権総数の各5分の1以上の同意があれば、随時、総会招集を請求できます。',
-        refs:[{type:'k',id:'k57',label:'第44条（組合員の総会招集権）'}] },
-      { q:'管理費等を滞納してしまいました。相談できますか？',
-        a:'滞納が生じた場合は、お早めに分割納付のご相談をしてください。また、訴訟提起予定通知が届いた場合は、通知到達の日から30日以内であれば異議を申し立てることができます。',
-        refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'}] },
-      { q:'提出期限を過ぎてしまった書類は受け付けてもらえますか？',
-        a:'原則として受理されません。ただし、期限翌日から3日以内に、入院証明書・罹災証明書等の客観的な証明書類を添付して申し出た場合は、理事会が個別に判断します。',
-        refs:[{type:'h',id:'h5',label:'第1編 一般管理細則 第4条の2（提出期限）'}] },
-    ]
-  },
-
   // ===== カテゴリ1: マンションの基本的事項 =====
   { cat:'basic', catLabel:'マンションの基本的事項',
     wendyUrl:'https://wendy-net.com/mansion/faq/qa_kanri01',
@@ -2668,13 +2711,13 @@ const RMOS_FAQ = [
     qa:[
       { q:'専有部分の使用に制限はありますか？',
         a:'住居専用です。騒音・振動・臭気等で他の居住者に迷惑をかけてはなりません。ペット・楽器等は使用細則の定めに従います。',
-        refs:[{type:'k',id:'k12',label:'第12条（専有部分の用途）'},{type:'k',id:'k13',label:'第13条（専有部分の使用に関する注意）'},{type:'h',id:'h16',label:'第2編 生活使用細則 第1条（目的）'}] },
+        refs:[{type:'k',id:'k12',label:'第12条（専有部分の用途）'},{type:'k',id:'k13',label:'第13条（専有部分の使用に関する注意）'},{type:'h',id:'h15',label:'第2編 生活使用細則'}] },
       { q:'バルコニーは自由に使えますか？',
         a:'バルコニーは専用使用部分ですが、共用部分です。管理規約・細則の定める方法でのみ使用できます。避難経路の確保が必要です。',
-        refs:[{type:'k',id:'k14',label:'第14条（専用使用部分）'},{type:'h',id:'h16',label:'第2編 生活使用細則 第1条（目的）'}] },
+        refs:[{type:'k',id:'k14',label:'第14条（専用使用部分）'},{type:'h',id:'h15',label:'第2編 生活使用細則'}] },
       { q:'駐車場の使用ルールを教えてください。',
         a:'駐車場は管理組合との使用契約に基づき使用します。管理費等を滞納している場合は使用が制限・停止されます。また滞納中は新規申込みができません。',
-        refs:[{type:'k',id:'k15',label:'第15条（駐車場の使用）'},{type:'k',id:'k16',label:'第15条の2（駐車場使用制限）'},{type:'h',id:'h94',label:'第7編 滞納対応細則 第16条（駐車場使用制限）'}] },
+        refs:[{type:'k',id:'k15',label:'第15条（駐車場の使用）'},{type:'k',id:'k16',label:'第15条の2（駐車場使用制限）'},{type:'h',id:'h88',label:'第7編 滞納対応細則 第16条'}] },
       { q:'暴力団員が入居している場合はどうなりますか？',
         a:'暴力団員等への専有部分の貸与・売却は禁止されています。発覚した場合、管理組合は使用停止・契約解除を求めることができます。',
         refs:[{type:'k',id:'k21',label:'第19条の2（暴力団員の排除）'}] },
@@ -2683,19 +2726,19 @@ const RMOS_FAQ = [
         refs:[{type:'h',id:'h12',label:'第1編 一般管理細則 第9条（使用細則への委任等）'}] },
       { q:'壁に穴を開けたい・重い物を運び込みたいと相談されたら？',
         a:'建物の構造・耐久性・外観に影響する変更、他住戸に影響する設備の新設・変更、500kg超の重量物の搬入、冷暖房配管等のための壁の無断貫通は禁止です。',
-        refs:[{type:'h',id:'h17',label:'第2編 生活使用細則 第2条（専有部分の構造変更等）'}] },
+        refs:[{type:'h',id:'h16',label:'第2編 生活使用細則 第2条（専有部分の構造変更等）'}] },
       { q:'西側空き地に来客が一時的に車を停めたいと言ってきたら？',
         a:'訪問客または専有部分工事に係る業者に限り、事前承認・期間・条件付きで臨時駐車できます。住戸番号等の車両表示と連絡先の届出が必要です。専用使用権は生じず、支障が出れば移動を命じられます。',
-        refs:[{type:'h',id:'h19',label:'第2編 生活使用細則 第4条（共用部分の使用）'}] },
+        refs:[{type:'h',id:'h18',label:'第2編 生活使用細則 第4条（共用部分の使用）'}] },
       { q:'バルコニーの避難経路を塞いでいる・物が多いと苦情が来たら？',
         a:'避難経路を妨げる物の放置は禁止です。違反があった場合、理事長は理事会の決議を経て勧告または指示を行うことができます。',
-        refs:[{type:'h',id:'h21',label:'第2編 生活使用細則 第6条（バルコニー等の使用）'},{type:'h',id:'h26',label:'第2編 生活使用細則 第11条（是正措置）'},{type:'k',id:'k81',label:'第67条（理事長の勧告及び指示等）'}] },
+        refs:[{type:'h',id:'h20',label:'第2編 生活使用細則 第6条（バルコニー等の使用）'},{type:'h',id:'h25',label:'第2編 生活使用細則 第11条（是正措置）'},{type:'k',id:'k81',label:'第67条（理事長の勧告及び指示等）'}] },
       { q:'ペットの鳴き声・共用部での扱いに苦情が来たら？',
         a:'飼育は室内に限ります。共用部分では抱えて移動し、近隣に迷惑を及ぼす鳴き声等は禁止です。',
-        refs:[{type:'h',id:'h24',label:'第2編 生活使用細則 第9条（ペットの飼育）'}] },
+        refs:[{type:'h',id:'h23',label:'第2編 生活使用細則 第9条（ペットの飼育）'}] },
       { q:'長期不在にすると言われた場合はどうしますか？',
         a:'1か月以上の長期不在は管理組合へ届出が必要です。',
-        refs:[{type:'h',id:'h25',label:'第2編 生活使用細則 第10条（届出義務）'}] },
+        refs:[{type:'h',id:'h24',label:'第2編 生活使用細則 第10条（届出義務）'}] },
     ]
   },
   // ===== カテゴリ3: 総会・理事会の運営 =====
@@ -2728,31 +2771,31 @@ const RMOS_FAQ = [
         refs:[{type:'k',id:'k54',label:'第41条（監事）'}] },
       { q:'理事会はいつ開くものですか？',
         a:'原則2か月に1回以上、定例で開催します。年度当初に日程を決定し組合員に周知します。緊急時等は理事長が臨時理事会を招集できます。',
-        refs:[{type:'h',id:'h108',label:'第8編 理事会運営細則 第7条（定例理事会）'},{type:'h',id:'h109',label:'第8編 理事会運営細則 第8条（臨時理事会）'}] },
+        refs:[{type:'h',id:'h113',label:'第9編 理事会運営細則 第7条（定例理事会）'},{type:'h',id:'h114',label:'第9編 理事会運営細則 第8条（臨時理事会）'}] },
       { q:'理事会の招集通知はいつまでに出しますか？',
         a:'開催日の7日前までに、開催日時・場所・議題を記載した通知を発します。緊急の場合は期間を短縮し、電話・メール等によることができます。全員の同意があれば招集手続を省略できます。',
-        refs:[{type:'h',id:'h110',label:'第8編 理事会運営細則 第9条（招集手続）'}] },
+        refs:[{type:'h',id:'h115',label:'第9編 理事会運営細則 第9条（招集手続）'}] },
       { q:'理事会の決議は何人の賛成で成立しますか？',
         a:'出席理事の過半数で決議します。可否同数の場合は議長が決します。特別の利害関係を有する理事は議決に加わることができません。',
-        refs:[{type:'h',id:'h116',label:'第8編 理事会運営細則 第15条（決議の方法）'},{type:'h',id:'h117',label:'第8編 理事会運営細則 第16条（特別利害関係理事の除外）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'}] },
+        refs:[{type:'h',id:'h121',label:'第9編 理事会運営細則 第15条（決議の方法）'},{type:'h',id:'h122',label:'第9編 理事会運営細則 第16条（特別利害関係理事の除外）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'}] },
       { q:'緊急で理事会を開けないとき意思決定できますか？',
         a:'理事長がLINE・電子メール等の電磁的方法で全理事の意思確認を行い、過半数の賛成があれば暫定的に業務を執行できます。次回理事会で必ず報告・審議のうえ正式に追認しなければなりません。追認が得られなければ原状回復等の措置を講じます。',
-        refs:[{type:'h',id:'h120',label:'第8編 理事会運営細則 第19条（電磁的方法による意思確認と追認）'}] },
+        refs:[{type:'h',id:'h125',label:'第9編 理事会運営細則 第19条（電磁的方法による意思確認と追認）'}] },
       { q:'理事会を開かずに決議したい（書面決議）ときはどうしますか？',
         a:'専有部分工事の承認・不承認に関する事項に限れば、理事の過半数の承諾で書面決議ができます。それ以外の事項でも、理事全員の同意があれば会議を開かず書面決議で決定できます。',
-        refs:[{type:'h',id:'h119',label:'第8編 理事会運営細則 第18条（書面決議）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'}] },
+        refs:[{type:'h',id:'h124',label:'第9編 理事会運営細則 第18条（書面決議）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'}] },
       { q:'理事会議事録はいつまでに作成し、誰が署名しますか？',
         a:'開催後2週間以内に理事長が作成します。議長（理事長）と、出席理事の中から互選された署名人2名が署名押印します。紙・デジタルデータの双方で保管し、保管期間は10年間です。',
-        refs:[{type:'h',id:'h121',label:'第8編 理事会運営細則 第20条（議事録の作成）'},{type:'h',id:'h123',label:'第8編 理事会運営細則 第22条（議事録の署名）'},{type:'h',id:'h124',label:'第8編 理事会運営細則 第23条（議事録の保管・開示）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'},{type:'k',id:'k62',label:'第49条（議事録の作成、保管等）'}] },
+        refs:[{type:'h',id:'h126',label:'第9編 理事会運営細則 第20条（議事録の作成）'},{type:'h',id:'h128',label:'第9編 理事会運営細則 第22条（議事録の署名）'},{type:'h',id:'h129',label:'第9編 理事会運営細則 第23条（議事録の保管・開示）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'},{type:'k',id:'k62',label:'第49条（議事録の作成、保管等）'}] },
       { q:'理事を退任するとき何を引き継ぎますか？',
         a:'保管文書の所在、パスワード・認証情報、進行中案件の状況、管理会社・弁護士等の連絡先、銀行口座・印鑑・鍵類を引き継ぎます。原則として総会承認後2週間以内に完了し、引継書に新旧役員が署名押印します。',
-        refs:[{type:'h',id:'h127',label:'第8編 理事会運営細則 第26条（引き継ぎの義務）'},{type:'h',id:'h128',label:'第8編 理事会運営細則 第27条（引き継ぎ事項）'}] },
+        refs:[{type:'h',id:'h132',label:'第9編 理事会運営細則 第26条（引き継ぎの義務）'},{type:'h',id:'h133',label:'第9編 理事会運営細則 第27条（引き継ぎ事項）'}] },
       { q:'渉外理事は理事長の代わりに何ができますか？',
         a:'理事会決議を経て理事長の代理人に指定された場合、弁護士等との連絡調整、滞納督促・交渉、内容証明の作成発送、訴訟等の法的手続の準備行為などを行えます。代理行為の法的効果は管理組合に帰属し、理事長が監督責任を負います。',
-        refs:[{type:'h',id:'h132',label:'第8編 理事会運営細則 第31条（理事長の代理）'}] },
+        refs:[{type:'h',id:'h137',label:'第9編 理事会運営細則 第31条（理事長の代理）'}] },
       { q:'専門委員会（修繕委員会など）を作りたいと言われたら？',
         a:'理事会が設立目的を定め委員を公募します。原則5名以上（軽微な事項なら3名以上も可）とし、設立後14日以内に取組方針等の報告書を理事会に提出します。委員会は決定権限を持たず、理事会の諮問機関にとどまります。',
-        refs:[{type:'h',id:'h116',label:'第8編 理事会運営細則 第15条（決議の方法）'},{type:'k',id:'k69',label:'第55条（専門委員会の設置）'}] },
+        refs:[{type:'h',id:'h121',label:'第9編 理事会運営細則 第15条（決議の方法）'},{type:'k',id:'k69',label:'第55条（専門委員会の設置）'}] },
       { q:'電磁的方法（RMOS Pro等）はいつから使えるようになりますか？',
         a:'理事会が電磁的方法の運用基準を決議した時点から使用できます。理事全員の同意があれば会議を開かず書面決議で決めることもできます。総会の承認は不要ですが、新たに電磁的方法を採用するときは総会へ報告しなければなりません。',
         refs:[{type:'k',id:'k91',label:'第73条（改正区分所有法への対応）'},{type:'k',id:'k67',label:'第53条（理事会の会議及び議事）'}] },
@@ -2764,16 +2807,16 @@ const RMOS_FAQ = [
     qa:[
       { q:'管理費等を滞納するとどうなりますか？',
         a:'理事長は書面等で催告します。それでも支払いがない場合は訴訟提起予定通知→異議申立期間（30日）→訴訟提起と段階的に法的措置を進めます。',
-        refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'},{type:'h',id:'h78',label:'第7編 滞納対応細則 第1条（目的）'}] },
+        refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'},{type:'h',id:'h72',label:'第7編 滞納対応細則'}] },
       { q:'遅延損害金はいくらですか？',
         a:'施行前（平成22年規約）の滞納分は年10%、令和8年7月19日以降は年14.6%の遅延損害金が発生します（弁護士確認済）。',
-        refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'},{type:'h',id:'h78',label:'第7編 滞納対応細則 第1条（目的）'}] },
+        refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'},{type:'h',id:'h72',label:'第7編 滞納対応細則'}] },
       { q:'弁済の充当順序はどうなっていますか？',
         a:'民法第489条の規定に従い、①費用→②遅延損害金→③管理費等元本の順に充当されます。',
-        refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'},{type:'h',id:'h78',label:'第7編 滞納対応細則 第1条（目的）'}] },
+        refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'},{type:'h',id:'h72',label:'第7編 滞納対応細則'}] },
       { q:'滞納者の駐車場は止められますか？',
         a:'3か月以上の滞納がある場合、14日の猶予通知を行った上で駐車場使用を停止できます。また滞納中は新規申込みも受理しません。',
-        refs:[{type:'k',id:'k16',label:'第15条の2（駐車場使用制限）'},{type:'h',id:'h94',label:'第7編 滞納対応細則 第16条（駐車場使用制限）'}] },
+        refs:[{type:'k',id:'k16',label:'第15条の2（駐車場使用制限）'},{type:'h',id:'h88',label:'第7編 滞納対応細則 第16条'}] },
       { q:'訴訟提起は総会決議が必要ですか？',
         a:'管理費等の回収に係る訴訟提起は、理事会の決議をもって足りるとされています（第60条第5項）。総会決議は不要です。',
         refs:[{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'}] },
@@ -2791,22 +2834,22 @@ const RMOS_FAQ = [
         refs:[{type:'h',id:'h11',label:'第1編 一般管理細則 第8条（滞納への対応）'}] },
       { q:'支払いが遅れている組合員にいつ督促を出しますか？',
         a:'支払期限から14日経過した時点で督促状を発送します（滞納額・支払期限を明記し、受領後7日以内の支払いを求めます）。30日経過した時点で内容証明郵便（民法第150条の催告）を発送します。',
-        refs:[{type:'h',id:'h81',label:'第7編 滞納対応細則 第3条（督促状の発送時期）'},{type:'h',id:'h83',label:'第7編 滞納対応細則 第5条（内容証明郵便の発送）'}] },
+        refs:[{type:'h',id:'h75',label:'第7編 滞納対応細則 第3条（督促状の発送時期）'},{type:'h',id:'h77',label:'第7編 滞納対応細則 第5条（内容証明郵便の発送）'}] },
       { q:'180日以上滞納が続いている場合、次はどうしますか？',
         a:'原則として理事会で法的措置への移行を決議します。強制執行認諾文言付き公正証書による分割返済契約が締結され履行中である場合は例外とし、その理由を議事録に記録します。',
-        refs:[{type:'h',id:'h85',label:'第7編 滞納対応細則 第7条（法的措置の実施時期）'}] },
+        refs:[{type:'h',id:'h79',label:'第7編 滞納対応細則 第7条（法的措置の実施時期）'}] },
       { q:'分割返済を求められたら応じてよいですか？',
         a:'強制執行認諾文言付き公正証書を作成しない限り分割契約は成立しません。期間は最長24か月以内です。新たな滞納や支払遅延が生じれば期限の利益を喪失し、直ちに法的措置へ移行します。',
-        refs:[{type:'h',id:'h87',label:'第7編 滞納対応細則 第9条（公正証書）'},{type:'h',id:'h88',label:'第7編 滞納対応細則 第10条（分割返済）'}] },
+        refs:[{type:'h',id:'h81',label:'第7編 滞納対応細則 第9条（公正証書）'},{type:'h',id:'h82',label:'第7編 滞納対応細則 第10条（分割返済）'}] },
       { q:'滞納額が50万円未満かどうかで対応は変わりますか？',
         a:'50万円未満は公正証書の作成が原則です。ただし債務者が協議に応じない、所在不明、悪質な滞納、競売開始決定等の場合は直ちに訴訟を提起できます。',
-        refs:[{type:'h',id:'h86',label:'第7編 滞納対応細則 第8条（法的措置の選択）'}] },
+        refs:[{type:'h',id:'h80',label:'第7編 滞納対応細則 第8条（法的措置の選択）'}] },
       { q:'滞納者の駐車場はすぐに止められますか？',
         a:'3か月以上滞納していても、理事会決議・通知のみでの一方的な使用停止・解除はできません。本人の書面同意、または確定判決等の執行力ある債務名義が必要です。新規申込みも滞納を理由に拒否できません。',
-        refs:[{type:'h',id:'h94',label:'第7編 滞納対応細則 第16条（駐車場使用制限）'},{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'}] },
+        refs:[{type:'h',id:'h88',label:'第7編 滞納対応細則 第16条（駐車場使用制限）'},{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'}] },
       { q:'滞納している組合員が亡くなった場合はどうしますか？',
         a:'相続人を調査して請求します。相続放棄または不存在が確認された場合は、原則として相続財産管理人の選任を申し立てます。',
-        refs:[{type:'h',id:'h93',label:'第7編 滞納対応細則 第15条（相続人への請求）'}] },
+        refs:[{type:'h',id:'h87',label:'第7編 滞納対応細則 第15条（相続人への請求）'}] },
     ]
   },
   // ===== カテゴリ5: 専有部分について =====
@@ -2815,7 +2858,7 @@ const RMOS_FAQ = [
     qa:[
       { q:'専有部分をリフォームしたい場合はどうすればよいですか？',
         a:'事前に理事長へ申請し、承認を得る必要があります。工事は管理規約・細則の定める方法で行い、共用部分に影響する工事は別途手続きが必要です。',
-        refs:[{type:'k',id:'k18',label:'第17条（専有部分の修繕等）'},{type:'h',id:'h64',label:'第6編 専有部分工事管理細則 第1条（目的）'}] },
+        refs:[{type:'k',id:'k18',label:'第17条（専有部分の修繕等）'},{type:'h',id:'h59',label:'第6編 専有部分工事管理細則'}] },
       { q:'専有部分を賃貸に出してもよいですか？',
         a:'賃貸に出すこと自体は可能ですが、賃借人にも管理規約・細則を遵守させる義務があります。また賃貸開始時に理事長への届出が必要です。',
         refs:[{type:'k',id:'k20',label:'第19条（専有部分の貸与）'}] },
@@ -2889,19 +2932,19 @@ const RMOS_FAQ = [
     qa:[
       { q:'集会室を借りたいと言われたらどうしますか？',
         a:'使用日の2日前までに所定の方法で申請し、承認を受けます。対象は組合員・占有者です（理事会が認めた場合は例外があります）。',
-        refs:[{type:'h',id:'h29',label:'第3編 集会室使用細則 第2条（使用資格）'},{type:'h',id:'h31',label:'第3編 集会室使用細則 第4条（使用手続）'}] },
+        refs:[{type:'h',id:'h27',label:'第3編 集会室使用細則 第2条（使用資格）'},{type:'h',id:'h29',label:'第3編 集会室使用細則 第4条（使用手続）'}] },
       { q:'集会室の使用料はいくらですか・無料になる場合は？',
         a:'非営利目的は1時間200円、営利目的は1時間400円です（1時間未満も1時間として扱います）。総会・理事会等の公式会議、理事会が承認した防災訓練・住民説明会、非営利の管理運営目的での利用は無料です。',
-        refs:[{type:'h',id:'h32',label:'第3編 集会室使用細則 第5条（使用料）'}] },
+        refs:[{type:'h',id:'h30',label:'第3編 集会室使用細則 第5条（使用料）'}] },
       { q:'使用希望が重なったらどちらを優先しますか？',
         a:'原則として申込受付順です。災害等非常時、葬儀での利用、理事長が招集した理事会等での利用は優先されます。',
-        refs:[{type:'h',id:'h33',label:'第3編 集会室使用細則 第6条（使用順位）'}] },
+        refs:[{type:'h',id:'h31',label:'第3編 集会室使用細則 第6条（使用順位）'}] },
       { q:'使用後に汚損・破損があった場合はどうなりますか？',
         a:'原状回復に要する費用を使用者が負担します。',
-        refs:[{type:'h',id:'h35',label:'第3編 集会室使用細則 第8条（損害賠償）'}] },
+        refs:[{type:'h',id:'h33',label:'第3編 集会室使用細則 第8条（損害賠償）'}] },
       { q:'キャンセルしたら使用料は戻りますか？',
         a:'原則として返還しません。管理組合都合による中止の場合は例外です。',
-        refs:[{type:'h',id:'h32',label:'第3編 集会室使用細則 第5条（使用料）'}] },
+        refs:[{type:'h',id:'h30',label:'第3編 集会室使用細則 第5条（使用料）'}] },
     ]
   },
   // ===== カテゴリ12: 防犯カメラの運用 =====
@@ -2909,25 +2952,25 @@ const RMOS_FAQ = [
     qa:[
       { q:'防犯カメラの映像を見たいと言われたら？',
         a:'管理組合所定の書面で理事長に申請してもらいます。発生日時・場所・具体的事実を明記し、理事長が受理後、理事会に付議します。',
-        refs:[{type:'h',id:'h44',label:'第4編 防犯カメラ運用細則 第6条（閲覧の申請）'}] },
+        refs:[{type:'h',id:'h41',label:'第4編 防犯カメラ運用細則 第6条（閲覧の申請）'}] },
       { q:'防犯カメラの映像を実際に見せてよいですか？',
         a:'犯罪行為等が発生した場合、その予防保全措置として必要な場合、捜査機関から法令に基づく要請があった場合、理事会が相当の理由により必要と認めた場合に限ります。必要最小限の範囲で、理事会決議を経て複数名の立会いのもとで実施します。',
-        refs:[{type:'h',id:'h45',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'}] },
+        refs:[{type:'h',id:'h42',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'}] },
       { q:'緊急で今すぐ映像を見る必要があるときはどうしますか？',
         a:'理事長の判断で先に閲覧できます。事後速やかに理事会へ報告し、承認を得ます。',
-        refs:[{type:'h',id:'h45',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'}] },
+        refs:[{type:'h',id:'h42',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'}] },
       { q:'警察から映像の提供を求められたらどうしますか？',
         a:'法令に基づく要請であれば提供できます（第三者提供禁止の例外にあたります）。',
-        refs:[{type:'h',id:'h45',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'},{type:'h',id:'h46',label:'第4編 防犯カメラ運用細則 第8条（第三者提供）'}] },
+        refs:[{type:'h',id:'h42',label:'第4編 防犯カメラ運用細則 第7条（閲覧の決定）'},{type:'h',id:'h43',label:'第4編 防犯カメラ運用細則 第8条（第三者提供）'}] },
       { q:'被害者本人に映像を見せてほしいと言われたら？',
         a:'理事会決議を経て、必要最小限の範囲で提供できます。',
-        refs:[{type:'h',id:'h46',label:'第4編 防犯カメラ運用細則 第8条（第三者提供）'}] },
+        refs:[{type:'h',id:'h43',label:'第4編 防犯カメラ運用細則 第8条（第三者提供）'}] },
       { q:'防犯カメラの映像はどれくらい残っていますか？',
         a:'自動上書き方式で、原則30日間保存します。事故・事件に関係する場合は除きます。保存期間経過後は復元できない方法で消去します。',
-        refs:[{type:'h',id:'h43',label:'第4編 防犯カメラ運用細則 第5条（録画及び保存）'}] },
+        refs:[{type:'h',id:'h40',label:'第4編 防犯カメラ運用細則 第5条（録画及び保存）'}] },
       { q:'映像を閲覧・提供した後にすべきことは何ですか？',
         a:'日時、目的、閲覧者氏名等を記録し、3年間保存します。閲覧・提供により知り得た情報の守秘義務は、役職を退任した後も継続します。',
-        refs:[{type:'h',id:'h47',label:'第4編 防犯カメラ運用細則 第9条（記録）'},{type:'h',id:'h48',label:'第4編 防犯カメラ運用細則 第10条（守秘義務）'}] },
+        refs:[{type:'h',id:'h44',label:'第4編 防犯カメラ運用細則 第9条（記録）'},{type:'h',id:'h45',label:'第4編 防犯カメラ運用細則 第10条（守秘義務）'}] },
     ]
   },
   // ===== カテゴリ13: 契約・業者選定 =====
@@ -2938,25 +2981,25 @@ const RMOS_FAQ = [
         refs:[{type:'h',id:'h13',label:'第1編 一般管理細則 第10条（契約手続への委任）'}] },
       { q:'いくらまでなら理事長だけで決めてよいですか？',
         a:'10万円未満は理事長の専決とすることができます（理事会への報告は必要です）。10万円以上100万円未満は理事会の承認が必要です。100万円以上は総会の承認が必要です。',
-        refs:[{type:'h',id:'h54',label:'第5編 契約及び業者選定に関する細則 第4条（金額区分及び決定権限）'}] },
+        refs:[{type:'h',id:'h50',label:'第5編 契約及び業者選定細則 第4条（金額区分及び決定権限）'}] },
       { q:'見積りは何社取ればいいですか？',
         a:'10万円以上の契約は原則2社以上、100万円以上の契約は原則3社以上から見積りを取得します。特定業者に限定する合理的理由がある場合は、その理由を議事録に明記します。',
-        refs:[{type:'h',id:'h55',label:'第5編 契約及び業者選定に関する細則 第5条（見積取得）'}] },
+        refs:[{type:'h',id:'h51',label:'第5編 契約及び業者選定細則 第5条（見積取得）'}] },
       { q:'理事の知り合いの業者に発注したいという話が出たら？',
         a:'契約相手と利害関係がある理事・監事は、その案件の審議・議決に参加できません。利益相反申告書の提出が必要です。',
-        refs:[{type:'h',id:'h57',label:'第5編 契約及び業者選定に関する細則 第7条（利益相反の排除）'}] },
+        refs:[{type:'h',id:'h53',label:'第5編 契約及び業者選定細則 第7条（利益相反の排除）'}] },
       { q:'災害等で緊急対応が必要で見積りを待てないときは？',
         a:'理事長が契約を締結できます。事後速やかに理事会へ報告し、承認を得ます。',
-        refs:[{type:'h',id:'h58',label:'第5編 契約及び業者選定に関する細則 第8条（緊急時対応）'}] },
+        refs:[{type:'h',id:'h54',label:'第5編 契約及び業者選定細則 第8条（緊急時対応）'}] },
       { q:'一番安い業者を選べばよいですか？',
         a:'価格だけでなく、技術力・実績、提案内容の妥当性、履行体制・保証内容、アフターサービス体制、財務状況等を総合的に評価します。',
-        refs:[{type:'h',id:'h56',label:'第5編 契約及び業者選定に関する細則 第6条（評価方法）'}] },
+        refs:[{type:'h',id:'h52',label:'第5編 契約及び業者選定細則 第6条（評価方法）'}] },
       { q:'契約関連書類はいつまで保管しますか？',
         a:'見積書・比較表・評価資料・議事録・契約書は、契約終了後5年間保存します。',
-        refs:[{type:'h',id:'h60',label:'第5編 契約及び業者選定に関する細則 第10条（記録及び保存）'}] },
+        refs:[{type:'h',id:'h56',label:'第5編 契約及び業者選定細則 第10条（記録及び保存）'}] },
       { q:'第三者管理方式を採用した場合、契約のルールはどう読みますか？',
         a:'細則中の「理事長」は「管理者」に、「理事会」は「監督機関」に読み替えます。契約金額にかかわらず管理者単独では決定できず、監督機関の承認を得たうえで監事の確認・承認も必要になります。',
-        refs:[{type:'h',id:'h54',label:'第5編 契約及び業者選定に関する細則 第4条（金額区分及び決定権限）'},{type:'h',id:'h61',label:'第5編 契約及び業者選定に関する細則 第11条（外部管理者方式（理事会不設置型）における読み替え）'}] },
+        refs:[{type:'h',id:'h50',label:'第5編 契約及び業者選定細則 第4条（金額区分及び決定権限）'},{type:'h',id:'h57',label:'第5編 契約及び業者選定細則 第11条（第三者管理方式における読み替え）'}] },
     ]
   },
   // ===== カテゴリ14: 専有部分の工事 =====
@@ -2967,43 +3010,30 @@ const RMOS_FAQ = [
         refs:[{type:'h',id:'h12',label:'第1編 一般管理細則 第9条（使用細則への委任等）'}] },
       { q:'リフォームしたいと相談されたらどうしますか？',
         a:'所定様式で事前に届け出てもらいます。軽微な内装工事は理事長の承認、構造・設備・共用部分に影響する工事は理事会の承認が必要です。',
-        refs:[{type:'h',id:'h66',label:'第6編 専有部分工事管理細則 第3条（事前届出及び承認）'}] },
+        refs:[{type:'h',id:'h61',label:'第6編 専有部分工事管理細則 第3条（事前届出及び承認）'}] },
       { q:'業者に規約・細則を守らせたいが、どう周知しますか？',
         a:'工事着手前に管理組合が規約・細則一式を貸し出し、施工業者に内容を周知させます。区分所有者・施工業者は受領確認欄に署名し、工事完了後7日以内に返却します（複写・複製は禁止です）。',
-        refs:[{type:'h',id:'h67',label:'第6編 専有部分工事管理細則 第3条の2（規約・細則の貸出および遵守）'}] },
+        refs:[{type:'h',id:'h62',label:'第6編 専有部分工事管理細則 第3条の2（規約・細則の貸出および遵守）'}] },
       { q:'工事は何時から何時まで可能ですか・土日祝はどうですか？',
         a:'原則として午前9時から午後5時までです。工事関係者は午後6時までに退室します。日曜は工事不可。土曜・国民の祝日は軽微な工程に限り理事長の承認があれば可能です。年末年始（12月29日〜1月3日）は工事を認めません。',
-        refs:[{type:'h',id:'h69',label:'第6編 専有部分工事管理細則 第4条（工事時間及び退室義務）'}] },
+        refs:[{type:'h',id:'h64',label:'第6編 専有部分工事管理細則 第4条（工事時間及び退室義務）'}] },
       { q:'工事中、エントランスを資材置き場にしたいと言われたら？',
         a:'エントランスは搬入出のための一時的使用のみ可能です。作業・保管・待機等はできません。',
-        refs:[{type:'h',id:'h70',label:'第6編 専有部分工事管理細則 第5条（共用部分の使用及び責任）'}] },
+        refs:[{type:'h',id:'h65',label:'第6編 専有部分工事管理細則 第5条（共用部分の使用及び責任）'}] },
       { q:'工事車両はどこに停めますか？',
         a:'原則として西側空き地です。区分所有者の専用区画を業者に一時使用させる場合は事前の届出が必要です。車両には住戸番号・連絡先を明示します。',
-        refs:[{type:'h',id:'h71',label:'第6編 専有部分工事管理細則 第6条（工事車両の取扱い）'}] },
+        refs:[{type:'h',id:'h66',label:'第6編 専有部分工事管理細則 第6条（工事車両の取扱い）'}] },
       { q:'工事保証金は必ず取りますか？',
         a:'工事の内容・規模・共用部分への影響に照らし必要と認める場合のみ預託を求めます。完了後に損傷がなければ返還し、損傷があれば原状回復費用に充当します。',
-        refs:[{type:'h',id:'h72',label:'第6編 専有部分工事管理細則 第7条（工事保証金）'}] },
+        refs:[{type:'h',id:'h67',label:'第6編 専有部分工事管理細則 第7条（工事保証金）'}] },
       { q:'貸し出した規約・細則を返してもらえないときはどうしますか？',
         a:'管理組合は返却を督促し、必要に応じて実費相当額を請求できます。',
-        refs:[{type:'h',id:'h67',label:'第6編 専有部分工事管理細則 第3条の2（規約・細則の貸出および遵守）'}] },
+        refs:[{type:'h',id:'h62',label:'第6編 専有部分工事管理細則 第3条の2（規約・細則の貸出および遵守）'}] },
     ]
   },
-];
-/* カテゴリ15「駐車場使用の詳細手続き」（chusha）は令和8年8月5日、一時非表示化。
-   下記 RMOS_FAQ_PENDING_PARKING を参照。 */
-
-/* ===== 駐車場関連FAQ：一時非表示（令和8年8月5日）=====
- * 根拠だった「第8編 駐車場使用細則」が令和8年7月19日の最終製本版に未収録のため、
- * 駐車場専門委員会の結論が出るまでRMOS_FAQから外し、ここに保管しています。
- * 結論が出たら内容を見直したうえでRMOS_FAQの届出・申請カテゴリ（todokede）に戻してください。
- */
-const RMOS_FAQ_PENDING_PARKING = [
-      { q:'駐車場を新しく借りたい場合はどうすればよいですか？',
-        a:'申込期間内に新規申込みを行ってください。敷地内駐車場は2年ごとの定期抽選で割り当てます。',
-        refs:[{type:'h',id:'h95',label:'第8編 駐車場使用細則 第7条（申込手続）'},{type:'h',id:'h96',label:'同 第8条（割当方法）'},{type:'h',id:'h97',label:'同 第9条（抽選の実施方法）'}] },
-      { q:'駐車場の契約更新や解約はどうすればよいですか？',
-        a:'契約の更新は、定期抽選への参加をもって申込みとみなします。解約する場合は、随時、書面で解約届を提出してください。',
-        refs:[{type:'h',id:'h100',label:'第8編 駐車場使用細則 第12条（契約期間・更新）'},{type:'h',id:'h101',label:'同 第13条（解約手続）'}] },
+  // ===== カテゴリ15: 駐車場使用の詳細手続き =====
+  { cat:'chusha', catLabel:'駐車場使用の詳細手続き',
+    qa:[
       { q:'滞納している組合員から駐車場の新規申込みがあったら？',
         a:'滞納を理由に申込みを拒否してはなりません（管理組合が受理しない取扱いとなります）。滞納そのものへの対応は別途の手続によります。',
         refs:[{type:'h',id:'h92',label:'第8編 駐車場使用細則 第4条（滞納者の申込制限）'},{type:'k',id:'k74',label:'第60条（管理費等の徴収及び滞納対応）'}] },
@@ -3022,8 +3052,9 @@ const RMOS_FAQ_PENDING_PARKING = [
       { q:'専有部分を売却・賃貸したら駐車場契約はどうなりますか？',
         a:'譲渡または貸与した時点で、駐車場使用契約は効力を失います。',
         refs:[{type:'h',id:'h104',label:'第8編 駐車場使用細則 第16条（区分所有権譲渡時の取扱い）'}] },
-];;
-
+    ]
+  },
+];
 
 const WENDY_FAQ = [
   { title:'マンションの基本的事項', url:'https://wendy-net.com/mansion/faq/qa_kanri01',
@@ -3145,7 +3176,7 @@ function renderWendyFAQPage(){
           </button>
         </div>`).join('')}
       <div style="margin-top:12px;text-align:right">
-        ${cat.wendyUrl ? `<a href="${cat.wendyUrl}" target="_blank" style="font-size:11px;color:#4285F4;text-decoration:none">Wendy-Net 詳細FAQ ↗</a>` : ''}
+        <a href="${cat.wendyUrl}" target="_blank" style="font-size:11px;color:#4285F4;text-decoration:none">Wendy-Net 詳細FAQ ↗</a>
       </div>`;
     return;
   }
@@ -3177,13 +3208,13 @@ function renderWendyFAQPage(){
           </button>`).join('')}
       </div>
     </div>
-    ${cat.wendyUrl ? `<div style="padding:10px 12px;background:var(--sf);border:1px solid rgba(56,139,253,.2);border-radius:8px;text-align:center">
+    <div style="padding:10px 12px;background:var(--sf);border:1px solid rgba(56,139,253,.2);border-radius:8px;text-align:center">
       <div style="font-size:11px;color:var(--tx2);margin-bottom:4px">弁護士監修の詳細解説</div>
       <a href="${cat.wendyUrl}" target="_blank"
          style="font-size:12px;color:#4285F4;text-decoration:none;font-weight:600">
         Wendy-Net FAQで詳しく読む ↗
       </a>
-    </div>` : ''}`;
+    </div>`;
 }
 
 function rmFaqSelCat(cat){
@@ -3500,6 +3531,346 @@ async function rmPushSend() {
   } catch(e) {
     if (res) { res.style.color='#c0392b'; res.textContent='❌ 通信エラー：' + e.message; }
   }
+}
+
+// ── 駐車場申請 ──
+const PARKING_GAS = GAS_URL;
+
+function calcParkingFee() {
+  const start = document.getElementById('pk-start').value;
+  const end   = document.getElementById('pk-end').value;
+  const wrap  = document.getElementById('pk-fee-wrap');
+  if (!start || !end) { wrap.style.display = 'none'; return; }
+  const diff = (new Date(end) - new Date(start)) / (1000 * 60 * 60); // 時間
+  if (diff <= 0) { wrap.style.display = 'none'; return; }
+  const units  = Math.ceil(diff / 24);
+  const amount = units * 200;
+  const h = Math.floor(diff);
+  const m = Math.round((diff - h) * 60);
+  document.getElementById('pk-fee-hours').textContent =
+    h + '時間' + (m > 0 ? m + '分' : '') + '　（' + units + '回分）';
+  document.getElementById('pk-fee-amount').textContent = amount.toLocaleString() + ' 円';
+  wrap.style.display = 'block';
+}
+
+function renderParking() {
+  const sel = document.getElementById('pk-lot');
+  const wrap = document.getElementById('parking-lots-wrap');
+  sel.innerHTML = '<option value="">読み込み中...</option>';
+  wrap.innerHTML = '';
+
+  const CSV_MASTER = 'https://docs.google.com/spreadsheets/d/1xxceOMc2FvShqbUnPK6bHHhC-Cd6XeYSl0yQ2whutVw/export?format=csv&gid=8713510&t=' + Date.now();
+  fetch(CSV_MASTER, { cache: 'no-store' })
+    .then(r => r.text())
+    .then(csv => {
+      const rows = csv.trim().split('\n').slice(1); // ヘッダー除く
+      const lots = rows.map(row => {
+        const cols = row.split(',');
+        return { id: cols[0]?.trim(), type: cols[1]?.trim(), status: cols[2]?.trim() };
+      }).filter(l => l.id);
+      sel.innerHTML = '<option value="">-- 空き区画を選択 --</option>';
+
+      const groups = { '通常': [], '専用': [], '敷地外': [] };
+      lots.forEach(l => { if (l.status === '空き') groups[l.type]?.push(l); });
+
+      const colors = { '通常': '#2196F3', '専用': '#9C27B0', '敷地外': '#FF9800' };
+      let html = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">';
+      ['通常','専用','敷地外'].forEach(t => {
+        const cnt = groups[t].length;
+        html += `<span style="padding:4px 10px;border-radius:20px;font-size:12px;background:${colors[t]}22;color:${colors[t]};border:1px solid ${colors[t]}44">${t}：空き ${cnt} 区画</span>`;
+      });
+      html += '</div>';
+      wrap.innerHTML = html;
+
+      ['通常','専用','敷地外'].forEach(t => {
+        if (groups[t].length === 0) return;
+        const og = document.createElement('optgroup');
+        og.label = t + (t==='専用'?' （軽自動車限定）': t==='敷地外'?' （未舗装）':'');
+        groups[t].forEach(l => {
+          const opt = document.createElement('option');
+          opt.value = l.id;
+          opt.textContent = l.id + '　[' + t + ']';
+          og.appendChild(opt);
+        });
+        sel.appendChild(og);
+      });
+
+      if (lots.filter(l => l.status === '空き').length === 0) {
+        sel.innerHTML = '<option value="">現在空き区画がありません</option>';
+        wrap.innerHTML = '<p style="color:var(--tx2);font-size:13px;padding:8px;background:var(--sf);border-radius:8px">現在空き区画がありません。管理組合にお問い合わせください。</p>';
+      }
+    })
+    .catch(() => {
+      sel.innerHTML = '<option value="">取得失敗 - 管理組合にお問い合わせください</option>';
+    });
+}
+
+function submitParking() {
+  const room  = document.getElementById('pk-room').value.trim();
+  const name  = document.getElementById('pk-name').value.trim();
+  const lot   = document.getElementById('pk-lot').value;
+  const start = document.getElementById('pk-start').value;
+  const end   = document.getElementById('pk-end').value;
+  const carno = document.getElementById('pk-carno').value.trim();
+  const msg   = document.getElementById('pk-msg');
+
+  if (!room || !name || !lot || !start || !end || !carno) {
+    msg.style.color = 'red';
+    msg.textContent = '※ すべての項目を入力してください。';
+    return;
+  }
+  if (new Date(end) <= new Date(start)) {
+    msg.style.color = 'red';
+    msg.textContent = '※ 終了日時は開始日時より後にしてください。';
+    return;
+  }
+
+  const btn = document.getElementById('pk-btn');
+  btn.disabled = true;
+  btn.textContent = '送信中...';
+  msg.textContent = '';
+
+  const diff   = (new Date(end) - new Date(start)) / (1000 * 60 * 60);
+  const amount = Math.ceil(diff / 24) * 200;
+
+  const params = new URLSearchParams({
+    action:  'parkingRequest',
+    room:    room,
+    name:    name,
+    lotId:   lot,
+    startDt: start,
+    endDt:   end,
+    carNo:   carno,
+    fee:     amount + '円'
+  });
+
+  fetch(PARKING_GAS + '?' + params.toString(), { method: 'GET', mode: 'no-cors' })
+    .then(() => {
+      msg.style.color = 'green';
+      msg.textContent = '✅ 申請を受け付けました。管理組合より許可証を発行します。';
+      btn.textContent = '送信済み';
+      ['pk-room','pk-name','pk-start','pk-end','pk-carno'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('pk-lot').selectedIndex = 0;
+    })
+    .catch(() => {
+      msg.style.color = 'red';
+      msg.textContent = '送信に失敗しました。管理組合にお問い合わせください。';
+      btn.disabled = false;
+      btn.textContent = '🅿️ 申請する';
+    });
+}
+
+// ── 集会室使用申請 ──
+const MEETING_GAS = GAS_URL;
+let _meetingBookingsCache = { date: null, bookings: [] };
+
+function calcMeetingFee() {
+  const cat   = document.getElementById('mt-category').value;
+  const start = document.getElementById('mt-start').value;
+  const end   = document.getElementById('mt-end').value;
+  const wrap  = document.getElementById('mt-fee-wrap');
+  const warn  = document.getElementById('mt-time-warn');
+
+  if (!start || !end) { wrap.style.display = 'none'; warn.style.display='none'; return; }
+
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
+  const startMin = sh * 60 + sm;
+  const endMin   = eh * 60 + em;
+  const diffMin  = endMin - startMin;
+
+  if (diffMin <= 0) { wrap.style.display = 'none'; return; }
+
+  if (startMin < 9*60 || endMin > 21*60) {
+    warn.style.display = 'block';
+    warn.textContent = '⚠ 集会室の使用時間は原則9:00〜21:00です。この時間を超える申請は理事会の個別承認が必要です。';
+  } else {
+    warn.style.display = 'none';
+  }
+
+  if (cat === '無料') {
+    document.getElementById('mt-fee-hours').textContent = '無料対象（総会・理事会等）';
+    document.getElementById('mt-fee-amount').textContent = '0 円';
+    wrap.style.display = 'block';
+    return;
+  }
+
+  const hours  = Math.ceil(diffMin / 60);
+  const rate   = cat === '営利' ? 400 : 200;
+  const amount = hours * rate;
+  document.getElementById('mt-fee-hours').textContent = hours + '時間分（' + rate + '円/時間）';
+  document.getElementById('mt-fee-amount').textContent = amount.toLocaleString() + ' 円';
+  wrap.style.display = 'block';
+}
+
+function checkMeetingConflict() {
+  const date  = document.getElementById('mt-date').value;
+  const start = document.getElementById('mt-start').value;
+  const end   = document.getElementById('mt-end').value;
+  const wrap  = document.getElementById('mt-conflict-wrap');
+  if (!date) { wrap.style.display = 'none'; return; }
+
+  const runCheck = () => {
+    if (!start || !end) { wrap.style.display = 'none'; return; }
+    const [sh, sm] = start.split(':').map(Number);
+    const [eh, em] = end.split(':').map(Number);
+    const s = sh * 60 + sm, e = eh * 60 + em;
+    const overlaps = _meetingBookingsCache.bookings.filter(b => {
+      const [bsh, bsm] = b.start.split(':').map(Number);
+      const [beh, bem] = b.end.split(':').map(Number);
+      const bs = bsh * 60 + bsm, be = beh * 60 + bem;
+      return s < be && e > bs;
+    });
+    if (overlaps.length) {
+      wrap.style.display = 'block';
+      wrap.innerHTML = '⚠ 同じ日の ' + overlaps.map(b => b.start + '〜' + b.end + '（' + b.purpose + '）').join('、') +
+        ' に既存の申込みがあります。時間の重複は理事会にて調整しますので、そのまま申請いただいて構いません。';
+    } else {
+      wrap.style.display = 'none';
+    }
+  };
+
+  if (_meetingBookingsCache.date === date) { runCheck(); return; }
+
+  wrap.style.display = 'block';
+  wrap.style.background = 'var(--sf)';
+  wrap.style.color = 'var(--tx2)';
+  wrap.style.border = '1px solid var(--bd)';
+  wrap.textContent = '予約状況を確認中...';
+
+  fetch(MEETING_GAS + '?action=getMeetingBookings&date=' + encodeURIComponent(date) + '&t=' + Date.now(), { method: 'GET', mode: 'cors' })
+    .then(r => r.json())
+    .then(data => {
+      _meetingBookingsCache = { date: date, bookings: (data.bookings || []) };
+      wrap.style.background = '#FDECEA';
+      wrap.style.color = '#c0392b';
+      wrap.style.border = '1px solid #f5c6cb';
+      runCheck();
+    })
+    .catch(() => {
+      wrap.style.display = 'none';
+    });
+}
+
+function submitMeeting() {
+  const room    = document.getElementById('mt-room').value.trim();
+  const name    = document.getElementById('mt-name').value.trim();
+  const purpose = document.getElementById('mt-purpose').value.trim();
+  const cat     = document.getElementById('mt-category').value;
+  const date    = document.getElementById('mt-date').value;
+  const start   = document.getElementById('mt-start').value;
+  const end     = document.getElementById('mt-end').value;
+  const msg     = document.getElementById('mt-msg');
+
+  if (!room || !name || !purpose || !date || !start || !end) {
+    msg.style.color = 'red';
+    msg.textContent = '※ すべての項目を入力してください。';
+    return;
+  }
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
+  if (eh * 60 + em <= sh * 60 + sm) {
+    msg.style.color = 'red';
+    msg.textContent = '※ 終了時刻は開始時刻より後にしてください。';
+    return;
+  }
+
+  const btn = document.getElementById('mt-btn');
+  btn.disabled = true;
+  btn.textContent = '送信中...';
+  msg.textContent = '';
+
+  const diffMin = (eh * 60 + em) - (sh * 60 + sm);
+  const hours   = Math.ceil(diffMin / 60);
+  const rate    = cat === '無料' ? 0 : (cat === '営利' ? 400 : 200);
+  const amount  = hours * rate;
+
+  const params = new URLSearchParams({
+    action:   'meetingRoomRequest',
+    room:     room,
+    name:     name,
+    purpose:  purpose,
+    category: cat,
+    date:     date,
+    startTm:  start,
+    endTm:    end,
+    fee:      amount + '円'
+  });
+
+  fetch(MEETING_GAS + '?' + params.toString(), { method: 'GET', mode: 'no-cors' })
+    .then(() => {
+      msg.style.color = 'green';
+      msg.textContent = '✅ 申請を受け付けました。管理組合より結果をご連絡します。';
+      btn.textContent = '送信済み';
+      ['mt-room','mt-name','mt-purpose','mt-date','mt-start','mt-end'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('mt-category').selectedIndex = 0;
+      document.getElementById('mt-fee-wrap').style.display = 'none';
+      document.getElementById('mt-conflict-wrap').style.display = 'none';
+      document.getElementById('mt-time-warn').style.display = 'none';
+    })
+    .catch(() => {
+      msg.style.color = 'red';
+      msg.textContent = '送信に失敗しました。管理組合にお問い合わせください。';
+      btn.disabled = false;
+      btn.textContent = '🏛 申請する';
+    });
+}
+
+// ── 申請承認（管理者用） ──
+const APPROVAL_GAS = GAS_URL;
+
+function apvCard(fieldsHtml, row, kind) {
+  return `<div class="ni" style="margin-bottom:10px">
+    <div style="font-size:13px;line-height:1.8">${fieldsHtml}</div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button onclick="decideApproval('${kind}',${row},'承認')" style="flex:1;padding:8px;background:#2e7d32;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer">✅ 承認</button>
+      <button onclick="decideApproval('${kind}',${row},'却下')" style="flex:1;padding:8px;background:#c0392b;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer">✖ 却下</button>
+    </div>
+  </div>`;
+}
+
+function renderApprovals() {
+  const pList  = document.getElementById('apv-parking-list');
+  const pEmpty = document.getElementById('apv-parking-empty');
+  const mList  = document.getElementById('apv-meeting-list');
+  const mEmpty = document.getElementById('apv-meeting-empty');
+  pList.innerHTML = '読み込み中...';
+  mList.innerHTML = '読み込み中...';
+
+  fetch(APPROVAL_GAS + '?action=getParkingRequests&t=' + Date.now(), { method: 'GET', mode: 'cors' })
+    .then(r => r.json())
+    .then(data => {
+      const items = (data.requests || []).filter(r => r.status === '受付済');
+      if (!items.length) { pList.innerHTML = ''; pEmpty.style.display = 'block'; return; }
+      pEmpty.style.display = 'none';
+      pList.innerHTML = items.map(r => apvCard(
+        `号室：${esc(r.room)}　氏名：${esc(r.name)}<br>区画：${esc(r.lotId)}　車両：${esc(r.carNo)}<br>期間：${esc(r.startDt)} 〜 ${esc(r.endDt)}<br>使用料：${esc(r.fee)}`,
+        r.row, 'parking'
+      )).join('');
+    })
+    .catch(() => { pList.innerHTML = '<p style="color:red;font-size:13px">取得に失敗しました。</p>'; });
+
+  fetch(APPROVAL_GAS + '?action=getMeetingRequests&t=' + Date.now(), { method: 'GET', mode: 'cors' })
+    .then(r => r.json())
+    .then(data => {
+      const items = (data.requests || []).filter(r => r.status === '受付済');
+      if (!items.length) { mList.innerHTML = ''; mEmpty.style.display = 'block'; return; }
+      mEmpty.style.display = 'none';
+      mList.innerHTML = items.map(r => apvCard(
+        `号室：${esc(r.room)}　氏名：${esc(r.name)}<br>目的：${esc(r.purpose)}　区分：${esc(r.category)}<br>日時：${esc(r.date)} ${esc(r.startTm)}〜${esc(r.endTm)}<br>使用料：${esc(r.fee)}`,
+        r.row, 'meeting'
+      )).join('');
+    })
+    .catch(() => { mList.innerHTML = '<p style="color:red;font-size:13px">取得に失敗しました。</p>'; });
+}
+
+function decideApproval(kind, row, decision) {
+  if (!confirm((decision === '承認' ? 'この申請を承認します。' : 'この申請を却下します。') + 'よろしいですか？')) return;
+  const action = kind === 'parking' ? 'decideParkingRequest' : 'decideMeetingRequest';
+  const params = new URLSearchParams({ action: action, row: row, decision: decision });
+  fetch(APPROVAL_GAS + '?' + params.toString(), { method: 'GET', mode: 'no-cors' })
+    .then(() => { setTimeout(renderApprovals, 800); })
+    .catch(() => { alert('処理に失敗しました。時間をおいて再度お試しください。'); });
 }
 
 </script>
