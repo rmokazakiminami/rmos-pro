@@ -226,10 +226,39 @@ mark{background:#FFF3B0;padding:0 2px;border-radius:2px}
 .wendy-cat-items{display:flex;flex-direction:column;gap:2px;margin-bottom:6px}
 .wendy-cat-item{font-size:10px;color:var(--tx2);border-left:2px solid rgba(56,139,253,.2);padding-left:7px}
 .wendy-link{display:inline-block;font-size:10px;color:#4285F4;text-decoration:none;border:1px solid rgba(56,139,253,.2);border-radius:3px;padding:3px 8px;background:rgba(56,139,253,.05)}
+/* ===== ENTRY GATE（初回ログイン必須画面）===== */
+.entry-gate{position:fixed;inset:0;background:var(--bg);z-index:9999;
+    display:flex;align-items:center;justify-content:center;padding:20px}
+.entry-gate.hidden{display:none}
+.eg-card{background:var(--sf);border-radius:16px;padding:32px 24px;width:100%;
+    max-width:380px;box-shadow:0 8px 30px rgba(0,0,0,.15);text-align:center}
+.eg-logo{font-size:40px;margin-bottom:10px}
+.eg-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.eg-sub{font-size:12px;color:var(--tx2);margin-bottom:22px}
+.eg-input{width:100%;padding:14px;border:1px solid var(--bd2);border-radius:var(--r);
+    font-size:16px;background:var(--bg);color:var(--tx);outline:none;
+    -webkit-appearance:none;margin-bottom:8px;text-align:center;letter-spacing:.05em}
+.eg-input:focus{border-color:var(--ac)}
+.eg-err{font-size:12px;color:var(--rd);min-height:16px;margin-bottom:10px}
+.eg-btn{width:100%;padding:14px;background:var(--ac);color:#fff;border:none;
+    border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer}
 
 </style>
 </head>
 <body>
+<!-- ENTRY GATE：未ログイン時は必ずここを通過。認証されるまで他の内容は操作不可 -->
+<div class="entry-gate" id="entry-gate">
+  <div class="eg-card">
+    <div class="eg-logo">🔐</div>
+    <div class="eg-title">ロイヤルマンション岡崎南公園</div>
+    <div class="eg-sub">RMOS Pro をご利用いただくには、パスワードでログインしてください。</div>
+    <input type="password" class="eg-input" id="epw" placeholder="パスワード"
+      autocomplete="off" autocorrect="off" autocapitalize="off"
+      onkeydown="if(event.key==='Enter'){this.blur();doEntryLogin()}">
+    <div class="eg-err" id="eg-err"></div>
+    <button class="eg-btn" onclick="doEntryLogin()">ログイン</button>
+  </div>
+</div>
 
 <header class="hd">
   <div>
@@ -1447,22 +1476,22 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 設定シートからPWを読み込んでから初期化
   loadConfig(()=>{
     setTimeout(()=>{const pw=document.getElementById('mpw');if(pw)pw.value='';},500);
-    // localStorage からログイン状態を復元
+    // localStorage からログイン状態を復元（復元できた場合のみゲートを通過させる）
     try{
       const savedArea = localStorage.getItem('rmos_area');
       if(savedArea && ['resident','board','repair'].includes(savedArea)){
         auth[savedArea] = true;
         // kanriフラグ復元
         if(savedArea==='board' && localStorage.getItem('rmos_kanri')==='1') auth.kanri=true;
+        document.getElementById('entry-gate').classList.add('hidden');
         updAuth(); buildNav(); goSec({public:'kiyaku',resident:'notices',board:'minutes',repair:'progress'}[savedArea]);
         rmPushInit();
       } else {
-        updAuth(); buildNav(); goSec('kiyaku');
-        setTimeout(()=>openLogin(),400);
+        // 未ログイン：エントリーゲートを表示したまま待機（公開エリアも含め、ログインするまで何も表示しない）
+        setTimeout(()=>{const epw=document.getElementById('epw');if(epw)epw.focus();},300);
       }
     } catch(e) {
-      updAuth(); buildNav(); goSec('kiyaku');
-      setTimeout(()=>openLogin(),400);
+      setTimeout(()=>{const epw=document.getElementById('epw');if(epw)epw.focus();},300);
     }
     document.getElementById('mw').addEventListener('click',e=>{if(e.target===e.currentTarget)closeMod();});
     document.getElementById('am').addEventListener('click',e=>{if(e.target===e.currentTarget)closeAM();});
@@ -2236,6 +2265,31 @@ function openLogin(){
 }
 function closeMod(){document.getElementById('mw').classList.remove('op');}
 function closeAM(){document.getElementById('am').classList.remove('op');}
+function doEntryLogin(){
+  const pw=document.getElementById('epw').value.trim();
+  let matched=null;
+  if(pw===PW.resident)matched='resident';
+  else if(pw===PW.board)matched='board';
+  else if(pw===PW.repair)matched='repair';
+  else if(pw===PW.kanri)matched='kanri';
+  if(matched){
+    auth[matched]=true;
+    if(matched==='kanri') auth.board=true;
+    const areaMap={resident:'rm2026',board:'riji2026',repair:'sk2026',kanri:'kanri2026'};
+    if(typeof gtag==='function') gtag('event','login',{area:areaMap[matched]});
+    const area=(matched==='kanri')?'board':matched;
+    try{ localStorage.setItem('rmos_area', area);
+         if(matched==='kanri') localStorage.setItem('rmos_kanri','1'); }catch(e){}
+    document.getElementById('entry-gate').classList.add('hidden');
+    curArea=area;
+    updAuth(); buildNav();
+    goSec({resident:'notices',board:'minutes',repair:'progress'}[area]);
+    rmPushInit();
+  } else {
+    document.getElementById('eg-err').textContent='❌ パスワードが違います';
+    document.getElementById('epw').select();
+  }
+}
 function doLogin(){
   const pw=document.getElementById('mpw').value.trim();
   let matched=null;
@@ -2339,7 +2393,15 @@ function logout(){
   try{localStorage.removeItem('rmos_auth');}catch(e){}
   try{localStorage.removeItem('rmos_area');}catch(e){}
   try{localStorage.removeItem('rmos_kanri');}catch(e){}
-  setArea('public');
+  closeAM();
+  curArea='public';
+  const gate=document.getElementById('entry-gate');
+  if(gate){
+    gate.classList.remove('hidden');
+    const epw=document.getElementById('epw'); if(epw){epw.value='';}
+    const err=document.getElementById('eg-err'); if(err){err.textContent='';}
+    setTimeout(()=>{if(epw)epw.focus();},200);
+  }
 }
 
 /* ===== UTILS ===== */
